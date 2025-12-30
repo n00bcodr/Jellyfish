@@ -4,17 +4,42 @@
 ================================================================================
 */
 
-.layout-desktop .itemMiscInfo {
-    margin-left: -46vw !important;
+/* 10.11.x+ Detail Page Fixes */
+/* Resize show/movie image on details page for 10.11 */
+.layout-desktop .detailImageContainer .card {
+    top: 1.8em !important;
+    width: 18.3vw !important;
+    position: absolute !important;
 }
 
-.layout-desktop .nameContainer {
-    margin-left: -46.5vw !important;
+/* Legacy style to not break pre-10.11.X */
+.layout-desktop .infoWrapper .detailImageContainer .card {
+    top: 9em !important;
 }
 
 .detailImageContainer {
     margin-left: -4vw !important;
     margin-top: -8vw !important;
+}
+
+/* Re-position title and info for 10.11 */
+.layout-desktop .infoWrapper {
+    margin-top: 245px !important;
+    margin-left: 20.8vw !important;
+}
+
+/* Fix for title position on 10.11.X */
+.layout-desktop [dir="ltr"] .detailPagePrimaryContainer:not(.detailRibbon) .detailRibbon {
+    padding-left: unset !important;
+}
+
+.layout-desktop .itemMiscInfo {
+    margin-left: 0.75em !important;
+    margin-top: 1em !important;
+}
+
+.layout-desktop .nameContainer {
+    margin-top: -3em !important;
 }
 
 .nextUpSection  {
@@ -25,6 +50,29 @@ div#listChildrenCollapsible {
 }
 .detailSectionContent {
     order: 0 !important;
+}
+
+/* Re-position content on details page for 10.11 */
+.layout-desktop .detailSection {
+    margin-right: 0 !important;
+}
+
+.layout-desktop .detailPageContent {
+    padding-left: 3.3% !important;
+    padding-right: 0 !important;
+}
+
+/* Improved detail section content styling */
+@supports selector(:has(*)) {
+    .layout-desktop .detailPageWrapperContainer:not(:has(.itemMiscInfo-primary .mediaInfoItem)) .detailSectionContent {
+        padding: 0px 20px 10px 20px !important;
+    }
+}
+
+.layout-mobile .detailSectionContent {
+    background: var(--secondary-background-color) !important;
+    border-radius: var(--rounded-cards) !important;
+    padding: 10px 20px !important;
 }
 
 .itemDetailsGroup {
