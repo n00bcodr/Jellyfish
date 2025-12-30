@@ -1106,6 +1106,7 @@ a.emby-button.homeLibraryButton.raised:hover::before {
     max-height: 30%;         /* Maximum height relative to parent - adjust for logo size */
     height: 800px !important;/* Fixed height, likely overridden by max-height. Review if this is intended or if max-height is sufficient. */
     z-index: 3;              /* Ensure logo is above backdrop but potentially below some OSD elements */
+    object-fit: contain !important; /* Ensure logo scales properly without overflow */
     animation: slideInLogo 0.8s ease-out; /* Apply slide-in animation */
 }
 
@@ -1241,15 +1242,15 @@ h3.tagline {
 }
 .layout-desktop .nameContainer { /* Container for the item name/title */
     position: absolute !important;
-    margin-top: -48px !important; /* Negative margin to pull it upwards */
+    margin-top: -3em !important; /* Use em units for consistent zoom behavior */
     display: flex;
     flex-direction: column; /* Stack title elements vertically */
     align-items: flex-start;
 }
 .layout-desktop .itemMiscInfo { /* Miscellaneous info like year, runtime, rating */
     position: absolute !important;
-    margin-left: 12px !important;
-    margin-top: 10px !important;
+    margin-left: 0.75em !important; /* Use em for consistent zoom behavior */
+    margin-top: 1em !important; /* Use em for consistent zoom behavior */
 }
 
 /* == Description Box Positioning (Desktop) == */
@@ -1950,7 +1951,9 @@ h3.tagline {
 /* Styles related to the music player interface and the "Now Playing" bar at the bottom. */
 
 /* Margin adjustment for the info container in the desktop Now Playing bar. */
-.layout-desktop .appfooter .nowPlayingBarInfoContainer { margin-left: 20px !important; }
+.layout-desktop .appfooter .nowPlayingBarInfoContainer { 
+    margin-left: 10px !important; 
+}
 
 /* Styling for the volume OSD (On-Screen Display) in the desktop layout. */
 .volumeOsd {
@@ -1960,7 +1963,8 @@ h3.tagline {
 
 /* Margin adjustments for parent name (Album/Artist) in the music player's name container (Desktop). */
 .layout-desktop .nameContainer .musicParentName {
-    margin-right: 20px !important;
+    margin-top: 18px !important;
+    margin-right: 22px !important;
     font-size: 1.8em;
     color: var(--primary-accent-color);
 }
@@ -1972,6 +1976,11 @@ h3.tagline {
 /* Margin adjustments for the Now Playing bar itself and its position container (Desktop). */
 .layout-desktop .appfooter .nowPlayingBar { margin-top: 20px !important; }
 .layout-desktop .appfooter .nowPlayingBar .nowPlayingBarPositionContainer { top: -15px !important; } /* Slight upward shift */
+
+.listItem[data-mediatype="Audio"] {
+    padding: 0 1em;
+    border-radius: var(--rounded-cards) !important;
+}
 
 #childrenContent:has(.listItem[data-type="Audio"]) {
     border: 1px solid var(--alt-accent-color);
