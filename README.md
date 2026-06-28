@@ -20,6 +20,11 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 > ```css
 > @import url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/10.11_fixes.css");
 > ```
+>
+> Jellyfin 12 made the new "experimental" layout the default, replacing the legacy header and sidebar with a React/MUI top bar and nav drawer. theme.css's header/sidebar rules target the legacy elements, which still exist but are hidden, so they no longer apply. If you are on **Jellyfin Version 12+**, add the below import as well.
+> ```css
+> @import url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/12_fixes.css");
+> ```
 
 
 
