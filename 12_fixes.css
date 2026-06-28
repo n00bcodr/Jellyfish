@@ -1,0 +1,160 @@
+/*
+================================================================================
+|                         JELLYFIN 12 FIXES                                    |
+|  Re-themes the new React/MUI experimental layout's top bar and nav drawer.  |
+|  Import this ALONGSIDE theme.css, after it, if you are on Jellyfin 12+.     |
+================================================================================
+*/
+
+/* ~~~~~~~~~~~~~~~~~~~~ TOP BAR ~~~~~~~~~~~~~~~~~~~~ */
+
+/* Transparent app bar background */
+.MuiAppBar-root {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Keep the toolbar in a single row on all screen sizes */
+.MuiToolbar-root {
+    flex-wrap: nowrap !important;
+}
+
+/* Icon tray: don't stretch the gap; wrap onto a second row instead of overflowing the bar */
+.MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+    row-gap: 4px !important;
+    margin-left: auto !important;
+}
+
+/* Pill/blur background for the icon tray + avatar */
+.MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]),
+.MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
+    background: var(--header-background-color) !important;
+    backdrop-filter: blur(50px) !important;
+    border-radius: 100px !important;
+    padding: 2px 8px !important;
+}
+
+/* Drawer/back button: sits outside the pill, against a transparent/dark bar, so it needs
+   a light color rather than the pill's dark-on-light icon color below */
+.MuiToolbar-root .MuiIconButton-root {
+    color: var(--text-color) !important;
+    width: 48px !important;
+    height: 48px !important;
+    box-sizing: border-box !important;
+}
+
+/* Icon tray + avatar buttons (sit on the light pill background) */
+.MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]) .MuiIconButton-root,
+.MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) .MuiIconButton-root {
+    color: var(--secondary-background-color) !important;
+}
+
+.MuiToolbar-root .MuiIconButton-root svg,
+.MuiToolbar-root .MuiIconButton-root .material-icons {
+    font-size: 24px !important;
+}
+
+.MuiToolbar-root .MuiIconButton-root:hover,
+.MuiToolbar-root .MuiIconButton-root:focus-visible {
+    color: var(--primary-accent-color) !important;
+    background-color: var(--primary-background-transparent) !important;
+}
+
+/* Avatar / user menu button */
+.MuiToolbar-root [aria-controls="app-user-menu"] {
+    border-radius: 50% !important;
+}
+.MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
+    flex-shrink: 0 !important;
+}
+
+/* Legacy icon buttons still injected into the new toolbar by some plugins */
+.MuiToolbar-root .headerButton.paper-icon-button-light {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: var(--secondary-background-color) !important;
+}
+
+.MuiToolbar-root .headerButton.paper-icon-button-light > .material-icons {
+    font-size: 24px !important;
+}
+
+.MuiToolbar-root .headerButton.paper-icon-button-light:hover {
+    color: var(--primary-accent-color) !important;
+}
+
+/* Server logo: hide the server name text, replace the bundled icon image with --logo */
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
+    font-size: 0 !important;
+    min-width: 0 !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon {
+    position: relative !important;
+    width: 5em !important;
+    height: 3em !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon img {
+    visibility: hidden !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: var(--logo) no-repeat center center !important;
+    background-size: contain !important;
+}
+
+/* Smaller logo on mobile */
+.layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon {
+    width: 3em !important;
+    height: 2em !important;
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~ NAV DRAWER ~~~~~~~~~~~~~~~~~~~~ */
+
+/* Drawer panel background/shape (extra .MuiDrawer-paper repeats boost specificity
+   above MUI's own dynamically-injected styles) */
+.MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper {
+    background: var(--secondary-background-transparent) !important;
+    backdrop-filter: blur(30px) !important;
+    border-top-right-radius: 30px !important;
+    border-bottom-right-radius: 30px !important;
+}
+
+/* Nav links inside the drawer list */
+.MuiDrawer-paper .MuiListItemButton-root {
+    width: 85% !important;
+    margin: 3px auto !important;
+    border-radius: 10px !important;
+    transition: .2s !important;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected) {
+    background: var(--primary-background-transparent) !important;
+    color: var(--primary-accent-color) !important;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+    background: var(--secondary-accent-color) !important;
+    color: var(--primary-accent-color) !important;
+}
+
+.MuiDrawer-paper .MuiListItemIcon-root,
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+    color: inherit !important;
+}
