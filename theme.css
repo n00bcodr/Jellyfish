@@ -23,6 +23,12 @@
     --blur: 15px;           /* Default blur intensity */
 }
 
+/* NOTE: theme.css targets Jellyfin 10.11+ as its baseline (the detail-page/layout
+   fixes formerly in 10.11_fixes.css are merged in directly). 10.11_fixes.css now
+   only contains dashboard-specific styles for the JS-injection workaround - see
+   scripts/10.11_dashboard_theming.js. Jellyfin 12+ still needs 12_fixes.css
+   imported alongside this file for the new React/MUI header and nav drawer. */
+
 /* ~~~~~~~~~~~~~~~~~~~~ GLOBAL FONT ~~~~~~~~~~~~~~~~~~~~ */
 /* Sets the font for the theme. */
 body, h1, h2, h3, h4, h5, h6, p {
@@ -1092,9 +1098,21 @@ div.card-hoverable.squareCard.card {
 /* Styles aimed at restoring or customizing the layout of the item details page. */
 
 /* == Detail Image Sizing and Positioning (Desktop) == */
+/* 10.11+ markup: detailImageContainer sits outside infoWrapper, needs absolute positioning */
 .layout-desktop .detailImageContainer .card { /* The main poster/image on the details page */
-    top: 9em !important;      /* Vertical positioning from the top */
-    width: 18.3vw !important; /* Width relative to viewport width */
+    top: 2em !important;       /* Vertical positioning from the top */
+    width: 18.3vw !important;  /* Width relative to viewport width */
+    position: absolute !important;
+    left: 3.3% !important;
+}
+/* Pre-10.11 markup: detailImageContainer is nested inside infoWrapper, so it needs the old offsets */
+.layout-desktop .infoWrapper .detailImageContainer .card {
+    top: 9em !important;
+    left: unset !important;
+}
+.layout-desktop .detailImageContainer {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
 }
 
 /* == Detail Page Content Repositioning (Desktop) == */
@@ -1102,7 +1120,12 @@ div.card-hoverable.squareCard.card {
     margin-right: 0 !important; /* Remove any default right margin */
 }
 .layout-desktop .detailPageContent { /* Main content container for details */
-    padding-left: 3.3% !important; /* Original/desired left padding */
+    padding-left: 3.3% !important;  /* Original/desired left padding */
+    padding-right: 0 !important;
+}
+/* 10.11+: title padding needs resetting on the ribbon itself */
+.layout-desktop [dir="ltr"] .detailPagePrimaryContainer:not(.detailRibbon) .detailRibbon {
+    padding-left: unset !important;
 }
 
 /* == Detail Page Logo Positioning and Styling == */
@@ -1252,13 +1275,6 @@ h3.tagline {
 .layout-desktop .detailPagePrimaryContainer { /* Primary container for the top section of details page */
     padding-left: 3.3% !important; /* Re-affirm padding */
 }
-.layout-desktop .nameContainer { /* Container for the item name/title */
-    position: absolute !important;
-    margin-top: -3em !important; /* Use em units for consistent zoom behavior */
-    display: flex;
-    flex-direction: column; /* Stack title elements vertically */
-    align-items: flex-start;
-}
 .layout-desktop .itemMiscInfo { /* Miscellaneous info like year, runtime, rating */
     position: absolute !important;
     margin-left: 0.75em !important; /* Use em for consistent zoom behavior */
@@ -1298,10 +1314,16 @@ h3.tagline {
     display: flex;
     flex-direction: column; /* Stack items vertically */
 }
-.detailSection .detailSectionContent { order: 1; } /* Description first */
+.detailSection .detailSectionContent { order: 0; } /* Description first */
 .detailSection .recordingFields    { order: 2; } /* Recording fields (for Live TV) */
 .detailSection .trackSelections    { order: 3; } /* Audio/Subtitle selection */
-.detailSection .itemDetailsGroup   { order: 4; } /* Other details like genres, ratings */
+.detailSection .itemDetailsGroup   { order: 3; } /* Other details like genres, ratings */
+
+/* 10.11+: nextUp/children sections sit as siblings of detailSection on the wrapper - order them after it */
+.nextUpSection { order: 5 !important; }
+div#listChildrenCollapsible { order: 6 !important; }
+.collectionItems { order: 6 !important; }
+.collectionItems .sectionTitleContainer-cards { padding-left: 0 !important; }
 
 /* == Reordering Episode Title Elements (Desktop) == */
 /* Adjusts the order of parent name (Show Title) and item name (Episode Title) within the name container. */
@@ -1310,8 +1332,10 @@ h3.tagline {
 
 /* == Episode Name Position Modification (Desktop) == */
 .layout-desktop .nameContainer .itemName.infoText.subtitle {
-    margin: .8em 12px !important; /* Consistent margin for original titles or subtitles */
-    padding: 0px !important;     /* Remove default padding if any */
+    margin: 5px 0px !important;
+    padding: 0px !important;
+    font-weight: bolder;
+    font-size: x-large;
 }
 
 /* Hide original title (titles in original language) */
@@ -1324,6 +1348,8 @@ h3.tagline {
 }
 
 .layout-desktop .nameContainer {
+    position: absolute !important;
+    margin-top: -3em !important; /* Use em units for consistent zoom behavior */
     display: flex;
     justify-content: flex-start;
     flex-wrap: nowrap;
@@ -1344,12 +1370,9 @@ h3.tagline {
     content: " -";
 }
 
-
-.layout-desktop .nameContainer .itemName.infoText.subtitle {
-    margin: 5px 0px !important;
-    padding: 0px !important;
-    font-weight: bolder;
-    font-size: x-large;
+/* Music player: audio listItem name sits higher than the video/movie default */
+.layout-desktop #itemDetailPage:has(.listItem[data-type="Audio"]) .nameContainer {
+    margin-top: -4.5em !important;
 }
 
 
@@ -2005,6 +2028,23 @@ h3.tagline {
     background: var(--secondary-background-transparent);
 }
 
+/* == Music Artist Detail Page Fixes == */
+/* Artist page (person + MusicAlbum sections) needs extra top margin to clear the backdrop/buttons */
+.layout-desktop #itemDetailPage:has(.verticalSection[data-type="MusicAlbum"]) .detailPageWrapperContainer,
+.layout-tv #itemDetailPage:has(.verticalSection[data-type="MusicAlbum"]) .detailPageWrapperContainer {
+    margin-top: 20em !important;
+}
+
+.layout-desktop #itemDetailPage:has(div.detailImageContainer .cardImageIcon.person):has(.verticalSection[data-type="MusicAlbum"]) .mainDetailButtons {
+    top: 0em !important;
+}
+
+@media (orientation: portrait) {
+    .layout-mobile #itemDetailPage:has(div.detailImageContainer .cardImageIcon.person):has(.verticalSection[data-type="MusicAlbum"]) .itemBackdrop {
+        height: 30% !important;
+    }
+}
+
 
 /* ~~~~~~~~~~~~~~~~~~~~ LIVE TV ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles specific to the Live TV guide and related elements. */
@@ -2156,8 +2196,14 @@ h3.tagline {
 }
 
 /* == Fixes for TV Layout Header == */
-.layout-tv .sectionTabs { width: auto !important; } /* Ensure tabs fit content */
+.layout-tv .sectionTabs { width: fit-content !important; margin-inline: auto !important; } /* Fit and center tabs */
 .layout-tv .headerLeft { padding: 5px !important; } /* Adjust padding for left header on TV */
+
+/* == Backdrop Height (Desktop/TV) == */
+.layout-desktop .itemBackdrop,
+.layout-tv .itemBackdrop {
+    height: 45vh !important;
+}
 
 /* == Font and Overlap Fixes for Media Bar Area == */
 

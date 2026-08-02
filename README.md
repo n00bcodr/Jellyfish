@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/last-commit/n00bcodr/Jellyfish/main?logo=semantic-release&logoColor=white&label=Last%20Updated&labelColor=black&color=AA5CC3&cacheSeconds=3600" alt="Last Updated">
   <img src="https://img.shields.io/github/commit-activity/w/n00bcodr/Jellyfish?logo=git&label=Commit%20Activity&labelColor=black&color=00A4DC&cacheSeconds=600" alt="Commit Activity">
-  <img src="https://img.shields.io/badge/Jellyfin%20Version-10.10.7-AA5CC3?logo=jellyfin&logoColor=00A4DC&labelColor=black" alt="Jellyfin Version">
+  <img src="https://img.shields.io/badge/Jellyfin%20Version-10.11%20%7C%2012-AA5CC3?logo=jellyfin&logoColor=00A4DC&labelColor=black" alt="Jellyfin Version">
 </p>
 <br>
 
@@ -14,12 +14,16 @@ I've made a few tweaks and modifications of my own.
 Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 
 > [!IMPORTANT]
-> This theme is designed for Jellyfin Version **10.10.7**, there have been a few changes in version 10.11 which cause alignment issues which I am actively trying to fix.
-> 
-> If you are on **Jellyfin Version 10.11**, please add the below import statement along with others.
+> `theme.css` targets **Jellyfin 10.11+** natively - the detail-page/layout fixes that used to live in a separate `10.11_fixes.css` import are now merged directly into `theme.css`. If you're on 10.11 or newer, just import `theme.css` as usual, no extra file needed for normal pages.
+>
+> `10.11_fixes.css` now only contains **admin dashboard** styling, since Jellyfin 10.11 [removed the ability](https://github.com/jellyfin/jellyfin-web/issues/7220#issuecomment-3427290912) to theme the dashboard via Custom CSS Code. It only takes effect through the JS-injection workaround (see [10.11 Dashboard Theming](scripts/README.md#1011-dashboard-theming)) - most users don't need to import it at all.
+>
+> Jellyfin 12 made the new "modern" layout the default, replacing the legacy header and sidebar with a React/MUI top bar and nav drawer. theme.css's header/sidebar rules target the legacy elements, which still exist but are hidden, so they no longer apply. If you are on **Jellyfin Version 12+**, add the below import as well.
 > ```css
-> @import url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/10.11_fixes.css");
+> @import url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/12_fixes.css");
 > ```
+>
+> If you're still on **Jellyfin 10.10.x or older**, the theme should mostly still work (there's a legacy fallback for the old detail-page markup), but it's no longer the primary target and minor misalignments are possible.
 
 
 
