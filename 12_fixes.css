@@ -34,7 +34,6 @@
 .MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]),
 .MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
     background: var(--header-background-color) !important;
-    backdrop-filter: blur(50px) !important;
     border-radius: 100px !important;
     padding: 2px 8px !important;
 }
