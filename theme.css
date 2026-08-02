@@ -1222,7 +1222,7 @@ h3.tagline {
     margin-left: 10px !important;
     border: none !important;
     max-width: 70em !important; /* Ensures dropdowns fit within the track selection area */
-    width: 70em !important; /* Matches the width of the track selection area */
+    width: 100% !important;
 }
 
 /* hide the dropdown arrow in track selections */
