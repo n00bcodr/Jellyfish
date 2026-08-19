@@ -2572,34 +2572,44 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
 /* ~~~~~~~~~~~~~~~~~~~~ NAV DRAWER ~~~~~~~~~~~~~~~~~~~~ */
 
 /* Drawer panel background/shape (extra .MuiDrawer-paper repeats boost specificity
-   above MUI's own dynamically-injected styles) */
-.MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper {
+   above MUI's own dynamically-injected styles). Scoped away from the
+   dashboard - its permanent sidebar carries this same generic MUI class,
+   and its high specificity here would otherwise beat the dashboard's own
+   sidebar rules further below (different radius/background intended there). */
+body:not(.dashboardDocument) .MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper {
     background: var(--secondary-background-transparent) !important;
     backdrop-filter: blur(30px) !important;
     border-top-right-radius: 30px !important;
     border-bottom-right-radius: 30px !important;
 }
 
-/* Nav links inside the drawer list */
-.MuiDrawer-paper .MuiListItemButton-root {
+/* Nav links inside the drawer list. Scoped away from the dashboard
+   (body.dashboardDocument) - .MuiDrawer-paper is a generic MUI class that
+   the dashboard's own permanent sidebar also carries, so without this
+   exclusion these rules (meant for the regular site's slide-out drawer)
+   leak into the dashboard and fight with its own dedicated sidebar rules
+   further below - e.g. this section's width: 85% competing with the
+   dashboard's own width handling produced mismatched pill widths between
+   items depending on which rule happened to win. */
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root {
     width: 85% !important;
     margin: 3px auto !important;
     border-radius: 10px !important;
     transition: .2s !important;
 }
 
-.MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected) {
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected) {
     background: var(--primary-background-transparent) !important;
     color: var(--primary-accent-color) !important;
 }
 
-.MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
     background: var(--secondary-accent-color) !important;
     color: var(--primary-accent-color) !important;
 }
 
-.MuiDrawer-paper .MuiListItemIcon-root,
-.MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemIcon-root,
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
     color: inherit !important;
 }
 
