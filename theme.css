@@ -23,11 +23,13 @@
     --blur: 15px;           /* Default blur intensity */
 }
 
-/* NOTE: theme.css targets Jellyfin 10.11+ as its baseline (the detail-page/layout
-   fixes formerly in 10.11_fixes.css are merged in directly). 10.11_fixes.css now
-   only contains dashboard-specific styles for the JS-injection workaround - see
-   scripts/10.11_dashboard_theming.js. Jellyfin 12+ still needs 12_fixes.css
-   imported alongside this file for the new React/MUI header and nav drawer. */
+/* NOTE: theme.css is the single stylesheet for the whole theme - the former
+   10.11_fixes.css (dashboard-only, JS-injection workaround) and 12_fixes.css
+   (Jellyfin 12+ React/MUI top bar & nav drawer) are merged in directly below.
+   Regular pages pick this up via Jellyfin's Custom CSS/branding field as usual.
+   The admin dashboard blocks Custom CSS entirely, so its section (marked below)
+   only takes effect when this file is also loaded via JS injection - see
+   scripts/dashboard_theming.js. */
 
 /* ~~~~~~~~~~~~~~~~~~~~ GLOBAL FONT ~~~~~~~~~~~~~~~~~~~~ */
 /* Sets the font for the theme. */
@@ -82,6 +84,12 @@ progress[aria-valuenow]:before,               /* Progress bar fill (pseudo-eleme
 .iconOsdProgressInner                         /* Inner part of OSD circular progress indicators */
 {
     background: var(--primary-accent-color) !important;
+}
+
+/* == Header Nav Active Link Color == */
+/* The desktop header's active top-level nav link (e.g. "Movies") uses MUI's default primary blue instead of the theme accent. */
+header .MuiButton-textPrimary.MuiButton-colorPrimary {
+    color: var(--primary-accent-color) !important;
 }
 
 /* == Secondary Accent Backgrounds == */
@@ -649,12 +657,9 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     background: var(--secondary-background-color) !important;
 }
 
-/* == Dashboard Top Bar Styling (MUI Override) == */
-/* Removes background and shadow from a Material UI AppBar element likely used in the dashboard top. */
-.css-fknfom { /* This is a generated MUI class name, may be fragile if Jellyfin updates MUI versions/styling */
-        background: none !important;
-        box-shadow: none !important;
-}
+/* Dashboard top bar (MUI AppBar) transparency is handled globally in the
+   "JELLYFIN 12+ (MUI) TOP BAR & NAV DRAWER" section below - it targets
+   .MuiAppBar-root unscoped, which covers the dashboard's AppBar too. */
 
 /* == Sidebar Navigation Buttons == */
 /* Styling for individual navigation options within the sidebar. */
@@ -1338,9 +1343,11 @@ div#listChildrenCollapsible { order: 6 !important; }
     font-size: x-large;
 }
 
-/* Hide original title (titles in original language) */
-.nameContainer .itemName.originalTitle {
-    display: none;
+/* Original title (titles in original language) - add a gap after the English title
+   instead of hiding it; the two <h1>/<h4> sit as adjacent siblings in the DOM with
+   no whitespace between them, so without this they run together with no gap. */
+.nameContainer .itemName.withOriginalTitle {
+    padding-right: 0.5em;
 }
 
 .itemDetailsGroup:has(.detailsGroupItem:not(.hide)) {
@@ -1386,7 +1393,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Desktop Play Button Styling. */
 .layout-tv .mainDetailButtons .btnPlay, .layout-desktop .mainDetailButtons .btnPlay {
     /* Primary accent background is applied globally, this ensures other properties */
-    padding-right: 20px !important; /* Padding for the custom text */
     margin-right: 0 !important;     /* Reset any conflicting margins */
     right: 0 !important;            /* Reset any conflicting offsets */
     color: var(--text-color) !important;/* Text color for contrast against accent bg */
@@ -2421,4 +2427,399 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     button.emby-tab-button.guide-date-tab-button.emby-tab-button-active.emby-button {
         padding: 10px 20px !important;
     }
+}
+
+/*
+================================================================================
+|             JELLYFIN 12+ (MUI) TOP BAR & NAV DRAWER                          |
+|  Re-themes the React/MUI "modern" layout's top bar and nav drawer. These     |
+|  selectors are unscoped (.MuiAppBar-root, .MuiToolbar-root, etc.) so they    |
+|  apply everywhere that layout renders, including the admin dashboard - see   |
+|  the DASHBOARD section further below for the dashboard's other JS-injected  |
+|  styles that Custom CSS can't reach.                                         |
+================================================================================
+*/
+
+/* Solid dark app bar background - covers the whole bar uniformly rather than
+   leaving it transparent with separate pill-shaped backgrounds per section. */
+.MuiAppBar-root {
+    background: var(--secondary-background-color) !important;
+    box-shadow: none !important;
+}
+
+/* Keep the toolbar in a single row on all screen sizes */
+.MuiToolbar-root {
+    flex-wrap: nowrap !important;
+}
+
+/* Icon tray: don't stretch the gap; wrap onto a second row instead of overflowing the bar */
+.MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+    row-gap: 4px !important;
+    margin-left: auto !important;
+}
+
+/* Icons/nav sit directly on the dark app bar now, so they need a light color. */
+.MuiToolbar-root .MuiIconButton-root {
+    color: var(--text-color) !important;
+    width: 48px !important;
+    height: 48px !important;
+    box-sizing: border-box !important;
+}
+
+.MuiToolbar-root .MuiIconButton-root svg,
+.MuiToolbar-root .MuiIconButton-root .material-icons {
+    font-size: 24px !important;
+}
+
+.MuiToolbar-root .MuiIconButton-root:hover,
+.MuiToolbar-root .MuiIconButton-root:focus-visible {
+    color: var(--primary-accent-color) !important;
+    background-color: var(--primary-background-transparent) !important;
+}
+
+/* Avatar / user menu button */
+.MuiToolbar-root [aria-controls="app-user-menu"] {
+    border-radius: 50% !important;
+}
+.MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
+    flex-shrink: 0 !important;
+}
+
+/* Legacy icon buttons still injected into the new toolbar by some plugins */
+.MuiToolbar-root .headerButton.paper-icon-button-light {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: var(--text-color) !important;
+}
+
+.MuiToolbar-root .headerButton.paper-icon-button-light > .material-icons {
+    font-size: 24px !important;
+}
+
+.MuiToolbar-root .headerButton.paper-icon-button-light:hover {
+    color: var(--primary-accent-color) !important;
+}
+
+/* Server logo: hide the server name text, replace the bundled icon image with --logo */
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
+    font-size: 0 !important;
+    min-width: 0 !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon {
+    position: relative !important;
+    width: 5em !important;
+    height: 3em !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon img {
+    visibility: hidden !important;
+}
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: var(--logo) no-repeat center center !important;
+    background-size: contain !important;
+}
+
+/* Smaller logo on mobile */
+.layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon {
+    width: 3em !important;
+    height: 2em !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ NAV DRAWER ~~~~~~~~~~~~~~~~~~~~ */
+
+/* Drawer panel background/shape (extra .MuiDrawer-paper repeats boost specificity
+   above MUI's own dynamically-injected styles) */
+.MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper {
+    background: var(--secondary-background-transparent) !important;
+    backdrop-filter: blur(30px) !important;
+    border-top-right-radius: 30px !important;
+    border-bottom-right-radius: 30px !important;
+}
+
+/* Nav links inside the drawer list */
+.MuiDrawer-paper .MuiListItemButton-root {
+    width: 85% !important;
+    margin: 3px auto !important;
+    border-radius: 10px !important;
+    transition: .2s !important;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected) {
+    background: var(--primary-background-transparent) !important;
+    color: var(--primary-accent-color) !important;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+    background: var(--secondary-accent-color) !important;
+    color: var(--primary-accent-color) !important;
+}
+
+.MuiDrawer-paper .MuiListItemIcon-root,
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+    color: inherit !important;
+}
+
+/*
+================================================================================
+|             DASHBOARD (JS-INJECTED ONLY - Custom CSS can't reach here)       |
+|  Jellyfin blocks Custom CSS/branding injection on the admin dashboard, so    |
+|  this section only takes effect when this whole file is also loaded via     |
+|  JavaScript injection - see scripts/dashboard_theming.js. A normal @import   |
+|  of theme.css via Custom CSS Code has no effect on these rules.              |
+|  Selectors below are generated MUI/Emotion "css-XXXXXXX" classnames tied to  |
+|  the dashboard's own React bundle - they WILL drift and stop matching every  |
+|  time Jellyfin rebuilds that bundle. Re-verify against the live dashboard    |
+|  DOM after any Jellyfin update and refresh the hashes here if things look    |
+|  unstyled again.                                                              |
+================================================================================
+*/
+
+/* Server info card */
+.css-1787okl, .css-znfy44 {
+  border-radius: 20px !important;
+  background: var(--secondary-background-transparent) !important;
+}
+
+/* Media chips (Movies/Series/Collections counts) */
+.css-1yr4dn5, .css-lh4h8w, .css-nqwc7a, .css-hkers1, .css-11qg7pw, .css-q0e3wl, .css-wnfue5, .css-46ocr5 {
+  border-radius: 20px !important;
+  background: var(--secondary-background-transparent) !important;
+}
+
+/* Activity, Alerts and Paths panels */
+.css-1m91j26, .css-1ypqulw {
+  border-radius: 20px !important;
+  padding: 0px !important;
+  background: var(--alt-accent-color) !important;
+}
+
+/* Devices list, Plugins footer */
+.css-4beb5o, .css-sxfj10, .css-1brmtja, .css-1yd4q9n {
+  background: var(--secondary-background-transparent) !important;
+}
+
+/* Devices card rounding */
+.css-1yd4q9n {
+  border-radius: 20px !important;
+}
+
+/* Bigger and centered server buttons */
+.MuiStack-root.css-11r6nok {
+    height: 3em;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+/* Responsive behavior for small screens - 2x2 grid */
+@media (max-width: 768px) {
+    .MuiStack-root.css-11r6nok {
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.5em;
+        padding: 0.5em;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .MuiStack-root.css-11r6nok button {
+        height: 2.5em;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* For very small screens - single column if needed */
+@media (max-width: 400px) {
+    .MuiStack-root.css-11r6nok {
+        grid-template-columns: 1fr;
+        max-width: 280px;
+    }
+}
+
+/* Server Buttons */
+.MuiStack-root.css-11r6nok button:nth-child(1) {
+  background: rebeccapurple !important;
+  color: white !important;
+}
+
+.css-jqp64h {
+  background: rebeccapurple !important;
+  color: white !important;
+  border: none !important;
+}
+
+.MuiStack-root.css-11r6nok button:nth-child(2) {
+  background: #ff9800 !important;
+  color: white !important;
+}
+.MuiStack-root.css-11r6nok button:nth-child(3) {
+  background: #f44336 !important;
+  color: white !important;
+}
+
+/* Activity list items */
+.MuiList-root:not(.MuiList-subheader) .MuiListItemButton-root.MuiListItemButton-gutters {
+    padding: 10px 30px 10px 30px !important;
+}
+
+/* Links */
+.css-c4z1po {
+    color: var(--primary-accent-color) !important;
+    --Link-underlineColor: var(--primary-accent-color) !important;
+}
+
+/* Save button and help button */
+.css-ybuz3k, .fab, .raised {
+    color: var(--text-color) !important;
+    background: var(--primary-accent-color) !important;
+}
+
+/* Switches */
+.css-1fmeo47.Mui-checked {
+    color: var(--primary-accent-color);
+}
+.css-1fmeo47.Mui-checked + .MuiSwitch-track {
+    background-color:  var(--secondary-accent-color);
+}
+
+/* Branding buttons */
+.css-1vcmsp6, .css-nu23t2 {
+    border-radius: 15px;
+    font-weight: 600;
+}
+
+/* Devices table */
+.css-mq8hip, tr, tr.MuiTableRow-root.css-vag9oz, .css-j5zxs1, tr.MuiTableRow-root.css-1cksag5  {
+    background-color: transparent !important;
+}
+
+/* Table headers */
+.css-wsew38 {
+    justify-content: flex-end;
+}
+
+input.PrivateSwitchBase-input.css-j8yymo, .css-5191sg.Mui-focused {
+    color: var(--primary-accent-color) !important;
+}
+
+.css-1y99tin::after, .css-g193a2::after {
+  border-bottom: 1px solid var(--primary-accent-color);
+}
+
+/* Checkboxes */
+span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-sizeMedium.PrivateSwitchBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-sizeMedium.Mui-checked.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-sizeMedium.css-1a194ku {
+    color: var(--primary-accent-color);
+}
+
+/* Buttons in plugin page */
+.css-1ejoxfo, .css-1ejoxfo:hover, .css-1ejoxfo.Mui-focusVisible {
+    background-color: var(--primary-accent-color);
+}
+/* Manage repository button */
+.css-cr7oyo {
+    background-color: var(--secondary-accent-color);
+    color: var(--text-color);
+    border-radius: 20px;
+    font-weight: 500;
+    border: 0;
+}
+
+/* Progress % for scheduled tasks */
+.MuiBox-root.css-lmbv6g {
+    color: var(--primary-accent-color);
+}
+
+/* Dashboard theme update date */
+.css-cdamzk > .css-1787okl::after {
+    content: "Theme last updated on " var(--theme-updated-on, "..........");
+    display: block;
+    background-color: var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    padding: 1em;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    margin: 10px 0px;
+}
+
+/* Progress track */
+.MuiLinearProgress-root {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--secondary-background-transparent) !important;
+}
+.MuiLinearProgress-bar {
+  border-radius: inherit;
+}
+.MuiLinearProgress-bar2 {
+  opacity: 0.8;
+}
+.css-lmbv6g .MuiTypography-root {
+  font-weight: 600;
+}
+
+/*
+================================================================================
+|                               Dialog Theming
+================================================================================
+*/
+
+/* Dialog container */
+.MuiDialog-paper {
+  border-radius: 20px !important;
+  background: var(--secondary-accent-color) !important;
+  backdrop-filter: blur(100px);
+}
+
+/* Dialog title */
+.MuiDialogTitle-root {
+  font-weight: 700 !important;
+  padding-bottom: 0.5em !important;
+}
+
+/* Dialog body text */
+.MuiDialogContent-root,
+.MuiDialogContentText-root {
+  color: var(--text-color) !important;
+  font-weight: 500 !important;
+}
+
+/* Dialog actions bar */
+.MuiDialogActions-root {
+  padding: 1em 1.5em !important;
+}
+
+/* Buttons */
+.MuiDialogActions-root .MuiButton-text {
+  color: var(--text-color) !important;
+}
+
+/* Destructive buttons (Restart, Delete, etc) */
+.MuiDialogActions-root .MuiButton-containedError {
+  background: #f44336 !important;
+  color: white !important;
+  border-radius: 14px !important;
+  font-weight: 600;
 }

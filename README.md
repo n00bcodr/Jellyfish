@@ -14,14 +14,9 @@ I've made a few tweaks and modifications of my own.
 Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 
 > [!IMPORTANT]
-> `theme.css` targets **Jellyfin 10.11+** natively - the detail-page/layout fixes that used to live in a separate `10.11_fixes.css` import are now merged directly into `theme.css`. If you're on 10.11 or newer, just import `theme.css` as usual, no extra file needed for normal pages.
+> `theme.css` is now the **only** stylesheet - it targets **Jellyfin 10.11+** natively, and includes the React/MUI top bar & nav drawer rules needed for Jellyfin 12's "modern" layout (formerly a separate `12_fixes.css` import). Just import `theme.css`, no extra file needed for normal pages.
 >
-> `10.11_fixes.css` now only contains **admin dashboard** styling, since Jellyfin 10.11 [removed the ability](https://github.com/jellyfin/jellyfin-web/issues/7220#issuecomment-3427290912) to theme the dashboard via Custom CSS Code. It only takes effect through the JS-injection workaround (see [10.11 Dashboard Theming](scripts/README.md#1011-dashboard-theming)) - most users don't need to import it at all.
->
-> Jellyfin 12 made the new "modern" layout the default, replacing the legacy header and sidebar with a React/MUI top bar and nav drawer. theme.css's header/sidebar rules target the legacy elements, which still exist but are hidden, so they no longer apply. If you are on **Jellyfin Version 12+**, add the below import as well.
-> ```css
-> @import url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/12_fixes.css");
-> ```
+> The admin dashboard is a special case: Jellyfin [removed the ability](https://github.com/jellyfin/jellyfin-web/issues/7220#issuecomment-3427290912) to theme it via Custom CSS Code, so `theme.css`'s dashboard-only section only takes effect through the JS-injection workaround (see [Dashboard Theming](scripts/README.md#dashboard-theming)) - most users don't need to set that up at all, it's only for admins who want the dashboard itself themed.
 >
 > If you're still on **Jellyfin 10.10.x or older**, the theme should mostly still work (there's a legacy fallback for the old detail-page markup), but it's no longer the primary target and minor misalignments are possible.
 

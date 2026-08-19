@@ -12,12 +12,13 @@
 
 (() => {
   // --- Add Themes here ---
-  // theme.css and 10.11_fixes.css are mandatory
-  // You can add any other urls here, but anything added in the CSS section in branding will override these
+  // theme.css is mandatory - it now contains everything (including the
+  // dashboard-only rules that used to live in 10.11_fixes.css/12_fixes.css).
+  // You can add a color scheme file here too - anything added in the CSS
+  // section in branding will override these.
   // The default color scheme (jellyblue) will be used if no color scheme is specified
   const themeUrls = [
-    "https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/theme.css",
-    "https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@master/10.11_fixes.css"
+    "https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish@main/theme.css"
   ];
   // ------------------------
 
