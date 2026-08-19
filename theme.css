@@ -2886,3 +2886,39 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   border-radius: 14px !important;
   font-weight: 600;
 }
+
+/* == Dashboard Server Action Buttons (Scan/Restart/Shutdown/Refresh Theme) ==
+   Restores the old distinct purple/orange/red/blue 10.11 look. MUI gives
+   Restart and Shutdown the identical "containedError" class (no aria-label
+   or title differs either - checked), so they're told apart by DOM position
+   instead: always the 2nd and 3rd of the 3 native buttons in that Stack
+   (Scan, Restart, Shutdown). The whole group is identified via :has() rather
+   than a generated hash class, so it keeps matching across Jellyfin rebuilds.
+   #theme-refresh-button is our own injected button (see the "New Dashboard
+   Theming" JS Injector script) - it has a stable, hand-assigned id, so no
+   such targeting games are needed for it. */
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+#theme-refresh-button {
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+}
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > .MuiButton-containedPrimary.MuiButton-containedPrimary:nth-child(1) {
+  background: rebeccapurple !important;
+  color: white !important;
+}
+.MuiStack-root > .MuiButton-containedError.MuiButton-containedError:nth-child(2) {
+  background: #ff9800 !important;
+}
+#theme-refresh-button {
+  /* Plain native <button>, not a MUI component, so it keeps the browser's
+     default 2px outset border unless reset here - the other three buttons
+     get theirs reset by MUI's own base styles for free. */
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+  background: var(--primary-accent-color) !important;
+  color: white !important;
+  height: 44px;
+  padding: 6px 16px;
+}
