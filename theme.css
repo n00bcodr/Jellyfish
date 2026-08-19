@@ -102,9 +102,14 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
     background: var(--secondary-accent-color) !important;
 }
 
-.MuiMenu-paper {
-    background: var(--secondary-background-transparent) !important;
-    backdrop-filter: blur(var(--blur)) !important;
+/* Solid, opaque background (see --header-solid-background-color) rather than
+   the 20%-opacity --secondary-background-transparent - a dropdown can open
+   over anything (a bright poster, a busy grid), and a translucent tint plus
+   blur isn't reliably readable against arbitrary content behind it. The
+   class is repeated to out-specificity MUI's own re-injected Paper
+   background (same trick already used on .MuiDrawer-paper below). */
+.MuiMenu-paper.MuiMenu-paper {
+    background: var(--header-solid-background-color) !important;
 }
 
 .formDialogHeader,
@@ -320,10 +325,19 @@ html
 .layout-desktop .detailSectionContent,        /* Content area within detail sections (Desktop) - Consider backdrop transparency rules */
 .layout-mobile .detailSectionContent,         /* Content area within detail sections (Mobile) */
 .layout-tv .detailSectionContent,         /* Content area within detail sections (tv) */
-.trackSelections,                            /* Audio/Subtitle track selection area */
-.MuiPaper-root.MuiPopover-paper
+.trackSelections                            /* Audio/Subtitle track selection area */
 {
     background: var(--secondary-background-transparent) !important;
+}
+
+/* Popovers (sort/filter dropdowns, etc.) can open over anything - a bright
+   poster, a busy grid - so they need the same solid, opaque background as
+   menus (see .MuiMenu-paper above) rather than a translucent tint that reads
+   fine over a drawer's own solid backing but washes out white text over
+   arbitrary page content. The class is repeated to out-specificity MUI's
+   own re-injected Paper background. */
+.MuiPaper-root.MuiPopover-paper.MuiPopover-paper {
+    background: var(--header-solid-background-color) !important;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ DYNAMIC BACKGROUNDS (ACTIVE DEVICES) ~~~~~~~~~~~~~~~~~~~~ */
