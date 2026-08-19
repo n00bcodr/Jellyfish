@@ -340,6 +340,16 @@ html
     background: var(--header-solid-background-color) !important;
 }
 
+/* Filter dropdown sections (Filters/Features/Video Type/Genres/etc.) render
+   as MUI Accordions nested inside the popover above - a separate component
+   with its own Paper background, so the popover fix doesn't reach it. Class
+   repeated rather than pinning the generated css-hash suffix (e.g. css-ecgo44)
+   - that hash drifts on every Jellyfin rebuild and silently stops matching,
+   the same failure mode already hit elsewhere in this file. */
+.MuiAccordion-root.MuiAccordion-root {
+    background: var(--header-solid-background-color) !important;
+}
+
 /* ~~~~~~~~~~~~~~~~~~~~ DYNAMIC BACKGROUNDS (ACTIVE DEVICES) ~~~~~~~~~~~~~~~~~~~~ */
 /* Provides a set of alternate background colors, often used for cards in the "Active Devices" section. */
 .defaultCardBackground1 { background-color: var(--primary-alt1) !important; }
@@ -1924,6 +1934,9 @@ div#listChildrenCollapsible { order: 6 !important; }
     border-top-right-radius: var(--rounded-cards) !important;
     border-bottom-right-radius: var(--rounded-cards)  !important;
 }
+body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
+    background: none !important;
+}
 /* Smaller sidebar width for mobile dashboard. */
 .layout-mobile .MuiPaper-root.MuiDrawer-paperAnchorDockedLeft {
     background: var(--secondary-background-transparent) !important; /* Transparent background on mobile */
@@ -2855,8 +2868,19 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   color: var(--text-color) !important;
 }
 
-/* Destructive buttons (Restart, Delete, etc) */
-.MuiDialogActions-root .MuiButton-containedError {
+/* Destructive buttons (Restart, Shutdown, Delete, etc). Unscoped (not just
+   .MuiDialogActions-root) so it also covers the dashboard's Restart/Shutdown
+   buttons - those use MUI's own semantic "containedError" class rather than
+   a stable hash, unlike the old position-based nth-child selectors this
+   replaced (those broke the moment Jellyfin rebuilt and the dashboard's
+   generated class names shifted). The class is repeated to out-specificity
+   the broad "Primary Accent Backgrounds" rule near the top of this file
+   (.MuiButton-root.MuiButton-containedSizeMedium), which would otherwise
+   paint every contained button - including error ones - the accent color;
+   a plain two-class match ties on specificity but still loses in practice
+   to MUI's own re-injected button styles (same pattern seen elsewhere in
+   this file, e.g. .MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper). */
+.MuiButton-root.MuiButton-containedError.MuiButton-containedError {
   background: #f44336 !important;
   color: white !important;
   border-radius: 14px !important;
