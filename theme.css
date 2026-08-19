@@ -2921,4 +2921,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   color: white !important;
   height: 44px;
   padding: 6px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
