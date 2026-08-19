@@ -21,6 +21,7 @@
     --theme-name: 'Jellyfish';
     --rounded-cards: 15px; /* Standard border-radius */
     --blur: 15px;           /* Default blur intensity */
+    --header-solid-background-color: color-mix(in srgb, var(--secondary-background-color) 85%, rgb(var(--primary-r), var(--primary-g), var(--primary-b)) 15%);
 }
 
 /* NOTE: theme.css is the single stylesheet for the whole theme - the former
@@ -2437,10 +2438,22 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
 ================================================================================
 */
 
-/* Solid dark app bar background - covers the whole bar uniformly rather than
-   leaving it transparent with separate pill-shaped backgrounds per section. */
+/* Solid app bar background, tinted with the palette's accent color (see
+   --header-solid-background-color above) - covers the whole bar uniformly
+   rather than leaving it transparent with separate pill-shaped backgrounds
+   per section. --secondary-accent-color was tried first but it's the raw
+   accent color at 60% alpha - too bright/saturated for a full-width bar, and
+   translucent enough that page content bled through on scroll. The MUI
+   AppBar toggles between "colorTransparent"/"colorDefault" variants (e.g. at
+   the top of a page vs scrolled), each carrying its own MUI-supplied
+   background with equal-or-higher selector specificity than a bare
+   .MuiAppBar-root - so both variants are targeted explicitly here to make
+   sure the override actually wins in every state, not just one. */
+.MuiAppBar-root.MuiAppBar-colorTransparent,
+.MuiAppBar-root.MuiAppBar-colorDefault,
 .MuiAppBar-root {
-    background: var(--secondary-background-color) !important;
+    background-color: var(--header-solid-background-color) !important;
+    background-image: none !important;
     box-shadow: none !important;
 }
 
@@ -2459,9 +2472,14 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     margin-left: auto !important;
 }
 
-/* Icons/nav sit directly on the dark app bar now, so they need a light color. */
+/* Icons/nav sit directly on the dark app bar now, so they need a light color.
+   Not var(--text-color): that variable is tuned per-palette for contrast
+   against --primary-accent-color (a bright, saturated color, so text-color
+   is often black), not against --secondary-background-color, which is
+   always a dark surface across every palette - hardcoded white matches that
+   surface reliably regardless of which color scheme is active. */
 .MuiToolbar-root .MuiIconButton-root {
-    color: var(--text-color) !important;
+    color: #ffffff !important;
     width: 48px !important;
     height: 48px !important;
     box-sizing: border-box !important;
@@ -2497,7 +2515,7 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     padding: 0 !important;
     margin: 0 !important;
     font-size: 16px !important;
-    color: var(--text-color) !important;
+    color: #ffffff !important;
 }
 
 .MuiToolbar-root .headerButton.paper-icon-button-light > .material-icons {
