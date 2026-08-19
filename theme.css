@@ -1387,13 +1387,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 }
 
 
-/* == Play Button Modification == */
-/* Customizes the text and appearance of the main Play button on the details page. */
-.layout-desktop .mainDetailButtons .btnPlay::after,
-.layout-tv .mainDetailButtons .btnPlay::after,
-.layout-mobile .mainDetailButtons .btnPlay::after {
-    content: "Play" !important; /* Custom text for the play button */
-}
 /* Desktop Play Button Styling. */
 .layout-tv .mainDetailButtons .btnPlay, .layout-desktop .mainDetailButtons .btnPlay {
     /* Primary accent background is applied globally, this ensures other properties */
