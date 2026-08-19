@@ -1032,6 +1032,10 @@ div.card-hoverable.squareCard.card {
     border-radius: var(--rounded-cards);
 }
 
+.listItemImage-large {
+    width: 21.5vw !important;
+}
+
 .listItem[data-mediatype="Video"] > .listItemImage {
     border-radius: var(--rounded-cards);
     max-height: fit-content;
