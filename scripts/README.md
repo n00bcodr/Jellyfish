@@ -47,7 +47,7 @@ Here's a breakdown of what each script does:
 </table>
 
 
-### [10.11 Dashboard Theming](10.11_dashboard_theming.js)
+### [Dashboard Theming](dashboard_theming.js)
 
 > [!WARNING]
 > USE AT YOUR OWN RISK!!

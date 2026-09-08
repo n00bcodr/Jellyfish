@@ -12,7 +12,6 @@ on:
       - 'scripts/**'
       - 'misc.css'
       - 'README.md'
-      - '10.11_fixes.css'
       - 'arr-tags-links.css'
 
   workflow_dispatch:

@@ -73,7 +73,6 @@ body:has(#loginPage) .backdropContainer {
 #loginPage .cardText {
     white-space: normal !important;
     font-weight: bold;
-    text-shadow: -1px 1px 5px var(--text-color);
 }
 /* Styling for the user image container within user cards. */
 #loginPage .cardImageContainer {
@@ -149,7 +148,7 @@ body:has(#loginPage:not(.hide)) .dialogContentInner {
 /* ~~~~~~~~~~~~~~~~~~~~ HIDING DEFAULT ELEMENTS ~~~~~~~~~~~~~~~~~~~~ */
 
 /* Hide the default header (including hamburger menu) on the login page. */
-body:has(#loginPage:not(.hide)) .headerTop {
+body:has(#loginPage:not(.hide)) .headerTop, body:has(#loginPage:not(.hide)) .header {
     display: none !important;
 }
 
