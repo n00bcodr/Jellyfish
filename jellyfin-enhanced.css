@@ -185,3 +185,24 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
         padding-top: 5em !important;
     }
 }
+
+/* Header icons added by the plugin (random item, active streams, Requests, Calendar,
+   Activity, Bookmarks...): the same round hover / focus highlight as the native toolbar
+   icons (SyncPlay, Cast, Search). They are legacy .headerButton elements, and theme.css
+   forces .paper-icon-button-light backgrounds to transparent, hence the extra specificity. */
+.je-header-actions-host .headerButton.paper-icon-button-light {
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .je-header-actions-host .headerButton.paper-icon-button-light:hover:not(:disabled) {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+.je-header-actions-host .headerButton.paper-icon-button-light:focus-visible {
+    color: var(--accent-text-color) !important;
+    background-color: var(--primary-background-transparent) !important;
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}

@@ -2939,26 +2939,8 @@ header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
     font-size: 24px !important;
 }
 
-.MuiToolbar-root .headerButton.paper-icon-button-light {
-    border-radius: 50%;
-    transition: color .15s ease, background-color .15s ease;
-}
-
-/* Same hover / focus treatment as the native toolbar icons (SyncPlay, Cast, Search...), so
-   plugin icons - Jellyfin Enhanced's random / streams / requests / calendar... - match.
-   The global `.paper-icon-button-light:hover { background: transparent !important }`
-   above would otherwise cancel the background, hence the extra specificity. */
-@media (hover: hover) and (pointer: fine) {
-    .MuiToolbar-root .headerButton.paper-icon-button-light:hover:not(:disabled) {
-        color: var(--accent-text-color) !important;
-        background-color: var(--primary-background-transparent) !important;
-    }
-}
-.MuiToolbar-root .headerButton.paper-icon-button-light:focus-visible {
-    color: var(--accent-text-color) !important;
-    background-color: var(--primary-background-transparent) !important;
-    outline: 2px solid var(--primary-accent-color);
-    outline-offset: -2px;
+.MuiToolbar-root .headerButton.paper-icon-button-light:hover {
+    color: var(--primary-accent-color) !important;
 }
 
 /* Server logo: hide the server name text, replace the bundled icon image with --logo */
