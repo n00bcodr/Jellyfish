@@ -80,6 +80,12 @@ html::before {
 body:not(.dashboardDocument) .MuiAppBar-root {
     border-bottom: 1px solid var(--glass-edge);
 }
+/* Same reason: no inset hairline or glass layer on the transparent dashboard bar. */
+body.dashboardDocument .MuiAppBar-root {
+    box-shadow: none !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+}
 
 .MuiMenu-paper.MuiMenu-paper,
 .MuiPaper-root.MuiPopover-paper.MuiPopover-paper,

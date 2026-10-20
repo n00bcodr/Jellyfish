@@ -3318,3 +3318,8 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   align-items: center;
   justify-content: center;
 }
+#theme-refresh-button svg,
+#theme-refresh-button .MuiButton-startIcon {
+  color: inherit !important; /* the icon kept a white colour of its own on light accents */
+  fill: currentColor !important;
+}
