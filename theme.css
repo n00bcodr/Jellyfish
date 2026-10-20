@@ -11,7 +11,7 @@
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/fonts/quicksand.css"); /* Quicksand Font */
 @import url("https://cdn.jsdelivr.net/gh/Druidblack/jellyfin-icon-metadata/public-icon.css"); /* Metadata icons by Druidblack */
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/fonts/materialSymbolsRounded.css");
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/loginpage.css");
+@import url("loginpage.css"); /* relative: follows whichever branch/tag theme.css was loaded from */
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/jellyblue.css");
 
 /* ~~~~~~~~~~~~~~~~~~~~ GLOBAL CSS VARIABLES ~~~~~~~~~~~~~~~~~~~~ */
