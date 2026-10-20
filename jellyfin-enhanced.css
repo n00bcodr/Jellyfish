@@ -158,3 +158,30 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
     box-sizing: border-box;
     padding-inline: inherit;
 }
+
+/* Item page metadata row (desktop layout).
+   Jellyfin Enhanced appends file size, audio language, three release dates and bitrate to
+   the year / runtime / rating row. That row is pinned (position: absolute) over the top
+   of the description panel, so once it wraps onto a second line it runs into the tagline
+   or description. Two fixes: (1) tighter spacing so more of it fits on one line, and
+   (2) a taller top padding on the panel - only when the plugin's items are present, and
+   only below the width where everything fits on one line - so a wrapped second line (and
+   the tagline after it) gets its own space. */
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem {
+    margin-right: .7em;
+}
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem-fileSize,
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem-audioLanguage,
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem-releaseDate,
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem-bitrate,
+.layout-desktop .itemMiscInfo-primary .mediaInfoItem-watchProgress {
+    font-size: .92em;
+}
+.layout-desktop .itemMiscInfo-primary {
+    row-gap: .15em;
+}
+@media (max-width: 2300px) {
+    .layout-desktop #itemDetailPage:has(.itemMiscInfo-primary :is(.mediaInfoItem-releaseDate, .mediaInfoItem-fileSize, .mediaInfoItem-audioLanguage, .mediaInfoItem-bitrate)) .detailSectionContent {
+        padding-top: 5em !important;
+    }
+}
