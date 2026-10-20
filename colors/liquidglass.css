@@ -65,8 +65,12 @@ html {
 .MuiAppBar-root.MuiAppBar-colorDefault {
     background-image: var(--glass-sheen) !important;
     backdrop-filter: blur(var(--blur)) saturate(1.7) !important;
-    border-bottom: 1px solid var(--glass-edge);
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .06) !important;
+}
+/* Edge line under the bar - not on the dashboard, where the bar is transparent and
+   starts 240px in, so the line would float over the sidebar. */
+body:not(.dashboardDocument) .MuiAppBar-root {
+    border-bottom: 1px solid var(--glass-edge);
 }
 
 .MuiMenu-paper.MuiMenu-paper,
