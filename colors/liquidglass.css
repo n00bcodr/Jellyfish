@@ -51,6 +51,14 @@
         radial-gradient(45% 35% at 4% 98%, rgba(255, 185, 120, .20), transparent 70%);
 }
 
+/* Jellyfin paints the ambient glow on <html>, which repeats down long pages (a visible
+   seam when you scroll). Pin it to the window: one glow, never tiled. */
+html {
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    background-size: 100% 100% !important;
+}
+
 /* ~~~~~~ Glass surfaces ~~~~~~ */
 .MuiAppBar-root,
 .MuiAppBar-root.MuiAppBar-colorTransparent,
