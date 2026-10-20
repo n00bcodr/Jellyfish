@@ -1412,13 +1412,21 @@ div.card-hoverable.squareCard.card {
     border: 0 !important;
     border-radius: 999px !important;
     margin: 1px 0 !important;
-    transition: color .15s ease, background-color .15s ease;
+    transition: color .15s ease, background-color .15s ease, transform .15s ease;
 }
 @media (hover: hover) and (pointer: fine) {
     .alphaPicker-fixed-right .MuiToggleButton-root:hover {
-        color: var(--accent-text-color, var(--primary-accent-color));
-        background-color: var(--primary-background-transparent);
+        color: #fff;
+        font-weight: 800;
+        background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent);
+        transform: scale(1.12);
     }
+}
+/* Touch has no hover: give the pressed / keyboard-focused letter the same feedback. */
+.alphaPicker-fixed-right .MuiToggleButton-root:active,
+.alphaPicker-fixed-right .MuiToggleButton-root:focus-visible {
+    color: #fff;
+    background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent);
 }
 .alphaPicker-fixed-right .MuiToggleButton-root.Mui-selected,
 .alphaPicker-fixed-right .MuiToggleButton-root.Mui-selected:hover {
@@ -1455,9 +1463,14 @@ div.card-hoverable.squareCard.card {
 }
 @media (hover: hover) and (pointer: fine) {
     .alphaPickerButton:hover {
-        color: var(--accent-text-color) !important;
-        background-color: var(--primary-background-transparent) !important;
+        color: #fff !important;
+        font-weight: 800;
+        background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent) !important;
     }
+}
+.alphaPickerButton:active {
+    color: #fff !important;
+    background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent) !important;
 }
 .alphaPickerButton-selected,
 .alphaPickerButton-selected:hover,
