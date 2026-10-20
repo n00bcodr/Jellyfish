@@ -406,7 +406,7 @@ To completely replicate the look in the screenshots you'd need the below plugins
 - Works for Movies and TV Shows, should work fine mostly for Music and Books, although I don't use Jellyfin for either of them
 - Works on both mobile app and web browser, known to have issues / not work on Jellyfin Media Player
 - **Jellyfin 12 layouts** (Settings → Display → Display mode): checked on 12.2 in the *Modern*/*Desktop*/*Mobile* layouts (the React app) and in the legacy *Desktop (legacy)*, *Mobile (legacy)* and **TV** layouts. The TV layout is a legacy-app layout in Jellyfin 12, so it uses the same stylesheet rules as the legacy desktop/mobile layouts, with larger A-Z letters and no blur effects (TV GPUs are weak).
-- **Screen sizes**: from ~360px phones through tablets and narrow/tiled desktop windows to 4K TVs at 200-250% scale. The A-Z picker always fits the viewport height, card badges scale with the screen, and the item page switches to a flowing title block below 1280px.
+- **Screen sizes**: from ~360px phones through tablets and narrow/tiled desktop windows to 4K TVs at 200-250% scale. The A-Z picker always fits the viewport height, card badges scale with the screen.
 
 
 
