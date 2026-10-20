@@ -64,6 +64,12 @@ Here's a breakdown of what each script does:
     <td><img src="../screenshots/10.11_dashboard.png" width="500"/></td>
 </table>
 
+**What the script does**
+- Loads `theme.css` on the dashboard (Jellyfin blocks Custom CSS there).
+- Adds a **Refresh Theme** button to the dashboard, which re-fetches the theme without cache.
+- Adds an editable **Dashboard Theme CSS URLs** box under *Dashboard → Branding → Custom CSS* (saved per browser). Use it to add a color palette (e.g. `.../colors/coal.css`) or `jellyfin-enhanced.css` if you use the Jellyfin Enhanced plugin. *Reset to Defaults* goes back to the list in the script.
+- It copies class names from the dashboard's own buttons and fields instead of hard-coding Jellyfin's generated `css-…` names, so it keeps working when Jellyfin rebuilds.
+
 
 🚀 Installation
 ---------------
