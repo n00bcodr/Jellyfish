@@ -13,11 +13,7 @@ a:has([data-testid="FavoriteIcon"]) { display: none !important; }
 
 /* Adjustments for 2K monitors (e.g., 2000px width and above) */
 @media (min-width: 2000px) {
-  .playedIndicator, .indicator, .mediaSourceIndicator {
-    width: 40px;
-    height: 40px;
-    font-size: 120%;
-  }
+  /* Card indicators scale via --indicator-size in theme.css */
   .cardText-first {
     font-size: 1.2em;
   }

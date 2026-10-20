@@ -11,7 +11,7 @@
     --secondary-background-color: #1A1A2E; /* Drawer, cards, dialogs */
     --tertiary-background-color: #16213E; /* Popovers */
     --alt-accent-color: #ffffff20;
-    --text-color: #ffffff;
+    --text-color: #000000; /* Text on the accent color (WCAG contrast 11:1; white would be 1.9:1) */
     --header-background-color: #ffffff6e; /* This is header and tabs background */
     --logo: url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish/logos/jellyfish.png");
     --background-image: url(https://images.unsplash.com/photo-1531366936337-7c912a4589a7);

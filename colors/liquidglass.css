@@ -1,0 +1,128 @@
+/* Jellyfish Liquid Glass Theme
+   Inspired by Apple's "Liquid Glass": translucent, frosted surfaces with a bright
+   specular edge and soft depth, on neutral graphite with a pearl-white accent - the
+   color comes from the content and the soft iridescent glow behind the glass, not
+   from a blue tint. To tint it, change --primary-r/g/b below (e.g. 120 185 255 for
+   an ice-blue variant).
+   Unlike the other palettes this file also restyles surfaces (header, drawer, menus,
+   dialogs, buttons), so it must be imported AFTER theme.css like every other palette:
+   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/liquidglass.css");
+   Surfaces rely on `backdrop-filter` and `color-mix()` (Chrome/Edge 111+, Safari 16.2+,
+   Firefox 113+). On older engines they fall back to solid, still-readable panels. */
+:root {
+    --primary-r: 236;
+    --primary-g: 241;
+    --primary-b: 250;
+    --primary-accent-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 1.0);
+    --secondary-accent-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.6);
+    --primary-background-transparent: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.1);
+    --secondary-background-transparent: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.2);
+    --primary-background-color: #07080b; /* Main background */
+    --secondary-background-color: #14161b; /* Drawer, cards, dialogs */
+    --tertiary-background-color: #1e2128; /* Popovers */
+    --alt-accent-color: #ffffff1f;
+    --text-color: #000000; /* Text on the pearl accent: ~18:1 */
+    --header-background-color: #ffffffb8; /* Frosted-white pill behind legacy header tabs */
+    --logo: url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish/logos/jellyfish.png");
+    --background-image: url(https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/images/liquidglass.jpg);
+    --footer-message: "🫧 Crystal clear streaming!";
+
+    /* Alternate accents (used by the Active Devices cards) */
+    --primary-alt1: rgba(176, 140, 255, 1);
+    --primary-alt2: rgba(176, 140, 255, 0.85);
+    --primary-alt3: rgba(176, 140, 255, 0.7);
+    --primary-alt4: rgba(176, 140, 255, 0.55);
+    --primary-alt5: rgba(176, 140, 255, 0.4);
+
+    /* Glass tokens */
+    --blur: 22px;
+    --rounded-cards: 20px;
+    --glass-fill: rgba(30, 32, 38, .62);          /* panels: still dark enough for white text over any poster */
+    --glass-sheen: linear-gradient(135deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .03) 55%, rgba(255, 255, 255, .08));
+    --glass-edge: rgba(255, 255, 255, .22);
+    --glass-shine: inset 0 1px 0 rgba(255, 255, 255, .4), inset 0 -1px 0 rgba(255, 255, 255, .06), inset 1px 0 0 rgba(255, 255, 255, .12);
+    --glass-shadow: 0 18px 48px rgba(0, 0, 0, .45);
+    --header-solid-background-color: rgba(30, 32, 38, .8);
+    /* Ambient colour for the glass to refract (Jellyfin 12 paints this behind every page) */
+    --jf-palette-background-defaultImage:
+        radial-gradient(55% 45% at 8% -5%, rgba(255, 140, 170, .30), transparent 70%),
+        radial-gradient(50% 45% at 96% 104%, rgba(150, 110, 255, .32), transparent 70%),
+        radial-gradient(40% 35% at 88% 6%, rgba(70, 215, 200, .20), transparent 70%),
+        radial-gradient(45% 35% at 4% 98%, rgba(255, 185, 120, .20), transparent 70%);
+}
+
+/* ~~~~~~ Glass surfaces ~~~~~~ */
+.MuiAppBar-root,
+.MuiAppBar-root.MuiAppBar-colorTransparent,
+.MuiAppBar-root.MuiAppBar-colorDefault {
+    background-image: var(--glass-sheen) !important;
+    backdrop-filter: blur(var(--blur)) saturate(1.7) !important;
+    border-bottom: 1px solid var(--glass-edge);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .06) !important;
+}
+
+.MuiMenu-paper.MuiMenu-paper,
+.MuiPaper-root.MuiPopover-paper.MuiPopover-paper,
+body:not(.dashboardDocument) .MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper,
+.MuiDialog-paper,
+.dialog,
+.actionSheetContent,
+.toastVisible {
+    background-color: var(--glass-fill) !important;
+    background-image: var(--glass-sheen) !important;
+    backdrop-filter: blur(var(--blur)) saturate(1.7) !important;
+    border: 1px solid var(--glass-edge) !important;
+    box-shadow: var(--glass-shine), var(--glass-shadow) !important;
+}
+/* Filter sections nest inside the popover - let the popover's glass show through. */
+.MuiAccordion-root.MuiAccordion-root {
+    background: transparent !important;
+}
+
+/* A-Z picker, legacy header pills, form dialogs */
+.alphaPicker-fixed-right > .MuiPaper-root,
+.headerTabs,
+.headerRight {
+    background-image: var(--glass-sheen);
+    box-shadow: var(--glass-shine), 0 8px 24px rgba(0, 0, 0, .35) !important;
+    border: 1px solid var(--glass-edge);
+}
+.formDialogHeader,
+.formDialogFooter {
+    background-color: var(--glass-fill) !important;
+    background-image: var(--glass-sheen) !important;
+}
+
+/* Selected / hovered rows: a lit pane of glass rather than a flat fill */
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected,
+.navMenuOption-selected {
+    background-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), .28) !important;
+    box-shadow: var(--glass-shine);
+}
+
+/* Primary buttons: glossy accent with a specular top edge and an accent glow */
+.MuiButton-root.MuiButton-containedSizeMedium,
+.button-submit,
+.layout-desktop .mainDetailButtons .btnPlay,
+.layout-mobile .mainDetailButtons .btnPlay,
+.layout-tv .mainDetailButtons .btnPlay,
+.emby-tab-button-active {
+    background-image: linear-gradient(rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 62%) !important;
+    box-shadow: var(--glass-shine), 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .35) !important;
+}
+
+/* Inputs read as recessed glass */
+.emby-input, .emby-textarea, .emby-select-withcolor {
+    background: rgba(255, 255, 255, .07) !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+/* Browsers without backdrop-filter: opaque panels so text stays readable */
+@supports not (backdrop-filter: blur(1px)) {
+    .MuiMenu-paper.MuiMenu-paper,
+    .MuiPaper-root.MuiPopover-paper.MuiPopover-paper,
+    body:not(.dashboardDocument) .MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper,
+    .MuiDialog-paper, .dialog, .actionSheetContent, .toastVisible {
+        background-color: var(--secondary-background-color) !important;
+    }
+}

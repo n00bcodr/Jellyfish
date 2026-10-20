@@ -11,7 +11,7 @@
     --secondary-background-color: #181818; /* Drawer, cards, dialogs */
     --tertiary-background-color: #252525; /* Popovers */
     --alt-accent-color: #ffffff20;
-    --text-color: #000000;
+    --text-color: #ffffff; /* Text on the accent color (5.0:1; black would be 4.2:1) */
     --header-background-color: #ffffff6e; /* This is header and tabs background */
     --logo: url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish/logos/streamberry.png");
     --background-image: url(https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/images/jellyflix.jpg);

@@ -24,6 +24,75 @@
     --header-solid-background-color: color-mix(in srgb, var(--secondary-background-color) 85%, rgb(var(--primary-r), var(--primary-g), var(--primary-b)) 15%);
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~ DERIVED COLOR TOKENS ~~~~~~~~~~~~~~~~~~~~ */
+/* Everything below is computed from the palette file (colors/*.css), so every
+   palette - including custom ones - gets readable text without per-palette work.
+   - --text-color             text ON the solid accent (buttons, active tabs): set per palette
+   - --accent-text-color      the accent used AS text on dark surfaces (links, titles), lightened to >= 4.5:1
+   - --accent-surface(-strong) dark, accent-tinted panels (selected rows, dialogs) that keep white text readable
+   The old rule of using the raw 60%-alpha accent behind text failed contrast on
+   most palettes (e.g. white on banana/grass/mint/peach, black on jellyflix). */
+:root {
+    --accent-text-color: color-mix(in srgb, var(--primary-accent-color) 70%, #fff);
+    --accent-surface: color-mix(in srgb, var(--primary-accent-color) 26%, var(--secondary-background-color));
+    --accent-surface-strong: color-mix(in srgb, var(--primary-accent-color) 40%, var(--secondary-background-color));
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ JELLYFIN 12 PALETTE BRIDGE ~~~~~~~~~~~~~~~~~~~~ */
+/* Jellyfin 12 builds its MUI components AND its legacy stylesheets from
+   --jf-palette-* variables (with fallbacks to its own blue/grey). Pointing them
+   at this theme's palette recolors buttons, switches, chips, selected states,
+   focus rings, menus and dialogs in one place instead of overriding each
+   component class with !important. [data-theme] raises specificity just above
+   Jellyfin's own :root/[data-theme="dark"] declarations. */
+:root,
+:root[data-theme] {
+    --jf-palette-primary-main: var(--primary-accent-color);
+    --jf-palette-primary-mainChannel: var(--primary-r) var(--primary-g) var(--primary-b);
+    --jf-palette-primary-light: color-mix(in srgb, var(--primary-accent-color) 78%, #fff);
+    --jf-palette-primary-dark: color-mix(in srgb, var(--primary-accent-color) 78%, #000);
+    --jf-palette-primary-contrastText: var(--text-color);
+    --jf-palette-secondary-main: var(--primary-accent-color);
+    --jf-palette-secondary-mainChannel: var(--primary-r) var(--primary-g) var(--primary-b);
+    --jf-palette-secondary-contrastText: var(--text-color);
+    --jf-palette-background-default: var(--primary-background-color);
+    --jf-palette-background-paper: var(--secondary-background-color);
+    --jf-palette-AppBar-defaultBg: var(--header-solid-background-color);
+    /* Jellyfin 12 reads its card corner radius from this variable too (also used by Abyss) */
+    --jf-card-borderRadius: var(--rounded-cards);
+}
+
+/* Engines without color-mix() (Chrome < 111: older Samsung Tizen / LG webOS TVs,
+   Jellyfin Media Player): a var() that holds an unsupported color-mix() is
+   "invalid at computed-value time", which would drop text colors and make
+   dialogs/selected rows transparent. Plain approximations keep everything readable. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+    :root {
+        --header-solid-background-color: var(--secondary-background-color);
+        --accent-text-color: var(--primary-accent-color);
+        --accent-surface: var(--secondary-background-color);
+        --accent-surface-strong: rgba(var(--primary-r), var(--primary-g), var(--primary-b), .35);
+    }
+    :root,
+    :root[data-theme] {
+        --jf-palette-primary-light: var(--primary-accent-color);
+        --jf-palette-primary-dark: var(--primary-accent-color);
+    }
+}
+
+/* Respect the OS "reduce motion" setting: no entrance animations, spinning icons or
+   hover lifts. (Pattern also used by Abyss, MIT - https://github.com/AumGupta/abyss-jellyfin) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 /* NOTE: theme.css is the single stylesheet for the whole theme - the former
    10.11_fixes.css (dashboard-only, JS-injection workaround) and 12_fixes.css
    (Jellyfin 12+ React/MUI top bar & nav drawer) are merged in directly below.
@@ -46,7 +115,7 @@ body, h1, h2, h3, h4, h5, h6, p {
 
 .emby-button.block, .dashboardDocument .material-icons.check:before, .displayPreferencesPage .material-icons.check:before {
     color: var(--text-color) !important;
-    background-color: var(--secondary-accent-color);
+    background-color: var(--primary-accent-color);
 }
 
 /* Show theme date in dashboard */
@@ -90,7 +159,7 @@ progress[aria-valuenow]:before,               /* Progress bar fill (pseudo-eleme
 /* == Header Nav Active Link Color == */
 /* The desktop header's active top-level nav link (e.g. "Movies") uses MUI's default primary blue instead of the theme accent. */
 header .MuiButton-textPrimary.MuiButton-colorPrimary {
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
 }
 
 /* == Secondary Accent Backgrounds == */
@@ -99,7 +168,7 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 .navMenuOption-selected,                        /* Selected items in the main navigation menu */
 .MuiListItemButton-root.Mui-selected,           /* Selected Material UI list item buttons */
 .jstree-default .jstree-wholerow-clicked        /* Clicked rows in jsTree (e.g., metadata editor folder tree) */ {
-    background: var(--secondary-accent-color) !important;
+    background: var(--accent-surface-strong) !important;
 }
 
 /* Solid, opaque background (see --header-solid-background-color) rather than
@@ -114,7 +183,7 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 
 .formDialogHeader,
 .formDialogFooter {
-    background: var(--secondary-accent-color) !important;
+    background: var(--accent-surface) !important;
     backdrop-filter: blur(25px) !important;
 }
 .formDialogHeader h3 {
@@ -161,7 +230,7 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 .listItemIcon:not(.listItemIcon-transparent, .notification_important) /* Icons in list items (excluding transparent/important notifications) */
 {
     color: #ffffff !important;
-    background-color: var(--secondary-accent-color) !important;
+    background-color: var(--accent-surface-strong) !important;
 }
 
 /* == Accent Color for Progress Bars == */
@@ -211,7 +280,7 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .sectionTitle,                                /* Titles of sections */
 .navMenuOption:hover:not(.navMenuOption-selected) /* Hovered main navigation items (not selected) */
 {
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
 }
 
 .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root, /* Icons within selected Material UI list items */
@@ -219,7 +288,6 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 {
     color: #ffffff !important;
 }
-
 
 /* == Accent Color for Hover Effects (Fine Pointer Devices) == */
 /* Applies accent color on hover for icon buttons, specifically for mouse users. */
@@ -237,7 +305,7 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 
 /* == Accent Color for Dashboard Headings == */
 .dashboardSection h3 {
- color: var(--primary-accent-color);
+ color: var(--accent-text-color);
  font-weight: bold !important;
 }
 
@@ -296,7 +364,6 @@ button.raised.btnRefresh.emby-button, .button-reset {
     background: rgb(180 96 96) !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ GENERAL BACKGROUND COLORS ~~~~~~~~~~~~~~~~~~~~ */
 /* Sets base background colors for main layout areas and components. */
 
@@ -312,16 +379,18 @@ html
     background-color: var(--secondary-background-transparent) !important;
 }
 
+/* PERF: this used to be a full-viewport `backdrop-filter` on .backgroundContainer.
+   A backdrop-filter re-samples and re-blurs everything behind it, so on tabbed
+   pages (home, libraries) it made scrolling ~4x slower. Blurring and dimming
+   the backdrop image itself looks the same but is rasterized once and cached. */
 .libraryDocument.withSectionTabs .backgroundContainer {
-    backdrop-filter: blur(var(--blur)) brightness(.3) !important;
     background-color: var(--secondary-background-transparent);
 }
 
-/* Hide backdrop image on homepage to work well with media bar */
 .libraryDocument.withSectionTabs .backdropImage {
     display: block !important;
+    filter: blur(var(--blur)) brightness(.3);
 }
-
 
 /* Secondary, often slightly transparent, backgrounds for elements like drawers, dialogs, and content sections. */
 .layout-desktop .mainDrawer,                  /* Main navigation drawer (Desktop) */
@@ -427,7 +496,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 }
 
 .actionSheetMenuItem.emby-button:hover, .listItem:hover {
-    background-color: var(--secondary-accent-color) !important; /* Accent color on hover */
+    background-color: var(--accent-surface) !important; /* Accent color on hover */
     border-radius: var(--rounded-cards) !important;
 }
 
@@ -493,7 +562,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     background: var(--header-background-color) !important; /* Use a variable for background, ensure it's defined (e.g., semi-transparent white) */
     border-radius: 100px !important; /* Creates the pill shape */
     color: var(--secondary-background-color) !important; /* Text color, assuming a light header background means dark text */
-    backdrop-filter: blur(50px) !important; /* Strong blur effect */
+    backdrop-filter: blur(24px) !important; /* Strong blur effect */
     box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.25) !important;
 }
 
@@ -635,7 +704,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     text-shadow: -2px 2px 12px #000000eb !important; /* Text shadow for mobile header icons for readability */
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ LAYOUT - MAIN DRAWER (SIDEBAR) ~~~~~~~~~~~~~~~~~~~~ */
 
 /* == Sidebar Dynamic Styling (Desktop - Default Behavior) == */
@@ -669,7 +737,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 /* Basic styling for the mobile sidebar. */
 .layout-mobile .mainDrawer {
     width: 250px !important;
-    backdrop-filter: blur(50px) !important;
+    backdrop-filter: blur(24px) !important;
 	border-top-right-radius : 30px !important;
     border-bottom-right-radius : 30px !important;
 }
@@ -712,13 +780,13 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 /* Hover effect for non-selected sidebar buttons. */
 .navMenuOption:hover:not(.navMenuOption-selected) {
     background: var(--primary-background-transparent) !important; /* Dark semi-transparent background */
-    color: var(--primary-accent-color) !important; /* Text color changes to accent on hover */
+    color: var(--accent-text-color) !important; /* Text color changes to accent on hover */
     transform: scale(1.05) !important;       /* Slight scaling effect */
 }
 /* Styling for selected sidebar buttons. */
 .navMenuOption-selected {
-    background: var(--secondary-accent-color) !important; /* Uses secondary accent for background */
-    color: var(--primary-accent-color) !important;    /* Uses primary accent for text */
+    background: var(--accent-surface-strong) !important; /* Dark accent-tinted surface */
+    color: #ffffff !important;                           /* Always readable on that surface */
 }
 
 /* == Sidebar Button Icons & Text Alignment == */
@@ -747,12 +815,17 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     transition: none !important;   /* No transition needed for static element */
 }
 /* Adjusts the main page content on the dashboard to accommodate the static sidebar. */
-.layout-desktop .dashboardDocument .mainAnimatedPage {
-    left: 260px !important;
-}
+/* The dashboard's permanent sidebar only exists from MUI's `md` breakpoint (900px)
+   up; below that it becomes a slide-out drawer, so reserving 260px for it left an
+   empty gutter and pushed the content off the right edge on narrow windows. */
+@media (min-width: 900px) {
+    .layout-desktop .dashboardDocument .mainAnimatedPage {
+        left: 260px !important;
+    }
 
-.layout-desktop div#dashboardPage {
-    left: 260px !important;
+    .layout-desktop div#dashboardPage {
+        left: 260px !important;
+    }
 }
 
 .localUsers .cardText-secondary {
@@ -799,7 +872,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 .layout-mobile .headroom--top .headerRight {
     background: var(--header-background-color) !important; /* Re-apply defined header background */
     border-radius: 100px !important;
-    backdrop-filter: blur(50px) !important; /* Strong blur */
+    backdrop-filter: blur(24px) !important; /* Strong blur */
     box-shadow: 1px 3px 6px rgba(var(--secondary-background-color),.5); /* Dark shadow */
     color: var(--secondary-background-color) !important; /* Dark text */
     height: 40px !important;
@@ -883,7 +956,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     font-size: 2vh !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ CARDS & LIST ITEMS ~~~~~~~~~~~~~~~~~~~~ */
 
 /* == Universal Card Rounding == */
@@ -898,7 +970,18 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 .cardOverlayContainer
  {
     border-radius: var(--rounded-cards) !important;
-    overflow: hidden !important; /* Crucial for rounded corners on elements with backgrounds/images */
+}
+/* Only the image layers clip: that is what rounds the poster corners. .card and
+   .cardBox also hold the title/year text and Jellyfin's TV focus-scale outline,
+   which `overflow: hidden` on them cut off (focused TV cards lost the left edge of
+   their title; see also issue #55 "Cards Clipped"). */
+.cardScalable,
+.cardPadder,
+.cardImageContainer,
+.blurhash-canvas,
+.cardContent,
+.cardOverlayContainer {
+    overflow: hidden !important;
 }
 
 .cardOverlayButton {
@@ -943,7 +1026,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     height: calc(100% - 1.5em);
 }
 
-
 /* Removes default background from card padders to rely on cardBox or image. */
 .cardPadder {
   background: none !important;
@@ -973,7 +1055,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     border-radius: 28px !important;
 }
 
-
 @media (orientation: portrait) {
     .layout-mobile .listItemImage {
         min-height: 5em !important;
@@ -1001,7 +1082,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     color: lawngreen !important; /* Accent color for watched state icon */
 }
 
-
 /* Hover effect for list items: background change and slight scaling. */
 .listItem {
     transition: background 0.2s ease, box-shadow 0.2s ease, translate 0.2s ease !important;
@@ -1012,7 +1092,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     translate: 0 -3px !important;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25) !important;
 }
-
 
 /* == Card Hover Effects (Outline & Dim) == */
 /* Adds an accent-colored border and a dimming overlay on hover for various card types. */
@@ -1075,60 +1154,72 @@ div.card-hoverable.squareCard.card {
     background-size: contain !important;
 }
 
-
-
 /* == Indicators (Watched, Count, Media Source) == */
-/* General styling for various indicators on cards/list items. */
-.playedIndicator { /* "Watched" checkmark indicator */
-    background: #48b648 !important; /* Green background */
-    color: white;
+/* One size token drives every card indicator, so they scale with the screen
+   instead of being fixed 20px/30px boxes that crowd narrow cards or look lost on
+   big ones. Shape: a rounded square sized from the token; counts widen into a pill
+   so "99+" never overflows. Jellyfin sizes indicators in `em` and sets a fixed
+   width, hence the explicit min-width/width overrides. */
+:root {
+    --indicator-size: 24px;      /* phones: still a comfortable 24px touch/read size */
+}
+@media (min-width: 600px)  { :root { --indicator-size: 26px; } }
+@media (min-width: 1200px) { :root { --indicator-size: 30px; } }
+@media (min-width: 2000px) { :root { --indicator-size: 40px; } }
+
+.playedIndicator,
+.countIndicator,
+.indicator:not(.timerIndicator):not(.syncIndicator) {
+    box-sizing: border-box;
+    min-width: var(--indicator-size);
+    width: auto;
+    height: var(--indicator-size);
+    padding: 0 calc(var(--indicator-size) * .24);
+    border-radius: calc(var(--indicator-size) * .34) !important;
+    font-size: calc(var(--indicator-size) * .5) !important;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.countIndicator {
-    color: var(--text-color) !important; /* Text color for count indicators */
+.playedIndicator { /* "Watched" check: square, green, white tick */
+    background: #3fae4a !important;
+    color: #fff;
+    width: var(--indicator-size);
+    padding: 0;
+}
+.playedIndicator .indicatorIcon {
+    width: auto;
+    height: auto;
+    font-size: calc(var(--indicator-size) * .72);
 }
 
-
-/* Desktop-specific indicator styling (squared look). */
-@media (min-width: 1200px) {
-    .playedIndicator, .indicator { /* General class for indicators */
-        border-radius: 10px !important; /* Custom rounding for desktop */
-        width: 30px;
-        height: 30px;
-    }
-    .mediaSourceIndicator { /* Indicator for media source (e.g., HD, 4K) */
-        background: var(--primary-accent-color) !important;
-        border-radius: 10px !important;
-        width: 30px;
-        height: 30px;
-        color: var(--secondary-background-color); /* Text color for contrast against accent */
-        display: flex; /* For centering text inside */
-        align-items: center;
-        justify-content: center;
-    }
+.countIndicator { /* Unwatched episode count */
+    color: var(--text-color) !important;
 }
-/* Mobile/default indicator styling. */
-@media (max-width: 1199px) {
-    /* Jellyfin's default indicator styles usually apply here. */
-    .mediaSourceIndicator {
-        border-radius: 0 !important; /* Default square shape for mobile */
-        background: #00000085 !important; /* Default dark semi-transparent background */
-    }
-    /* Smaller watched/count indicators so they don't dominate narrow cards. */
-    .playedIndicator, .countIndicator {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 0;
-        font-size: 12px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-    .playedIndicator .indicatorIcon {
-        width: 14px;
-        height: 14px;
-    }
+
+/* Keep the badges off the rounded card corner (cards clip at --rounded-cards). */
+.cardIndicators {
+    top: max(5px, calc(var(--rounded-cards) * .28)) !important;
+    right: max(5px, calc(var(--rounded-cards) * .28)) !important;
+    gap: 4px;
+}
+
+/* Media source badge (4K / HD / etc.). */
+.mediaSourceIndicator {
+    box-sizing: border-box;
+    min-width: var(--indicator-size);
+    height: var(--indicator-size);
+    padding: 0 calc(var(--indicator-size) * .24);
+    border-radius: calc(var(--indicator-size) * .34) !important;
+    font-size: calc(var(--indicator-size) * .46);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color);
 }
 
 /* Narrow screens: wrap the library toolbar (title, count, play/shuffle, filter, sort, view, pager)
@@ -1143,40 +1234,245 @@ div.card-hoverable.squareCard.card {
     }
 }
 
-/* Short screens: fit the whole A-Z picker in the viewport (otherwise Y/Z are cut off). */
-@media (max-width: 600px) {
+/* == Library toolbar buttons (Jellyfin 12 modern layout) ==
+   Play All / Shuffle, the Filter / Sort / View group and the pager used to be
+   stock MUI: flat 4px-radius blocks that ignored the theme's shape language. Now:
+   a solid pill for the primary group (accent, glossy top, readable --text-color on
+   every palette) and frosted pills for the icon groups. */
+.MuiToolbar-root .MuiButtonGroup-root {
+    border-radius: 999px;
+}
+
+.MuiToolbar-root .MuiButtonGroup-contained {
+    box-shadow: 0 4px 14px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .30);
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+.MuiToolbar-root .MuiButtonGroup-contained:hover {
+    box-shadow: 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
+    transform: translateY(-1px);
+}
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root {
+    background:
+        linear-gradient(rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 60%),
+        var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    font-weight: 700;
+    padding-inline: 16px;
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, .22);
+    transition: filter .15s ease;
+}
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:first-of-type {
+    border-radius: 999px 0 0 999px;
+    padding-inline-start: 18px;
+}
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:last-of-type {
+    border-radius: 0 999px 999px 0;
+    padding-inline-end: 18px;
+}
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:only-of-type {
+    border-radius: 999px;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:hover {
+        filter: brightness(1.12);
+    }
+}
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:focus-visible {
+    outline: 2px solid var(--accent-text-color);
+    outline-offset: 2px;
+}
+
+/* Filter / Sort / View and Previous / Next: frosted pill, round hover targets */
+.MuiToolbar-root .MuiButtonGroup-text {
+    background: var(--alt-accent-color);
+    padding: 2px;
+}
+.MuiToolbar-root .MuiButtonGroup-text .MuiButton-root {
+    border: 0 !important;
+    border-radius: 999px !important;
+    min-width: 40px;
+    transition: background-color .15s ease, color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root .MuiButtonGroup-text .MuiButton-root:hover:not(.Mui-disabled) {
+        background-color: var(--primary-background-transparent);
+        color: var(--accent-text-color);
+    }
+}
+
+/* == Library toolbar buttons, legacy markup (TV, desktop-legacy, mobile-legacy) ==
+   Same idea as above for the old toolbar: Play All is a solid accent pill, the
+   other icon buttons are round, and every one gets a clear accent fill when it has
+   hover (mouse) or focus (D-pad / keyboard). */
+.btnPlayAll,
+.btnShuffle {
+    border-radius: 999px !important;
+    transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+.btnPlayAll {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+.btnPlayAll .material-icons {
+    color: inherit !important;
+}
+.btnShuffle {
+    background: var(--alt-accent-color) !important;
+}
+.btnPreviousPage,
+.btnNextPage,
+.btnSelectView,
+.btnSort,
+.btnFilter {
+    border-radius: 999px !important;
+}
+.btnPlayAll:focus,
+.btnShuffle:focus,
+.btnPreviousPage:focus,
+.btnNextPage:focus,
+.btnSelectView:focus,
+.btnSort:focus,
+.btnFilter:focus {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+    .btnShuffle:hover,
+    .btnPreviousPage:hover,
+    .btnNextPage:hover,
+    .btnSelectView:hover,
+    .btnSort:hover,
+    .btnFilter:hover {
+        background-color: var(--primary-background-transparent) !important;
+    }
+    .btnPlayAll:hover {
+        filter: brightness(1.12);
+    }
+}
+
+/* A-Z picker: fit the viewport height at ANY width (otherwise the bottom letters,
+   e.g. Y/Z, are cut off on short viewports - 4K TVs at 250% scale, laptops with
+   browser chrome, phones in landscape). Jellyfin pins it at top: 96px (144px on
+   xs) with bottom: 0, so the group may never be taller than the space left. The
+   buttons shrink (flex) only when there isn't room, so tall screens look unchanged. */
+.alphaPicker-fixed-right .MuiToggleButtonGroup-vertical {
+    --alpha-room: calc(100vh - 96px - 16px);
+    max-height: var(--alpha-room);
+}
+@supports (height: 100dvh) {
+    /* dvh follows mobile browser toolbars; older engines keep the vh value above */
     .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical {
-        height: calc(100dvh - 156px) !important;
-        max-height: calc(100dvh - 156px);
+        --alpha-room: calc(100dvh - 96px - 16px);
+    }
+}
+@media (max-width: 599.95px) {
+    /* Phones: stretch the strip over the whole free height (bigger touch targets). */
+    .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical {
+        --alpha-room: calc(100vh - 144px - 16px);
+        height: var(--alpha-room);
+    }
+    @supports (height: 100dvh) {
+        .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical {
+            --alpha-room: calc(100dvh - 144px - 16px);
+        }
     }
     .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical .MuiToggleButton-root {
-        flex: 1 1 0;
-        min-height: 0;
-        height: auto !important;
+        flex-basis: 0;
         padding-top: 0;
         padding-bottom: 0;
-        line-height: 1;
     }
 }
+.alphaPicker-fixed-right .MuiToggleButtonGroup-vertical .MuiToggleButton-root {
+    flex: 1 1 auto;
+    min-height: 0;
+    font-size: clamp(8px, calc(var(--alpha-room) / 27 * .72), 12.1px);
+}
+@media (max-height: 760px) {
+    .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical .MuiToggleButton-root {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+/* A-Z picker skin (Jellyfin 12 "modern" layout: a MUI ToggleButtonGroup in a
+   Paper). A frosted pill that matches the header/drawer; the active letter is
+   filled with the accent color, hover uses the readable accent-text tint. */
+.alphaPicker-fixed-right > .MuiPaper-root {
+    background: color-mix(in srgb, var(--secondary-background-color) 72%, transparent) !important;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 999px !important;
+    padding: 4px 2px;
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+}
+.alphaPicker-fixed-right .MuiToggleButton-root {
+    color: rgba(255, 255, 255, .62);
+    font-weight: 600;
+    border: 0 !important;
+    border-radius: 999px !important;
+    margin: 1px 0 !important;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .alphaPicker-fixed-right .MuiToggleButton-root:hover {
+        color: var(--accent-text-color, var(--primary-accent-color));
+        background-color: var(--primary-background-transparent);
+    }
+}
+.alphaPicker-fixed-right .MuiToggleButton-root.Mui-selected,
+.alphaPicker-fixed-right .MuiToggleButton-root.Mui-selected:hover {
+    color: var(--text-color);
+    background-color: var(--primary-accent-color);
+    font-weight: 800;
+}
+
 /* ~~~~~~~~~~~~~~~~~~~~ SEARCH & FILTERING ~~~~~~~~~~~~~~~~~~~~ */
 
-
-/* Styles the buttons in the A-Z alpha picker */
+/* A-Z picker, legacy markup (TV layout, desktop-legacy, mobile-legacy).
+   Same frosted-pill look as the modern picker above. The pill is capped to the
+   viewport (letters shrink instead of falling off screen) and, on TV, the focused
+   letter gets an unmistakable accent fill because the D-pad is the only cursor. */
+.alphaPicker-vertical {
+    background: color-mix(in srgb, var(--secondary-background-color) 72%, transparent);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 999px;
+    padding: 4px 2px;
+    max-height: calc(100vh - 9em);
+    max-height: calc(100dvh - 9em);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+    backdrop-filter: blur(var(--blur));
+}
 .alphaPickerButton {
-    color: #888 !important;
+    color: rgba(255, 255, 255, .62) !important;
     font-weight: 600;
-    transition: color 0.2s ease, transform 0.2s ease !important;
+    transition: color .15s ease, background-color .15s ease !important;
+}
+.alphaPickerButton-vertical {
+    flex-shrink: 1;
+    min-height: 0;
+    border-radius: 999px !important;
+}
+@media (hover: hover) and (pointer: fine) {
+    .alphaPickerButton:hover {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+.alphaPickerButton-selected,
+.alphaPickerButton-selected:hover,
+.alphaPickerButton:focus {
+    color: var(--text-color) !important;
+    background-color: var(--primary-accent-color) !important;
+    font-weight: 800;
+}
+.layout-tv .alphaPicker-vertical {
+    /* Seen from a sofa: bigger letters, and no backdrop-filter on TV-class GPUs. */
+    font-size: clamp(14px, 2.1vh, 24px);
+    backdrop-filter: none;
+    background: var(--secondary-background-color);
 }
 
-.alphaPickerButton:hover {
-    color: #fff !important;
-    transform: scale(1.1) !important;
-}
-
-.alphaPickerButton-selected {
-    color: var(--primary-accent-color) !important;
-    transform: scale(1.2) !important;
-}
 /* ~~~~~~~~~~~~~~~~~~~~ DETAILS PAGE (Restored Original Layout Focus) ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles aimed at restoring or customizing the layout of the item details page. */
 
@@ -1280,7 +1576,6 @@ h3.tagline {
 /* Apply styles only if all children with class 'hide' are not hidden */
 .itemDetailsGroup:has(.detailsGroupItem:not(.hide)) {
     background: var(--secondary-background-transparent) !important;
-    padding: 10px 0px 0px 0px !important;
     border-radius: var(--rounded-cards) !important;
     max-width: 100% !important;
     backdrop-filter: blur(var(--blur)) !important;
@@ -1289,7 +1584,6 @@ h3.tagline {
 .layout-mobile .itemDetailsGroup:has(.detailsGroupItem:not(.hide)) {
     padding: 10px 20px 1px !important;
 }
-
 
 /* == Card Styling for Description Area == */
 /* Wraps the item description/overview in a styled container. */
@@ -1310,6 +1604,16 @@ h3.tagline {
     background: var(--secondary-background-transparent) !important;
     border-radius: var(--rounded-cards) !important;
     padding: 10px 20px !important;
+}
+
+/* Hide the description panel when there is nothing in it (e.g. a person with no bio and
+   no links rendered a blank rounded bar). Jellyfin always leaves a few children in
+   the box - "Show more" controls, an empty recording editor - so "empty" means: every
+   child is .hide, :empty, or one of those two helpers. Anything else (overview,
+   tagline, genres, ratings from plugins) keeps the panel. Engines without :has()
+   simply keep showing it, as before. */
+.detailSectionContent:not(:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor))) {
+    display: none !important;
 }
 
 /* == Card Styling for Track Selection Area == */
@@ -1389,8 +1693,6 @@ h3.tagline {
     }
 }
 
-
-
 /* == Reordering Detail Page Sections == */
 /* Uses flexbox to reorder elements within the detail section (e.g., description, track selection, groups). */
 .detailSection {
@@ -1459,7 +1761,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 .layout-desktop #itemDetailPage:has(.listItem[data-type="Audio"]) .nameContainer {
     margin-top: -4.5em !important;
 }
-
 
 /* Desktop Play Button Styling. */
 .layout-tv .mainDetailButtons .btnPlay, .layout-desktop .mainDetailButtons .btnPlay {
@@ -1543,7 +1844,6 @@ div#listChildrenCollapsible { order: 6 !important; }
     transition: transform 0.2s ease-in-out;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ PLAYER & UP NEXT DIALOG ~~~~~~~~~~~~~~~~~~~~ */
 
 /* == Player OSD Element Styling == */
@@ -1626,18 +1926,6 @@ div#listChildrenCollapsible { order: 6 !important; }
     border-radius: 0px !important;
     border: none;
     cursor: pointer;
-}
-
-/* Internet Explorer */
-
-.mdl-slider::-ms-thumb {
-    background: transparent !important;
-    height: 0px !important;
-    width: 0px !important;
-    border-radius: 0px !important;
-    border: none;
-    cursor: pointer;
-    margin-top: 0px;
 }
 
 /* Hover effect for the thumb */
@@ -1762,7 +2050,6 @@ div#listChildrenCollapsible { order: 6 !important; }
     background-color: #FFFFFF90 !important; /* Semi-transparent white */
 }
 
-
 .btnStartNow {
     background: var(--primary-accent-color) !important;
     color: var(--text-color) !important;
@@ -1779,7 +2066,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 .layout-desktop #popupContentContainer .previewEpisodeDetails { position: unset !important; margin: 0px 0px 6px 10px !important; font-size: 13.5px !important; }
 .layout-desktop #popupContentContainer .previewEpisodeTitle { font-size: 16.5px !important; }
 .layout-desktop #popupContentContainer .listItem { padding: .25em .5em !important; }
-
 
 /* ~~~~~~~~~~~~~~~~~~~~ SETTINGS & DASHBOARD ~~~~~~~~~~~~~~~~~~~~ */
 
@@ -1810,7 +2096,6 @@ div#listChildrenCollapsible { order: 6 !important; }
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.4) !important;
 }
-
 
 /* Change colors for options dropdown */
 .emby-select option {
@@ -1855,10 +2140,10 @@ div#listChildrenCollapsible { order: 6 !important; }
 }
 .username { /* Already styled in accent colors, this re-affirms or adjusts margin */
     margin: 0px 0px 10px 10px !important;
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
 }
 .headerUsername, .sectionTitle { /* Accent color for username in header and section titles */
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
     text-shadow: -1px 1px 15px #000000;
     font-weight: bold;
 }
@@ -2033,7 +2318,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     border-radius: 18px !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ METADATA EDITOR ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles specific to the metadata editor interface. */
 
@@ -2053,7 +2337,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     height: 40px !important;
     color: white !important; /* Ensure text is white for contrast */
 }
-
 
 /* ~~~~~~~~~~~~~~~~~~~~ MUSIC PLAYER & NOW PLAYING BAR ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles related to the music player interface and the "Now Playing" bar at the bottom. */
@@ -2079,7 +2362,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     margin-top: 18px !important;
     margin-right: 22px !important;
     font-size: 1.8em;
-    color: var(--primary-accent-color);
+    color: var(--accent-text-color);
 }
 
 .layout-desktop .nameContainer .musicParentName::after {
@@ -2125,7 +2408,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     }
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ LIVE TV ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles specific to the Live TV guide and related elements. */
 
@@ -2153,10 +2435,17 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* == Translucent Cards on Item Detail Page  == */
 /* Makes various sections on the item detail page translucent */
+/* PERF: these panels are huge (the whole description/ratings column), and a
+   backdrop-filter on an element that size is re-blurred on every scrolled frame -
+   the single biggest cost on item pages (22ms -> 17ms/frame here, i.e. back to
+   no-theme speed). A static accent tint over a darkened base gives the same
+   frosted-dark panel without the per-frame blur. */
 .layout-desktop #itemDetailPage .detailSectionContent,
 .layout-desktop #itemDetailPage .trackSelections {
-    background: var(--secondary-background-transparent) !important; /* Use theme's transparent background */
-    backdrop-filter: blur(var(--blur)) !important; /* Apply theme blur */
+    background:
+        linear-gradient(var(--secondary-background-transparent), var(--secondary-background-transparent)),
+        color-mix(in srgb, var(--secondary-background-color) 72%, transparent) !important;
+    backdrop-filter: none !important;
 	padding-bottom: 1em !important;
 }
 
@@ -2164,7 +2453,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .backgroundContainer.withBackdrop + div .mainDrawer
 {
     background: var(--secondary-background-transparent) !important; /* Darker gradient */
-    backdrop-filter: blur(50px) !important;
+    backdrop-filter: blur(24px) !important;
     border-top-right-radius: 30px !important; /* Rounded corners for the drawer */
     border-bottom-right-radius: 30px !important; /* Rounded corners for the drawer */
 }
@@ -2174,7 +2463,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     /* Simpler transparent background with blur for desktop JMP. */
     .layout-desktop .backgroundContainer.withBackdrop + div .mainDrawer {
         background: transparent !important;
-        backdrop-filter: blur(50px) !important;
+        backdrop-filter: blur(24px) !important;
         border-top-right-radius: 30px !important; /* Rounded corners for the drawer */
         border-bottom-right-radius: 30px !important; /* Rounded corners for the drawer */
     }
@@ -2194,7 +2483,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .layout-desktop:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected),
 .layout-mobile:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected) {
     background: var(--primary-background-transparent) !important; /* Use theme's transparent background on hover */
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
     backdrop-filter: blur(var(--blur)) !important;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
 }
@@ -2256,7 +2545,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     width: 100vw !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ RESPONSIVENESS & FIXES ~~~~~~~~~~~~~~~~~~~~ */
 
 /* == Scaling Fixes for Header Elements == */
@@ -2273,6 +2561,70 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
         width: auto !important;
         align-self: center !important;
     }
+}
+
+/* == Narrow desktop layout (tablets, small/tiled browser windows) ==
+   The desktop details page pins the title and metadata row with position:absolute
+   next to the poster. That only works while the metadata fits on one or two
+   lines; narrower than ~1280px it wraps to 3+ lines and runs over the tagline and
+   description. Below that width the title block flows normally instead. */
+@media (max-width: 1280px) {
+    .layout-desktop .itemBackdrop {
+        height: 30vh !important;
+    }
+    .layout-desktop .detailRibbon {
+        min-height: 0;
+        align-items: flex-end;
+    }
+    .layout-desktop .infoWrapper {
+        margin-top: 0 !important;
+        margin-left: 21vw !important;
+        flex: 1 1 auto;
+        min-width: 0;
+        height: auto;
+        padding-bottom: .5em;
+    }
+    .layout-desktop .nameContainer {
+        position: static !important;
+        margin-top: 0 !important;
+        flex-wrap: wrap;
+    }
+    .layout-desktop .itemMiscInfo,
+    .layout-desktop .itemMiscInfo.itemMiscInfo-secondary {
+        position: static !important;
+        margin: .5em 0 0 0 !important;
+        flex-wrap: wrap;
+    }
+    .layout-desktop .detailSectionContent {
+        margin-top: 1em !important;
+        padding-top: 1em !important;
+    }
+}
+
+/* == TV layout: item details, brought in line with the desktop page ==
+   Jellyfin's TV layout hides the clear logo and the hero, so the page was just a
+   poster + text on a flat color. With "Backdrops" on, the full-screen backdrop is
+   already behind it; here the clear logo is brought back in the top-left (as on
+   desktop), the content is pushed down to make room for it, and the panel/title
+   styling comes from the shared rules above. Sibling selector (not :has) because
+   TV browsers are often too old for :has(). Items without a logo keep the default
+   compact layout. */
+.layout-tv #itemDetailPage .detailLogo:not(.hide) {
+    display: block !important;
+    position: absolute !important;
+    left: 5% !important;
+    top: max(12vh, 110px) !important;   /* clear of the back/home buttons on short TVs */
+    width: 26vw !important;
+    height: 24vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    z-index: 3;
+}
+.layout-tv #itemDetailPage .detailLogo:not(.hide) + .detailPageWrapperContainer {
+    margin-top: 32vh !important;
 }
 
 /* == Fixes for TV Layout Header == */
@@ -2297,7 +2649,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     font-family: inherit !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ MOBILE SPECIFIC FIXES AND CHANGES ~~~~~~~~~~~~~~~~~~~~ */
 
 /* == Vertical Stacking on Detail Page (Mobile) == */
@@ -2310,7 +2661,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .layout-mobile .cardOverlayButton-br {
     display: none;
 }
-
 
 /* == Mobile Poster/Backdrop Styling == */
 /* Uses the item backdrop as the main image on mobile detail pages, with opacity and a gradient mask. */
@@ -2348,10 +2698,20 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     justify-content: center; /* Center buttons within their container */
     padding-top: 10px !important;
 }
+/* Narrow phones: 8-9 icon buttons (Play, trailer, watchlist, played, favorite, ...)
+   at the default 10px padding are 43px each and spill the last one onto a lonely
+   second row. Tighter padding keeps a typical row on one line. */
+@media (max-width: 430px) {
+    .layout-mobile .mainDetailButtons .detailButton {
+        padding: 7px !important;
+    }
+    .layout-mobile .mainDetailButtons .btnPlay {
+        padding-inline: 12px !important;
+    }
+}
 .layout-mobile .detailPageContent {
     padding-right: 0 !important; /* Remove right padding if any */
 }
-
 
 /* ~~~~~~~~~~~~~~~~~~~~ Book SPECIFIC FIXES AND CHANGES ~~~~~~~~~~~~~~~~~~~~ */
 
@@ -2385,7 +2745,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     margin-top: 11px !important;
 }
 
-
 /* ~~~~~~~~~~~~~~~~~~~~ JELLYFIN MEDIA PLAYER (JMP) FIXES ~~~~~~~~~~~~~~~~~~~~ */
 /* Compatibility fixes for Jellyfin Media Player desktop app */
 
@@ -2409,7 +2768,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     }
 
 }
-
 
 /* ~~~~~~~~~~~~~~~~~~~~ TV GUIDE STYLING ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles for the TV guide date selector tabs */
@@ -2437,7 +2795,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .emby-tabs-slider.guideDateTabsSlider {
     background: var(--header-background-color) !important;
     color: var(--secondary-background-color) !important;
-    backdrop-filter: blur(50px) !important;
+    backdrop-filter: blur(24px) !important;
     box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.25) !important;
     align-items: inherit;
     padding: 0px 10px;
@@ -2533,13 +2891,21 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     box-shadow: none !important;
 }
 
-/* Keep the toolbar in a single row on all screen sizes */
-.MuiToolbar-root {
+/* Keep the toolbar in a single row on all screen sizes.
+   :where() gives this zero specificity, so it is only a default: anything that
+   deliberately sets its own wrap - e.g. KefinTweaks' breadcrumb row, which needs the
+   toolbar to wrap so the breadcrumbs sit on a second line (and now uses !important
+   precisely because this rule used to beat it) - wins without a fight. */
+:where(.MuiToolbar-root) {
     flex-wrap: nowrap !important;
 }
 
-/* Icon tray: don't stretch the gap; wrap onto a second row instead of overflowing the bar */
-.MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
+/* Icon tray: don't stretch the gap; wrap onto a second row instead of overflowing the bar.
+   NOT applied to Jellyfin Enhanced's tray (.je-header-actions-host): the plugin measures
+   the row and collapses whatever doesn't fit into its own "More" menu, which only works
+   if the tray can use the full width in one non-wrapping line. Forcing it to wrap and
+   shrink (it ended up 240px wide) pushed most of its icons onto a hidden second row. */
+.MuiToolbar-root > .MuiBox-root:not(.je-header-actions-host):has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
     flex-grow: 0 !important;
     flex-shrink: 1 !important;
     flex-wrap: wrap !important;
@@ -2566,15 +2932,54 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     font-size: 24px !important;
 }
 
-.MuiToolbar-root .MuiIconButton-root:hover,
-.MuiToolbar-root .MuiIconButton-root:focus-visible {
-    color: var(--primary-accent-color) !important;
+.MuiToolbar-root .MuiIconButton-root {
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root .MuiIconButton-root:hover {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+/* Keyboard / TV-remote focus: an unmistakable ring, not just a tint */
+.MuiToolbar-root .MuiIconButton-root:focus-visible,
+.MuiToolbar-root .MuiButton-root:focus-visible {
+    color: var(--accent-text-color) !important;
     background-color: var(--primary-background-transparent) !important;
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}
+
+/* Top-level nav links (Movies, Shows, ...): pill hover and a tinted active state,
+   matching the pill language of the rest of the theme. The server-logo button is excluded. */
+.MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)) {
+    border-radius: 999px;
+    padding-inline: 14px;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)):hover {
+        background-color: var(--primary-background-transparent);
+    }
+}
+header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
+    background-color: var(--accent-surface);
+}
+
+/* A hairline under the bar separates it from page content without a heavy shadow */
+.MuiAppBar-root {
+    border-bottom: 1px solid var(--alt-accent-color);
 }
 
 /* Avatar / user menu button */
 .MuiToolbar-root [aria-controls="app-user-menu"] {
     border-radius: 50% !important;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root [aria-controls="app-user-menu"]:hover {
+        box-shadow: 0 0 0 2px var(--primary-accent-color);
+    }
 }
 .MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
     flex-shrink: 0 !important;
@@ -2662,17 +3067,22 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root {
 
 body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected) {
     background: var(--primary-background-transparent) !important;
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
 }
 
 body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
-    background: var(--secondary-accent-color) !important;
-    color: var(--primary-accent-color) !important;
+    background: var(--accent-surface-strong) !important;
+    color: #ffffff !important;
 }
 
 body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemIcon-root,
 body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
     color: inherit !important;
+}
+
+/* Selected item: white label on the tinted surface, accent-colored icon for flair. */
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+    color: var(--accent-text-color) !important;
 }
 
 /*
@@ -2719,64 +3129,55 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
   border-radius: 20px !important;
 }
 
-/* Bigger and centered server buttons */
-.MuiStack-root.css-11r6nok {
-    height: 3em;
+/* Bigger and centered server action buttons (Scan / Restart / Shutdown / Refresh Theme).
+   Matched structurally (the row that holds MUI's containedError buttons) instead of by
+   a generated css-hash class, which drifts on every Jellyfin rebuild - the old
+   `.css-11r6nok` rules had silently stopped matching on 12.x. Colors come from the
+   "Dashboard Server Action Buttons" rules further down. min-height (not height):
+   in a narrow content column the buttons wrap to two rows. */
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) {
+    min-height: 3em;
+    height: auto;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5em;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* Responsive behavior for small screens - 2x2 grid */
-@media (max-width: 768px) {
-    .MuiStack-root.css-11r6nok {
-        height: auto;
+/* All four buttons share one height. "Refresh Theme" is a native <button> (injected by
+   dashboard_theming.js) at a fixed 44px while the three MUI buttons are ~36px, which
+   made rows uneven whenever they wrapped. */
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+#theme-refresh-button {
+    box-sizing: border-box;
+    height: 44px !important;
+    min-height: 44px;
+    padding-block: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Phones: MUI stacks the four buttons into one tall column (and 600-900px wraps them
+   unevenly). A 2x2 grid keeps them compact and equal-width; the structural :has()
+   selector is the same one used above, so it survives Jellyfin rebuilds. */
+@media (max-width: 599.95px) {
+    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        gap: 0.5em;
-        padding: 0.5em;
-        max-width: 600px;
-        margin: 0 auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .5em;
+        width: 100%;
+        padding: 0 .25em;
     }
-
-    .MuiStack-root.css-11r6nok button {
-        height: 2.5em;
-        font-size: 0.9em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button {
+        width: 100%;
+        min-width: 0;
+        margin: 0 !important;
+        padding-inline: 8px;
+        font-size: .9em;
     }
-}
-
-/* For very small screens - single column if needed */
-@media (max-width: 400px) {
-    .MuiStack-root.css-11r6nok {
-        grid-template-columns: 1fr;
-        max-width: 280px;
-    }
-}
-
-/* Server Buttons */
-.MuiStack-root.css-11r6nok button:nth-child(1) {
-  background: rebeccapurple !important;
-  color: white !important;
-}
-
-.css-jqp64h {
-  background: rebeccapurple !important;
-  color: white !important;
-  border: none !important;
-}
-
-.MuiStack-root.css-11r6nok button:nth-child(2) {
-  background: #ff9800 !important;
-  color: white !important;
-}
-.MuiStack-root.css-11r6nok button:nth-child(3) {
-  background: #f44336 !important;
-  color: white !important;
 }
 
 /* Activity list items */
@@ -2786,7 +3187,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
 
 /* Links */
 .css-c4z1po {
-    color: var(--primary-accent-color) !important;
+    color: var(--accent-text-color) !important;
     --Link-underlineColor: var(--primary-accent-color) !important;
 }
 
@@ -2839,7 +3240,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 }
 /* Manage repository button */
 .css-cr7oyo {
-    background-color: var(--secondary-accent-color);
+    background-color: var(--primary-accent-color);
     color: var(--text-color);
     border-radius: 20px;
     font-weight: 500;
@@ -2848,7 +3249,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 
 /* Progress % for scheduled tasks */
 .MuiBox-root.css-lmbv6g {
-    color: var(--primary-accent-color);
+    color: var(--accent-text-color);
 }
 
 /* Dashboard theme update date */
@@ -2890,8 +3291,9 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 /* Dialog container */
 .MuiDialog-paper {
   border-radius: 20px !important;
-  background: var(--secondary-accent-color) !important;
-  backdrop-filter: blur(100px);
+  background: var(--accent-surface) !important;
+  backdrop-filter: blur(var(--blur)); /* was 100px - cost grows with radius and the surface is near-opaque anyway */
+  color: #ffffff;
 }
 
 /* Dialog title */
@@ -2903,7 +3305,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 /* Dialog body text */
 .MuiDialogContent-root,
 .MuiDialogContentText-root {
-  color: var(--text-color) !important;
+  color: #ffffff !important; /* dialog surface is a dark accent tint, so text is always light */
   font-weight: 500 !important;
 }
 
@@ -2914,7 +3316,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 
 /* Buttons */
 .MuiDialogActions-root .MuiButton-text {
-  color: var(--text-color) !important;
+  color: var(--accent-text-color) !important;
 }
 
 /* Destructive buttons (Restart, Shutdown, Delete, etc). Unscoped (not just

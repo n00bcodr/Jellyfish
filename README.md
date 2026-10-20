@@ -136,6 +136,9 @@ Individual users can apply the theme to their own account without affecting othe
 </p>
 
 **Indicators attached in the corner**
+
+Flush to the card corner on tablets and larger screens. On phones the theme's inset, rounded badges are used instead (corner-hugging badges are clipped by the card's rounded corner and are hard to read on narrow cards).
+
 ``` css
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/indicators.css");
 ```
@@ -171,6 +174,18 @@ Individual users can apply the theme to their own account without affecting othe
 
 ``` css
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/card_buttons.css");
+```
+
+<p align="center">
+----
+</p>
+
+**Jellyfin Enhanced add-on** (optional, if you use the [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) plugin)
+\
+Styles the plugin's header "More" menu, the active-streams panel, form-control fonts and the plugin's own CSS variables - none of which go through its Themer - and fixes the icon tray collapsing into "..." when [KefinTweaks](https://github.com/ranaldsgift/KefinTweaks) breadcrumbs are on. Import it **after** `theme.css` (and your palette).
+
+``` css
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css");
 ```
 
 <p align="center">
@@ -291,6 +306,17 @@ Streamberry Logo (inspired by Black Mirror) instead of Jellyfish Logo. Included 
 ----
 </p>
 
+<img src="./colors/swatches/liquidglass.png" alt="liquid glass" width="40%"/>
+
+**Liquid Glass** — an Apple-"Liquid Glass"-inspired palette: neutral graphite, a pearl-white accent and a soft iridescent glow, so the color comes from your artwork rather than a blue tint (change `--primary-r/g/b` in the file for a tinted variant). Besides the usual colors it makes the header, drawer, menus, dialogs, A-Z picker and buttons frosted, translucent glass with a bright edge highlight. Needs a browser with `backdrop-filter` (every current Chrome/Edge/Safari/Firefox); older engines fall back to solid panels.
+
+``` css
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/liquidglass.css");
+```
+<p align="center">
+----
+</p>
+
 <img src="./colors/swatches/lavender.png" alt="lavender" width="40%"/>
 
 ``` css
@@ -333,6 +359,41 @@ Streamberry Logo (inspired by Black Mirror) instead of Jellyfish Logo. Included 
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/watermelon.css");
 ```
 
+<p align="center">
+----
+</p>
+
+**More palettes** (no swatch image yet): `aurora`, `forest`, `jellypurple`, `midnight`
+
+``` css
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/aurora.css");
+```
+
+### Making your own palette
+
+A palette is just a handful of CSS variables - copy any file in [`colors/`](colors/) and change these:
+
+| Variable | What it is |
+|---|---|
+| `--primary-r/g/b` | The accent color as three numbers (`0..255`) |
+| `--primary-background-color` / `--secondary-background-color` | Page background / drawer, cards, dialogs (keep both **dark**) |
+| `--text-color` | Text drawn **on top of the solid accent** (Play button, active tab, unwatched count). Use `#000000` for light accents and `#ffffff` for dark ones - aim for ≥ 4.5:1 contrast |
+| `--header-background-color` | The frosted pill behind the header tabs (legacy/TV layouts) |
+
+Everything else (readable accent-colored text, tinted selected rows and dialogs, the whole Jellyfin 12 palette) is **derived automatically** from those values by `theme.css`, so a new palette stays readable without further work.
+
+### Quick tweaks
+
+Add these *after* the theme import in Custom CSS to adjust the look without editing any file:
+
+``` css
+:root {
+  --rounded-cards: 10px;   /* corner radius of cards, panels and buttons (default 15px) */
+  --blur: 8px;             /* strength of the frosted-glass blur; lower = faster on weak devices */
+  --indicator-size: 28px;  /* size of the watched / unwatched-count badges on cards */
+}
+```
+
 ## Recommended Plugins
 
 To completely replicate the look in the screenshots you'd need the below plugins installed and configured
@@ -344,6 +405,8 @@ To completely replicate the look in the screenshots you'd need the below plugins
 
 - Works for Movies and TV Shows, should work fine mostly for Music and Books, although I don't use Jellyfin for either of them
 - Works on both mobile app and web browser, known to have issues / not work on Jellyfin Media Player
+- **Jellyfin 12 layouts** (Settings → Display → Display mode): checked on 12.2 in the *Modern*/*Desktop*/*Mobile* layouts (the React app) and in the legacy *Desktop (legacy)*, *Mobile (legacy)* and **TV** layouts. The TV layout is a legacy-app layout in Jellyfin 12, so it uses the same stylesheet rules as the legacy desktop/mobile layouts, with larger A-Z letters and no blur effects (TV GPUs are weak).
+- **Screen sizes**: from ~360px phones through tablets and narrow/tiled desktop windows to 4K TVs at 200-250% scale. The A-Z picker always fits the viewport height, card badges scale with the screen, and the item page switches to a flowing title block below 1280px.
 
 
 

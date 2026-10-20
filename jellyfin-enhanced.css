@@ -1,0 +1,160 @@
+/* Jellyfish - Jellyfin Enhanced add-on (optional)
+   Styles for the Jellyfin Enhanced plugin (https://github.com/n00bcodr/Jellyfin-Enhanced) that
+   do NOT go through its "Themer": its header "More" menu, the active-streams panel, the
+   plugin's own CSS variables, form-control fonts, and the KefinTweaks-breadcrumb /
+   icon-tray compatibility fix. Import it AFTER theme.css (and your palette):
+   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css");
+   theme.css alone still works with the plugin - the Themer keeps feeding it colors, and
+   theme.css no longer forces the plugin's icon tray to wrap. */
+
+/* == Jellyfin Enhanced == */
+/* The little "active streams" count next to the header icon is drawn in the raw
+   accent color; the lightened accent-text tint keeps it readable on every palette
+   (forest/midnight/jellyflix were 4.1:1 against the dark bar). */
+#je-active-streams.je-as-active .je-as-sup {
+    color: var(--accent-text-color) !important;   /* active state only: the plugin's own error colours stay */
+}
+
+/* Jellyfin Enhanced, styled by the theme itself (no Themer needed).
+   The plugin's Themer reads a handful of Jellyfish variables and builds many panels from
+   inline styles - fine, and still supported. But the plugin ALSO exposes plain CSS
+   variables ("hooks") for its newer pieces, with its own defaults when nothing sets them.
+   Setting them here makes those pieces follow the palette on their own, so they keep
+   matching even if the Themer is disabled, fails, or a new plugin feature isn't wired
+   into it yet. Values the plugin sets inline (from the Themer) still win where present. */
+:root {
+    --je-launcher-surface: var(--header-solid-background-color);   /* the header "More" menu */
+    --je-launcher-text: #ffffff;
+    --je-as-accent: var(--accent-text-color);                      /* active-streams icon + count */
+    --je-hc-accent: var(--accent-text-color);                      /* Hidden Content */
+    --je-activity-accent: var(--accent-text-color);                /* Activity page */
+    --je-catchup-accent: var(--primary-accent-color);              /* Catch-up panel */
+    --je-catchup-panel: var(--secondary-background-color);
+    --je-catchup-secondary: var(--alt-accent-color);
+}
+
+/* The header "More" menu (shown when the tray runs out of room): same glass-pill language
+   as the theme's own menus instead of a flat grey 8px box. */
+.je-launcher-panel {
+    border-radius: var(--rounded-cards) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    background-color: var(--je-launcher-surface) !important;
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5) !important;
+}
+.je-launcher-action.emby-button {
+    border-radius: 12px !important;
+    transition: background-color .15s ease, color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .je-launcher-action.emby-button:hover:not(:disabled) {
+        background: var(--accent-surface) !important;
+        color: #ffffff;
+    }
+}
+.je-launcher-action.emby-button:focus-visible,
+.je-launcher-panel button:focus-visible {
+    outline: 2px solid var(--primary-accent-color) !important;
+    outline-offset: -2px;
+}
+.je-header-launcher[aria-expanded="true"] {
+    background: var(--primary-background-transparent) !important;
+    color: var(--accent-text-color) !important;
+}
+.je-launcher-heading h2 {
+    color: var(--accent-text-color);
+    font-weight: 700;
+}
+
+/* Buttons, inputs and selects fall back to the browser's UI font unless told otherwise;
+   the plugin's pages (Calendar, Hidden Content, Requests...) don't, so their controls
+   rendered in Arial next to Quicksand text. Scoped to the plugin's own elements. */
+[class*="je-"] :is(button, input, select, textarea),
+:is(button, input, select, textarea)[class*="je-"],
+[id^="je-"] :is(button, input, select, textarea) {
+    font-family: inherit;
+}
+
+/* Active streams panel (hard-coded near-black card in the plugin). Same surface, radius,
+   and accent as the theme's other floating panels; the 40%-white header icons were
+   too faint to read, so they are lifted to a readable level. */
+#je-active-streams-panel {
+    background-color: var(--header-solid-background-color) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    border-radius: var(--rounded-cards) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5) !important;
+    backdrop-filter: blur(var(--blur));
+}
+#je-active-streams-panel .je-as-panel-title {
+    color: var(--accent-text-color) !important;
+    font-weight: 700;
+}
+#je-active-streams-panel .je-as-panel-header button {
+    color: rgba(255, 255, 255, .78) !important;
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    #je-active-streams-panel .je-as-panel-header button:hover {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+#je-active-streams-panel .je-as-card {
+    background-color: var(--alt-accent-color) !important;
+    border-color: var(--alt-accent-color) !important;
+    border-radius: 14px !important;
+}
+#je-active-streams-panel .je-as-user,
+#je-active-streams-panel .je-as-panel-footer {
+    color: rgba(255, 255, 255, .62) !important;
+}
+#je-active-streams-panel .je-as-broadcast-input,
+#je-active-streams-panel .je-as-broadcast-textarea,
+#je-active-streams-panel .je-as-broadcast-timeout-input {
+    border-radius: 10px !important;
+}
+#je-active-streams-panel .je-as-broadcast-input:focus,
+#je-active-streams-panel .je-as-broadcast-textarea:focus,
+#je-active-streams-panel .je-as-broadcast-timeout-input:focus {
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: 0;
+}
+#je-active-streams-panel .je-as-broadcast-send {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 999px !important;
+    font-weight: 700;
+}
+#je-active-streams-panel .je-as-broadcast-cancel {
+    border-radius: 999px !important;
+}
+
+/* Jellyfin Enhanced: let the plugin size its own tray, right-aligned like the native one. */
+.MuiToolbar-root > .je-header-actions-host {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+/* KefinTweaks breadcrumbs + Jellyfin Enhanced icons.
+   KefinTweaks inserts its breadcrumb row INTO the toolbar as a full-width flex item and
+   makes the toolbar wrap. Jellyfin Enhanced sizes its icon tray by subtracting every
+   in-flow sibling from the row width - so the 100%-wide breadcrumb row leaves it ~0px,
+   and it folds ALL its icons into the "..." menu (this happens even without a theme).
+   The plugin ignores absolutely positioned siblings, so the breadcrumb row is pinned to
+   the bottom of the bar instead: the icons get the whole row back, and the bar reserves
+   a strip below for the breadcrumbs. */
+header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper) {
+    position: relative;
+    padding-bottom: 30px;
+}
+header > .MuiToolbar-root > .kefinTweaks-breadcrumbs-wrapper,
+header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
+    position: absolute !important;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    width: auto !important;
+    box-sizing: border-box;
+    padding-inline: inherit;
+}
