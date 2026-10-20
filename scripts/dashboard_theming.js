@@ -199,8 +199,10 @@
 
     // Reuse the classes of the existing Login Disclaimer field (label, input box, textarea,
     // helper text) so the panel matches it without hard-coding generated class names.
-    const labelClass = parentBlock.querySelector('label')?.className ||
-      "MuiFormLabel-root MuiInputLabel-root MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-filled MuiFormLabel-colorPrimary MuiFormLabel-filled";
+    // The panel always has text in it, so its label must be the small "shrunk" one even if the
+    // Login Disclaimer field it is copied from is empty (otherwise the label overlaps the text).
+    const labelClass = (parentBlock.querySelector('label')?.className ||
+      "MuiFormLabel-root MuiInputLabel-root MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-filled MuiFormLabel-colorPrimary MuiFormLabel-filled") + " MuiInputLabel-shrink MuiFormLabel-filled";
     const boxClass = loginDisclaimer.closest('.MuiInputBase-root')?.className ||
       "MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiFilledInput-multiline MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline";
     const textareaClass = loginDisclaimer.className;
@@ -211,7 +213,7 @@
     panel.id = PANEL_ID;
     panel.className = parentBlock.className;
     panel.innerHTML = `
-      <label class="${labelClass}">
+      <label class="${labelClass}" data-shrink="true" style="transform: translate(12px, 7px) scale(0.75); transform-origin: top left;">
         Dashboard Theme CSS URLs (one per line)
       </label>
       <div class="${boxClass}">
