@@ -44,19 +44,27 @@
     --glass-shadow: 0 18px 48px rgba(0, 0, 0, .45);
     --header-solid-background-color: rgba(30, 32, 38, .8);
     /* Ambient colour for the glass to refract (Jellyfin 12 paints this behind every page) */
-    --jf-palette-background-defaultImage:
+    /* The ambient glow. Jellyfin would paint it on <html>/page backgrounds (repeats down
+       long pages, and mobile browsers ignore background-attachment: fixed), so Jellyfin's own
+       variable is turned off and the glow is drawn once on a fixed layer instead - see
+       html::before below. */
+    --jf-palette-background-defaultImage: none;
+    --lg-glow:
         radial-gradient(55% 45% at 8% -5%, rgba(255, 140, 170, .30), transparent 70%),
         radial-gradient(50% 45% at 96% 104%, rgba(150, 110, 255, .32), transparent 70%),
         radial-gradient(40% 35% at 88% 6%, rgba(70, 215, 200, .20), transparent 70%),
         radial-gradient(45% 35% at 4% 98%, rgba(255, 185, 120, .20), transparent 70%);
 }
 
-/* Jellyfin paints the ambient glow on <html>, which repeats down long pages (a visible
-   seam when you scroll). Pin it to the window: one glow, never tiled. */
-html {
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-    background-size: 100% 100% !important;
+/* One glow, never tiled, on every device: a fixed-position layer behind everything.
+   (position: fixed works in all mobile browsers; background-attachment: fixed does not.) */
+html::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--lg-glow);
 }
 
 /* ~~~~~~ Glass surfaces ~~~~~~ */
