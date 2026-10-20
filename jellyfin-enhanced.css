@@ -146,6 +146,10 @@
    a strip below for the breadcrumbs. */
 header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper) {
     position: relative;
+}
+/* Only reserve the strip while breadcrumbs are shown: KefinTweaks keeps the (hidden,
+   inline display:none) wrapper in the bar on pages without breadcrumbs, e.g. a movie. */
+header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper:not([style*="display: none"]):not([style*="display:none"])) {
     padding-bottom: 30px;
 }
 header > .MuiToolbar-root > .kefinTweaks-breadcrumbs-wrapper,
