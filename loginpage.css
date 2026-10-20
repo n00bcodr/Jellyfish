@@ -14,7 +14,6 @@
   margin: 0 auto !important;
   background: rgba(0, 0, 0, 0.35) !important;
   width: min(45em, 94%) !important;
-  box-sizing: border-box !important; /* padding is inside the width, or phones overflow the screen */
   border-radius: 24px !important;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
@@ -387,6 +386,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
       max-width: 90% !important;
   }
   #loginPage .padded-left.padded-right.padded-bottom-page {
+      box-sizing: border-box !important; /* padding inside the width, or phones overflow the screen */
       width: 95% !important;
       padding: 1em !important; /* Reduce padding on small screens */
   }
