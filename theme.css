@@ -2887,22 +2887,6 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     outline-offset: -2px;
 }
 
-/* Top-level nav links (Movies, Shows, ...): pill hover and a tinted active state,
-   matching the pill language of the rest of the theme. The server-logo button is excluded. */
-.MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)) {
-    border-radius: 999px;
-    padding-inline: 14px;
-    transition: color .15s ease, background-color .15s ease;
-}
-@media (hover: hover) and (pointer: fine) {
-    .MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)):hover {
-        background-color: var(--primary-background-transparent);
-    }
-}
-header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
-    background-color: var(--accent-surface);
-}
-
 /* A hairline under the bar separates it from page content without a heavy shadow */
 .MuiAppBar-root {
     border-bottom: 1px solid var(--alt-accent-color);
