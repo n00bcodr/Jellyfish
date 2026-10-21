@@ -22,8 +22,65 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 
 
 
+<a id="highlights"></a>
+
+## ✨ Highlights
+
+<p align="center">
+  <img src="screenshots/palettes.gif" alt="Jellyfish palettes cycling" width="85%"/>
+</p>
+
+- **Jellyfin 10.11 and 12** - the Modern (React) layout, plus the legacy desktop, mobile and TV layouts, from small phones to 4K TVs.
+- **16 palettes** (including the frosted **Liquid Glass**) with readable text on every one, and an easy [way to make your own](#making-your-own-palette).
+- **Fast** - heavy blur effects are kept off the large panels, so scrolling stays smooth on modest hardware; [`lite.css`](#lite-mode) goes further for TVs and old tablets.
+- **Styled A-Z picker, toolbar buttons and badges** that fit any screen, and a **floating Save button** on settings pages.
+- **Works with** [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced), [KefinTweaks](https://github.com/ranaldsgift/KefinTweaks) and the Media Bar plugin, with an optional [add-on stylesheet](#jellyfin-enhanced-add-on) for the plugin's own panels.
+
+<a id="gallery"></a>
+
+## 🖼️ Gallery
+
+<table align="center">
+  <tr>
+    <th style="text-align:center">Home<sup><a href="https://github.com/IAmParadox27/jellyfin-plugin-media-bar/" target="_blank" style="text-decoration: none;">**</a></sup></th>
+    <th style="text-align:center">Library, A-Z picker and badges</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/overview-home.jpg" width="1000"/></td>
+    <td><img src="screenshots/overview-library.jpg" width="1000"/></td>
+  </tr>
+  <tr>
+    <th style="text-align:center">Movie</th>
+    <th style="text-align:center">Series</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/overview-movie.jpg" width="1000"/></td>
+    <td><img src="screenshots/overview-series.jpg" width="1000"/></td>
+  </tr>
+  <tr>
+    <th style="text-align:center">Playlist</th>
+    <th style="text-align:center">Settings with the floating Save button</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/overview-playlist.jpg" width="1000"/></td>
+    <td><img src="screenshots/floating-save.gif" width="1000"/></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="screenshots/mobile-home.jpg" width="24%"/>
+  <img src="screenshots/mobile-movie.jpg" width="24%"/>
+  <img src="screenshots/mobile-library.jpg" width="24%"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/library-hover.gif" alt="Hover states: navigation, cards and the A-Z picker" width="80%"/>
+</p>
+
 ## 📑 Table of Contents
 
+  - [Highlights](#highlights)
+  - [Gallery](#gallery)
   - [Installation](#installation)
     - [Globally for all users](#globally-for-all-users)
     - [User/Device-Specific Theme (Display Settings)](#userdevice-specific-theme-display-settings)
@@ -125,8 +182,8 @@ Individual users can apply the theme to their own account without affecting othe
     <th style="text-align:center">With</th>
   </tr>
   <tr>
-    <td><img src="screenshots\progressbar_without.png" width="300"/></td>
-    <td><img src="screenshots\progressbar_with.png" width="300"/></td>
+    <td><img src="screenshots/progressbar_without.png" width="300"/></td>
+    <td><img src="screenshots/progressbar_with.png" width="300"/></td>
   </tr>
 </table>
 
@@ -148,8 +205,8 @@ Flush to the card corner on tablets and larger screens. On phones the theme's in
     <th style="text-align:center">With</th>
   </tr>
   <tr>
-    <td><img src="screenshots\checkbox_without.png" width="250"/></td>
-    <td><img src="screenshots\checkbox_with.png" width="250"/></td>
+    <td><img src="screenshots/checkbox_without.png" width="250"/></td>
+    <td><img src="screenshots/checkbox_with.png" width="250"/></td>
   </tr>
 </table>
 
@@ -180,6 +237,20 @@ Flush to the card corner on tablets and larger screens. On phones the theme's in
 ----
 </p>
 
+<a id="lite-mode"></a>
+**Lite mode** (optional, for TVs, old tablets and Raspberry-Pi-class clients)
+\
+Turns off the costly effects: smaller blur radius, no backdrop blur on large panels, small fixed-size badges, no entrance animations or hover lifts and no smooth scrolling. Import it **after** `theme.css` and your palette.
+
+``` css
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/lite.css");
+```
+
+<p align="center">
+----
+</p>
+
+<a id="jellyfin-enhanced-add-on"></a>
 **Jellyfin Enhanced add-on** (optional, if you use the [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) plugin)
 \
 Styles the plugin's header "More" menu, the active-streams panel, form-control fonts and the plugin's own CSS variables - none of which go through its Themer - and fixes the icon tray collapsing into "..." when [KefinTweaks](https://github.com/ranaldsgift/KefinTweaks) breadcrumbs are on. Import it **after** `theme.css` (and your palette).
@@ -195,7 +266,7 @@ Styles the plugin's header "More" menu, the active-streams panel, form-control f
 **Text Instead of Icons**
 \
 \
-In item details page, show text for Play, Trailer, Mark as watched etc.
+In the item details page (desktop layout), show text for Play, Trailer, Mark as watched, Add to Watchlist and more. Buttons added by Jellyfin Enhanced and KefinTweaks (Hide, Report issue, Spoiler blur, Watchlist) are labelled the same way.
 
 ``` css
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/icontext.css");
@@ -206,8 +277,8 @@ In item details page, show text for Play, Trailer, Mark as watched etc.
     <th style="text-align:center">With</th>
   </tr>
   <tr>
-    <td><img src="screenshots\icontext_without.png" width="250"/></td>
-    <td><img src="screenshots\icontext_with.png" width="400"/></td>
+    <td><img src="screenshots/icontext_without.png" width="250"/></td>
+    <td><img src="screenshots/icontext_with.png" width="400"/></td>
   </tr>
 </table>
 
@@ -219,7 +290,7 @@ In item details page, show text for Play, Trailer, Mark as watched etc.
 
 **Coloured Parental Ratings**
 
-<img src="screenshots\ratings.png" width="500"/>
+<img src="screenshots/ratings.png" width="500"/>
 
 > [!NOTE]
 > Only works with a custom [javascript](scripts/rating.js)
