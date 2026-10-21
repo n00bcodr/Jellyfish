@@ -40,30 +40,22 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 
 ## 🖼️ Gallery
 
-<table align="center">
+<table>
   <tr>
-    <th style="text-align:center">Home<sup><a href="https://github.com/IAmParadox27/jellyfin-plugin-media-bar/" target="_blank" style="text-decoration: none;">**</a></sup></th>
-    <th style="text-align:center">Library, A-Z picker and badges</th>
+    <td width="50%" align="center"><img src="screenshots/overview-home.jpg" width="100%"/><br/><sub>Home, with the <a href="https://github.com/IAmParadox27/jellyfin-plugin-media-bar/">Media Bar</a> plugin</sub></td>
+    <td width="50%" align="center"><img src="screenshots/overview-library.jpg" width="100%"/><br/><sub>Library with the A-Z picker and badges</sub></td>
   </tr>
   <tr>
-    <td><img src="screenshots/overview-home.jpg" width="1000"/></td>
-    <td><img src="screenshots/overview-library.jpg" width="1000"/></td>
+    <td width="50%" align="center"><img src="screenshots/overview-movie.jpg" width="100%"/><br/><sub>Movie</sub></td>
+    <td width="50%" align="center"><img src="screenshots/overview-series.jpg" width="100%"/><br/><sub>Series</sub></td>
   </tr>
   <tr>
-    <th style="text-align:center">Movie</th>
-    <th style="text-align:center">Series</th>
+    <td width="50%" align="center"><img src="screenshots/overview-playlist.jpg" width="100%"/><br/><sub>Playlist</sub></td>
+    <td width="50%" align="center"><img src="screenshots/overview-album.jpg" width="100%"/><br/><sub>Album</sub></td>
   </tr>
   <tr>
-    <td><img src="screenshots/overview-movie.jpg" width="1000"/></td>
-    <td><img src="screenshots/overview-series.jpg" width="1000"/></td>
-  </tr>
-  <tr>
-    <th style="text-align:center">Playlist</th>
-    <th style="text-align:center">Settings with the floating Save button</th>
-  </tr>
-  <tr>
-    <td><img src="screenshots/overview-playlist.jpg" width="1000"/></td>
-    <td><img src="screenshots/floating-save.gif" width="1000"/></td>
+    <td width="50%" align="center"><img src="screenshots/overview-queue.jpg" width="100%"/><br/><sub>Now playing / queue</sub></td>
+    <td width="50%" align="center"><img src="screenshots/floating-save.gif" width="100%"/><br/><sub>Settings with the floating Save button</sub></td>
   </tr>
 </table>
 
@@ -71,10 +63,12 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
   <img src="screenshots/mobile-home.jpg" width="24%"/>
   <img src="screenshots/mobile-movie.jpg" width="24%"/>
   <img src="screenshots/mobile-library.jpg" width="24%"/>
+  <br/><sub>On a phone</sub>
 </p>
 
 <p align="center">
   <img src="screenshots/library-hover.gif" alt="Hover states: navigation, cards and the A-Z picker" width="80%"/>
+  <br/><sub>Hover states: navigation, cards and the A-Z picker</sub>
 </p>
 
 ## 📑 Table of Contents
@@ -322,123 +316,46 @@ Streamberry Logo (inspired by Black Mirror) instead of Jellyfish Logo. Included 
 ---
 ## 🎨 Colors
 
-<img src="./colors/swatches/banana.png" alt="banana" width="40%"/>
+Pick a palette and import it **after** `theme.css`. Jelly Blue is built into `theme.css`, so it needs no extra import.
 
 ``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/banana.css");
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/<name>.css");
 ```
 
-<p align="center">
-----
-</p>
+<table>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/aurora.png" alt="Aurora" width="100%"/><br/><code>aurora.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/banana.png" alt="Banana" width="100%"/><br/><code>banana.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/coal.png" alt="Coal" width="100%"/><br/><code>coal.css</code></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/coral.png" alt="Coral" width="100%"/><br/><code>coral.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/forest.png" alt="Forest" width="100%"/><br/><code>forest.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/grass.png" alt="Grass" width="100%"/><br/><code>grass.css</code></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/jellyblue.png" alt="Jelly Blue" width="100%"/><br/><code>jellyblue.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/jellyflix.png" alt="Jellyflix" width="100%"/><br/><code>jellyflix.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/jellypurple.png" alt="Jelly Purple" width="100%"/><br/><code>jellypurple.css</code></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/lavender.png" alt="Lavender" width="100%"/><br/><code>lavender.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/liquidglass.png" alt="Liquid Glass" width="100%"/><br/><code>liquidglass.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/midnight.png" alt="Midnight" width="100%"/><br/><code>midnight.css</code></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/mint.png" alt="Mint" width="100%"/><br/><code>mint.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/ocean.png" alt="Ocean" width="100%"/><br/><code>ocean.css</code></td>
+    <td width="33%" align="center"><img src="colors/swatches/peach.png" alt="Peach" width="100%"/><br/><code>peach.css</code></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="colors/swatches/watermelon.png" alt="Watermelon" width="100%"/><br/><code>watermelon.css</code></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
-<img src="./colors/swatches/coal.png" alt="coal" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/coal.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/coral.png" alt="coral" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/coral.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/grass.png" alt="grass" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/grass.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/jellyblue.png" alt="jellyblue" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/jellyblue.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/jellyflix.png" alt="jellyflix" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/jellyflix.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/liquidglass.png" alt="liquid glass" width="40%"/>
-
-**Liquid Glass** — an Apple-"Liquid Glass"-inspired palette: neutral graphite, a pearl-white accent and a soft iridescent glow, so the color comes from your artwork rather than a blue tint (change `--primary-r/g/b` in the file for a tinted variant). Besides the usual colors it makes the header, drawer, menus, dialogs, A-Z picker and buttons frosted, translucent glass with a bright edge highlight. Needs a browser with `backdrop-filter` (every current Chrome/Edge/Safari/Firefox); older engines fall back to solid panels.
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/liquidglass.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/lavender.png" alt="lavender" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/lavender.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/mint.png" alt="mint" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/mint.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/ocean.png" alt="ocean" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/ocean.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/peach.png" alt="peach" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/peach.css");
-```
-<p align="center">
-----
-</p>
-
-<img src="./colors/swatches/watermelon.png" alt="watermelon" width="40%"/>
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/watermelon.css");
-```
-
-<p align="center">
-----
-</p>
-
-**More palettes** (no swatch image yet): `aurora`, `forest`, `jellypurple`, `midnight`
-
-``` css
-@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/aurora.css");
-```
+**Liquid Glass** is an Apple-"Liquid Glass"-inspired palette: neutral graphite, a pearl-white accent and a soft iridescent glow, so the color comes from your artwork rather than a blue tint (change `--primary-r/g/b` in the file for a tinted variant). Besides the usual colors it makes the header, drawer, menus, dialogs, A-Z picker and buttons frosted, translucent glass with a bright edge highlight. It needs a browser with `backdrop-filter` (every current Chrome, Edge, Safari and Firefox); older engines fall back to solid panels.
 
 ### Making your own palette
 
