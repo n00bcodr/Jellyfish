@@ -63,17 +63,12 @@ html::before {
 }
 
 /* ~~~~~~ Glass surfaces ~~~~~~ */
-.MuiAppBar-root,
-.MuiAppBar-root.MuiAppBar-colorTransparent,
-.MuiAppBar-root.MuiAppBar-colorDefault {
-    background-image: var(--glass-sheen) !important;
-    backdrop-filter: blur(var(--blur)) saturate(1.7) !important;
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .06) !important;
-}
-/* Edge line under the bar. Not on the dashboard, where the bar is transparent and starts
-   after the sidebar. */
-body:not(.dashboardDocument) .MuiAppBar-root {
-    border-bottom: 1px solid var(--glass-edge);
+/* The floating top bar is drawn by theme.css from these tokens. */
+:root {
+    --bar-fill: rgba(30, 32, 38, .5);
+    --bar-sheen: var(--glass-sheen);
+    --bar-edge: var(--glass-edge);
+    --bar-shadow: var(--glass-shine), 0 14px 36px rgba(0, 0, 0, .4);
 }
 /* Dashboard bar: no inset hairline or glass layer. */
 body.dashboardDocument .MuiAppBar-root {

@@ -3013,6 +3013,66 @@ body:not(.dashboardDocument) .MuiAppBar-root {
     border-bottom: 1px solid var(--alt-accent-color);
 }
 
+/* Floating glass bar (modern layout, not the dashboard).
+   The AppBar itself becomes a transparent, full-width wrapper and each toolbar row is
+   drawn as an inset, rounded pane of frosted glass, so the artwork shows around and through
+   it. The fill, edge and shadow come from the palette (surface + accent), so every colour
+   file gets a matching bar; a palette can still restyle it through the --bar-* tokens.
+   Rows keep their original total height (8px gap + 56px bar), so page content is not pushed. */
+:root {
+    --bar-fill: color-mix(in srgb, var(--secondary-background-color) 66%, rgb(var(--primary-r), var(--primary-g), var(--primary-b)) 10%);
+    --bar-sheen: linear-gradient(135deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 60%);
+    --bar-edge: rgba(255, 255, 255, .14);
+    --bar-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 12px 30px rgba(0, 0, 0, .4);
+    --bar-radius: 20px;
+}
+body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+    background: transparent !important;
+    border-bottom: 0;
+    padding: 8px 12px 0;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root {
+    pointer-events: auto;
+    min-height: 56px;
+    height: 56px;
+    border-radius: var(--bar-radius);
+    background: var(--bar-sheen), var(--bar-fill);
+    border: 1px solid var(--bar-edge);
+    box-shadow: var(--bar-shadow);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(1.6);
+    backdrop-filter: blur(var(--blur)) saturate(1.6);
+    padding-inline: 10px;
+}
+/* The second row (library title, filters, breadcrumbs) is a slimmer pane under the bar */
+body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root ~ .MuiToolbar-root {
+    margin-top: 6px;
+    height: auto;
+    min-height: 44px;
+}
+/* Tabs: pill-shaped, the current one a solid accent chip */
+body:not(.dashboardDocument) .MuiToolbar-root > .MuiStack-root > :is(a, button) {
+    height: 40px;
+    align-self: center;
+    border-radius: 12px;
+}
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
+    background-color: var(--primary-accent-color);
+    box-shadow: 0 4px 16px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .4);
+}
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary,
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary :is(svg, span) {
+    color: var(--text-color) !important;
+    fill: currentColor;
+}
+@media (max-width: 600px) {
+    :root { --bar-radius: 16px; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+    body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root { background: var(--header-solid-background-color); }
+}
+
 /* Avatar / user menu button */
 .MuiToolbar-root [aria-controls="app-user-menu"] {
     border-radius: 50% !important;
