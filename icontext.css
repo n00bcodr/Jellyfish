@@ -1,31 +1,11 @@
-.layout-desktop .material-icons.detailButton-icon.shuffle,
-.layout-desktop .material-icons.detailButton-icon.check,
-.layout-desktop .material-icons.detailButton-icon.favorite,
-.layout-desktop .material-icons.detailButton-icon.more_vert,
-.layout-desktop .material-icons.detailButton-icon.replay,
-.layout-desktop .material-icons.detailButton-icon.theaters
-{
+/* Text labels instead of icons on the item details buttons (desktop layout).
+   Every button except Play shows its title - Trailer, Watched, Add to favourites, Split, More
+   and the ones added by plugins (Jellyfin Enhanced: Hide, Report issue, Spoiler blur;
+   KefinTweaks: Watchlist). Play keeps its icon. */
+.layout-desktop .mainDetailButtons .detailButton:not(.btnPlay) .detailButton-icon {
     display: none;
 }
-/* Buttons added by Jellyfin Enhanced / KefinTweaks: watchlist, hide, report issue,
-   spoiler blur. Their icon names change with state, so the whole icon is hidden and the
-   button's title is shown instead. */
-.layout-desktop :is(.watchlist-icon, .je-detail-hide-btn, .jellyseerr-report-issue-icon, .jellyseerr-report-unavailable-icon, .je-spoiler-blur-btn) .detailButton-icon
-{
-    display: none;
-}
-.layout-desktop .btnShuffle::after,
-.layout-desktop .btnMoreCommands::after,
-.layout-desktop .btnPlayTrailer::after,
-.layout-desktop .btnPlaystate::after,
-.layout-desktop .btnUserRating::after,
-.layout-desktop .btntheaters::after,
-.layout-desktop .watchlist-icon::after,
-.layout-desktop .je-detail-hide-btn::after,
-.layout-desktop .jellyseerr-report-issue-icon::after,
-.layout-desktop .jellyseerr-report-unavailable-icon::after,
-.layout-desktop .je-spoiler-blur-btn::after
-{
+.layout-desktop .mainDetailButtons .detailButton:not(.btnPlay)::after {
     content: attr(title);
 }
 

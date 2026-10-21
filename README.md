@@ -271,8 +271,8 @@ In the item details page (desktop layout), show text for Play, Trailer, Mark as 
     <th style="text-align:center">With</th>
   </tr>
   <tr>
-    <td><img src="screenshots/icontext_without.png" width="250"/></td>
-    <td><img src="screenshots/icontext_with.png" width="400"/></td>
+    <td><img src="screenshots/icontext_without.png" width="100%"/></td>
+    <td><img src="screenshots/icontext_with.png" width="100%"/></td>
   </tr>
 </table>
 
