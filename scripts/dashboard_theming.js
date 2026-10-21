@@ -187,6 +187,21 @@
     return button;
   }
 
+  // Accepts one entry per line, either a plain URL or a CSS import such as
+  //   @import url("https://example.com/theme.css");   @import "https://example.com/theme.css";
+  // so lines can be pasted straight from the Custom CSS box. Blank lines and comments are skipped.
+  function parseThemeUrls(text) {
+    const urls = [];
+    for (const raw of text.split('\n')) {
+      const line = raw.trim();
+      if (!line || line.startsWith('/*') || line.startsWith('//')) continue;
+      const imports = [...line.matchAll(/@import\s+(?:url\(\s*)?(["']?)([^"')\s;]+)\1\s*\)?/gi)];
+      if (imports.length) imports.forEach(m => urls.push(m[2]));
+      else urls.push(line.replace(/;$/, ''));
+    }
+    return urls;
+  }
+
   // Add editable theme list panel to branding page
   function injectThemeListPanel() {
     if (!isBrandingPage() || document.getElementById(PANEL_ID)) return;
@@ -214,13 +229,13 @@
     panel.className = parentBlock.className;
     panel.innerHTML = `
       <label class="${labelClass}" data-shrink="true" style="transform: translate(12px, 7px) scale(0.75); transform-origin: top left;">
-        Dashboard Theme CSS URLs (one per line)
+        Dashboard Theme CSS (one URL or @import per line)
       </label>
       <div class="${boxClass}">
         <textarea id="theme-urls-textarea" class="${textareaClass}" style="height: 120px; padding-top: 28px;">${themeUrls.join("\n")}</textarea>
       </div>
       <p class="${helperClass}">
-        Edit the dashboard theme CSS URLs above (one per line) and click "Save & Apply" to use your custom themes. Only applicable for dashboard pages.
+        Enter one CSS URL or @import rule per line above, then click "Save & Apply" to use your custom themes. Only applicable for dashboard pages.
       </p>
     `;
 
@@ -232,10 +247,7 @@
     const saveButton = createJellyfinButton('Save & Apply', true, 'save');
     saveButton.onclick = () => {
       const textarea = document.getElementById('theme-urls-textarea');
-      const urls = textarea.value
-        .split('\n')
-        .map(url => url.trim())
-        .filter(url => url.length > 0);
+      const urls = parseThemeUrls(textarea.value);
 
       if (urls.length === 0) {
         showNotification('Please enter at least one theme URL.');
