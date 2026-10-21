@@ -291,11 +291,9 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 
 /* == Accent Color for Hover Effects (Fine Pointer Devices) == */
 /* Applies accent color on hover for icon buttons, specifically for mouse users. */
-@media (any-hover: hover) {
-    .paper-icon-button-light:hover:not(:disabled) { /* Exclude disabled buttons */
-        color: var(--primary-accent-color) !important;
-        background-color: transparent !important;
-    }
+.paper-icon-button-light:hover:not(:disabled) { /* Exclude disabled buttons */
+    color: var(--primary-accent-color) !important;
+    background-color: transparent !important;
 }
 
 .paper-icon-button-light:active:not(:disabled) { /* Active state for icon buttons */
@@ -1123,12 +1121,10 @@ div.card-hoverable.squareCard.card {
     position: relative;
     transition: translate .18s ease;
 }
-@media (any-hover: hover) {
-    div.card-withuserdata.card-hoverable.card:hover,
-    div.groupedCard.card-hoverable.overflowSquareCard.card:hover,
-    div.card-hoverable.squareCard.card:hover {
-        translate: 0 -4px;
-    }
+div.card-withuserdata.card-hoverable.card:hover,
+div.groupedCard.card-hoverable.overflowSquareCard.card:hover,
+div.card-hoverable.squareCard.card:hover {
+    translate: 0 -4px;
 }
 
 /* == Home Library Button Hover Effects == */
@@ -1290,12 +1286,10 @@ div.card-hoverable.squareCard.card {
     box-shadow: 0 4px 14px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .30);
     transition: box-shadow .2s ease, transform .2s ease, filter .15s ease;
 }
-@media (any-hover: hover) {
-    .MuiToolbar-root .MuiButton-contained:not(.MuiButtonGroup-grouped):hover {
-        filter: brightness(1.12);
-        box-shadow: 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
-        transform: translateY(-1px);
-    }
+.MuiToolbar-root .MuiButton-contained:not(.MuiButtonGroup-grouped):hover {
+    filter: brightness(1.12);
+    box-shadow: 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
+    transform: translateY(-1px);
 }
 .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:first-of-type {
     border-radius: 999px 0 0 999px;
@@ -1308,10 +1302,8 @@ div.card-hoverable.squareCard.card {
 .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:only-of-type {
     border-radius: 999px;
 }
-@media (any-hover: hover) {
-    .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:hover {
-        filter: brightness(1.12);
-    }
+.MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:hover {
+    filter: brightness(1.12);
 }
 .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:focus-visible {
     outline: 2px solid var(--accent-text-color);
@@ -1329,11 +1321,9 @@ div.card-hoverable.squareCard.card {
     min-width: 40px;
     transition: background-color .15s ease, color .15s ease;
 }
-@media (any-hover: hover) {
-    .MuiToolbar-root .MuiButtonGroup-text .MuiButton-root:hover:not(.Mui-disabled) {
-        background-color: var(--primary-background-transparent);
-        color: var(--accent-text-color);
-    }
+.MuiToolbar-root .MuiButtonGroup-text .MuiButton-root:hover:not(.Mui-disabled) {
+    background-color: var(--primary-background-transparent);
+    color: var(--accent-text-color);
 }
 
 /* == Library toolbar buttons, legacy markup (TV, desktop-legacy, mobile-legacy) ==
@@ -1372,18 +1362,16 @@ div.card-hoverable.squareCard.card {
     color: var(--text-color) !important;
     box-shadow: 0 0 0 3px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45) !important;
 }
-@media (any-hover: hover) {
-    .btnShuffle:hover,
-    .btnPreviousPage:hover,
-    .btnNextPage:hover,
-    .btnSelectView:hover,
-    .btnSort:hover,
-    .btnFilter:hover {
-        background-color: var(--primary-background-transparent) !important;
-    }
-    .btnPlayAll:hover {
-        filter: brightness(1.12);
-    }
+.btnShuffle:hover,
+.btnPreviousPage:hover,
+.btnNextPage:hover,
+.btnSelectView:hover,
+.btnSort:hover,
+.btnFilter:hover {
+    background-color: var(--primary-background-transparent) !important;
+}
+.btnPlayAll:hover {
+    filter: brightness(1.12);
 }
 
 /* A-Z picker: fit the viewport height at ANY width (otherwise the bottom letters,
@@ -1448,13 +1436,11 @@ div.card-hoverable.squareCard.card {
     margin: 1px 0 !important;
     transition: color .15s ease, background-color .15s ease, transform .15s ease;
 }
-@media (any-hover: hover) {
-    .alphaPicker-fixed-right .MuiToggleButton-root:hover {
-        color: #fff;
-        font-weight: 800;
-        background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent);
-        transform: scale(1.12);
-    }
+.alphaPicker-fixed-right .MuiToggleButton-root:hover {
+    color: #fff;
+    font-weight: 800;
+    background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent);
+    transform: scale(1.12);
 }
 /* Touch has no hover: give the pressed / keyboard-focused letter the same feedback. */
 .alphaPicker-fixed-right .MuiToggleButton-root:active,
@@ -1495,12 +1481,10 @@ div.card-hoverable.squareCard.card {
     min-height: 0;
     border-radius: 999px !important;
 }
-@media (any-hover: hover) {
-    .alphaPickerButton:hover {
-        color: #fff !important;
-        font-weight: 800;
-        background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent) !important;
-    }
+.alphaPickerButton:hover {
+    color: #fff !important;
+    font-weight: 800;
+    background-color: color-mix(in srgb, var(--primary-accent-color) 38%, transparent) !important;
 }
 .alphaPickerButton:active {
     color: #fff !important;
@@ -2577,11 +2561,9 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .guideVerticalScroller .programCell-active {
     background: var(--accent-surface) !important;
 }
-@media (any-hover: hover) {
-    .guideVerticalScroller .programCell-active:hover {
-        background: var(--accent-surface-strong) !important;
-        box-shadow: inset 0 0 0 1px var(--primary-accent-color);
-    }
+.guideVerticalScroller .programCell-active:hover {
+    background: var(--accent-surface-strong) !important;
+    box-shadow: inset 0 0 0 1px var(--primary-accent-color);
 }
 .programCell:focus-visible {
     box-shadow: inset 0 0 0 2px var(--primary-accent-color);
@@ -3046,12 +3028,10 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     border-radius: 50%;
     transition: color .15s ease, background-color .15s ease;
 }
-@media (any-hover: hover) {
-    .MuiToolbar-root .MuiIconButton-root:hover {
-        color: #ffffff !important;
-        background-color: var(--accent-surface-strong) !important;
-        box-shadow: inset 0 0 0 1px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
-    }
+.MuiToolbar-root .MuiIconButton-root:hover {
+    color: #ffffff !important;
+    background-color: var(--accent-surface-strong) !important;
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
 }
 /* Keyboard / TV-remote focus: an unmistakable ring, not just a tint */
 .MuiToolbar-root .MuiIconButton-root:focus-visible,
@@ -3069,10 +3049,8 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     border-radius: 10px;
     transition: color .15s ease, background-color .15s ease;
 }
-@media (any-hover: hover) {
-    .MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)):hover {
-        background-color: var(--primary-background-transparent);
-    }
+.MuiToolbar-root .MuiButton-text:not(:has(.MuiButton-startIcon img)):hover {
+    background-color: var(--primary-background-transparent);
 }
 header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
     background-color: var(--accent-surface);
@@ -3170,13 +3148,11 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
 .MuiToolbar-root [aria-controls="app-user-menu"] {
     border-radius: 50% !important;
 }
-@media (any-hover: hover) {
-    /* Drawn inside the button (negative offset): the avatar button is flush with the edge
-       of the bar, so an outer ring would be clipped. */
-    .MuiToolbar-root [aria-controls="app-user-menu"]:hover {
-        outline: 2px solid var(--primary-accent-color);
-        outline-offset: -2px;
-    }
+/* Drawn inside the button (negative offset): the avatar button is flush with the edge
+   of the bar, so an outer ring would be clipped. */
+.MuiToolbar-root [aria-controls="app-user-menu"]:hover {
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
 }
 
 /* User menu and other MUI popover rows: inset, rounded rows with a clear accent hover
@@ -3186,10 +3162,8 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     border-radius: 10px;
     transition: background-color .15s ease;
 }
-@media (any-hover: hover) {
-    .MuiMenu-paper .MuiMenuItem-root:hover {
-        background-color: var(--accent-surface-strong) !important;
-    }
+.MuiMenu-paper .MuiMenuItem-root:hover {
+    background-color: var(--accent-surface-strong) !important;
 }
 .MuiMenu-paper .MuiMenuItem-root.Mui-focusVisible {
     background-color: var(--accent-surface-strong) !important;
