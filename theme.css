@@ -272,7 +272,6 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .metadataSidebarIcon,                         /* Icons in the metadata editor sidebar */
 .upNextDialog-countdownText,                  /* Countdown text in the "Up Next" dialog */
 .MuiSvgIcon-root.MuiSvgIcon-fontSizeInherit,  /* Material UI SVG icons inheriting font size */
-.listItemImageButton:hover,                   /* Hovered image buttons within list items */
 .button-flat:hover,                           /* Hovered flat buttons */
 #divRunningTasks span,                        /* Text within the running tasks indicator */
 .username,                                    /* Usernames (e.g., on profile pages) */
@@ -1058,14 +1057,46 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     }
 }
 
-.listItemImageButton:hover {
-    background: none !important;
-    translate: 0 -3px !important;
+/* Play button on episode / track row images: hidden until the row is hovered or focused, then
+   the same rounded-square accent button the poster cards show. Touch screens have no hover, so they
+   keep it visible. */
+.listItemImageButton {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    width: 2.4rem !important;    /* ~36px, the poster cards' button size */
+    height: 2.4rem !important;
+    margin: auto !important;
+    border-radius: 28% !important;   /* same rounded square as the poster cards' button (10px on 36px) */
+    opacity: 0;
+    transition: opacity .18s ease, transform .15s ease;
 }
-
-.listItemImageButton{
-    background: none !important;
-    color: white !important
+.listItemImageButton .listItemImageButton-icon {
+    font-size: 1.5rem;
+}
+.listItem:hover .listItemImageButton,
+.listItemImageButton:focus-visible {
+    opacity: 1;
+}
+.listItemImageButton:hover {
+    transform: scale(1.1);
+    color: var(--text-color) !important;
+}
+@media (hover: none) {
+    .listItemImageButton { opacity: 1; }
+}
+/* Dim the image behind the button, like the card overlay. */
+.listItemImage:has(.listItemImageButton)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--secondary-background-transparent);
+    opacity: 0;
+    transition: opacity .18s ease;
+    pointer-events: none;
+}
+.listItem:hover .listItemImage:has(.listItemImageButton)::before {
+    opacity: 1;
 }
 
 .layout-mobile #childrenContent .listItem {
