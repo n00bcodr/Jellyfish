@@ -1338,7 +1338,9 @@ div.card-hoverable.squareCard.card:hover {
 .btnPlayAll .material-icons {
     color: inherit !important;
 }
-.btnShuffle {
+/* A quiet tint that pairs Shuffle with the solid Play All pill. Not on the item page, where
+   the other action buttons have no fill. */
+.btnShuffle:not(.mainDetailButtons .btnShuffle) {
     background: var(--alt-accent-color) !important;
 }
 .btnPreviousPage,

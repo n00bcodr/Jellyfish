@@ -176,3 +176,65 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
     outline: 2px solid var(--primary-accent-color);
     outline-offset: -2px;
 }
+
+/* Reviews section (TMDB, AniList and user reviews).
+   The plugin injects its own <style> with fixed TMDB blue and green, after this file, so
+   these selectors are one class longer to win over it. Cards, links, the "Read More" toggle
+   and the review buttons follow the palette instead. */
+.tmdb-reviews-section .tmdb-review-card {
+    border-radius: var(--rounded-cards);
+    border-left: 4px solid var(--primary-accent-color);
+    background: var(--secondary-background-transparent);
+}
+.tmdb-reviews-section .tmdb-review-card.je-anilist-review-card,
+.tmdb-reviews-section .tmdb-review-card.je-user-review-card {
+    border-left-color: var(--primary-accent-color);
+}
+.tmdb-reviews-section .tmdb-review-card.je-user-review-card {
+    background: var(--accent-surface);
+}
+.tmdb-reviews-section .je-review-source,
+.tmdb-reviews-section .je-anilist-review-card .je-review-source,
+.tmdb-reviews-section .tmdb-review-text a,
+.tmdb-reviews-section .tmdb-review-toggle {
+    color: var(--accent-text-color);
+}
+.tmdb-reviews-section .tmdb-review-toggle {
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    transition: opacity .15s ease;
+}
+.tmdb-reviews-section .tmdb-review-toggle:hover,
+.tmdb-reviews-section .tmdb-review-text a:hover {
+    color: var(--accent-text-color);
+    opacity: .8;
+}
+.tmdb-reviews-section .tmdb-review-text blockquote {
+    border-left-color: var(--primary-accent-color);
+}
+.tmdb-reviews-section .je-user-avatar {
+    border-color: var(--primary-accent-color);
+}
+
+/* "Write a Review" and the review form buttons: accent pills instead of green outlines. */
+.tmdb-reviews-section .je-review-write-btn,
+.tmdb-reviews-section .je-review-edit-btn,
+.tmdb-reviews-section .je-review-submit-btn,
+.je-review-form .je-review-submit-btn {
+    border-color: var(--primary-accent-color);
+    color: var(--accent-text-color);
+    border-radius: 999px;
+}
+.tmdb-reviews-section .je-review-write-btn:hover,
+.tmdb-reviews-section .je-review-edit-btn:hover,
+.tmdb-reviews-section .je-review-submit-btn:hover,
+.je-review-form .je-review-submit-btn:hover {
+    background: var(--accent-surface-strong);
+}
+.je-review-form {
+    border-color: var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+}
+.je-review-form .je-review-textarea:focus {
+    border-color: var(--primary-accent-color);
+}
