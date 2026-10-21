@@ -1263,6 +1263,26 @@ div.card-hoverable.squareCard.card {
     border-color: rgba(0, 0, 0, .22);
     transition: filter .15s ease;
 }
+/* Stand-alone action buttons in the page toolbar (New Collection, New Playlist...) match the
+   Play All group: accent pill with a soft glow. */
+.MuiToolbar-root .MuiButton-contained:not(.MuiButtonGroup-grouped) {
+    background:
+        linear-gradient(rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 60%),
+        var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 999px;
+    font-weight: 700;
+    padding-inline: 18px;
+    box-shadow: 0 4px 14px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .30);
+    transition: box-shadow .2s ease, transform .2s ease, filter .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .MuiToolbar-root .MuiButton-contained:not(.MuiButtonGroup-grouped):hover {
+        filter: brightness(1.12);
+        box-shadow: 0 6px 20px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
+        transform: translateY(-1px);
+    }
+}
 .MuiToolbar-root .MuiButtonGroup-contained .MuiButton-root:first-of-type {
     border-radius: 999px 0 0 999px;
     padding-inline-start: 18px;
@@ -3086,6 +3106,10 @@ body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root ~ .MuiToolbar-ro
     height: auto;
     min-height: 44px;
     border-top: 1px solid var(--bar-edge);
+}
+/* Library grids start a little lower so the first row clears the floating bar */
+body:not(.dashboardDocument) .libraryPage .itemsContainer {
+    margin-top: 20px;
 }
 /* Tabs: rounded; the current one is a faint accent tint with a short accent underline,
    text stays white */
