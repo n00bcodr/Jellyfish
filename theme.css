@@ -2468,7 +2468,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 /* Margin adjustments for parent name (Album/Artist) in the music player's name container (Desktop). */
 .layout-desktop .nameContainer .musicParentName {
     margin-top: 18px !important;
-    margin-right: 22px !important;
+    margin-right: .25em !important;  /* one word space after the " -" before the album name */
     font-size: 1.8em;
     color: var(--accent-text-color);
 }
@@ -2500,12 +2500,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 }
 
 /* == Music Artist Detail Page Fixes == */
-/* Artist page (person + MusicAlbum sections) needs extra top margin to clear the backdrop/buttons */
-.layout-desktop #itemDetailPage:has(.verticalSection[data-type="MusicAlbum"]) .detailPageWrapperContainer,
-.layout-tv #itemDetailPage:has(.verticalSection[data-type="MusicAlbum"]) .detailPageWrapperContainer {
-    margin-top: 20em !important;
-}
-
 .layout-desktop #itemDetailPage:has(div.detailImageContainer .cardImageIcon.person):has(.verticalSection[data-type="MusicAlbum"]) .mainDetailButtons {
     top: 0em !important;
 }
