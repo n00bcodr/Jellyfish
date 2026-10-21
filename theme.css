@@ -1190,6 +1190,12 @@ div.card-hoverable.squareCard.card {
     width: var(--indicator-size);
     padding: 0;
 }
+/* The shared badge rule above is more specific than .playedIndicator, so it gave the check
+   its side padding and made it wider than tall. Repeat the class to win and keep it square. */
+.playedIndicator.playedIndicator.indicator {
+    width: var(--indicator-size);
+    padding: 0;
+}
 .playedIndicator .indicatorIcon {
     width: auto;
     height: auto;
