@@ -217,7 +217,7 @@
         Dashboard Theme CSS URLs (one per line)
       </label>
       <div class="${boxClass}">
-        <textarea id="theme-urls-textarea" class="${textareaClass}" style="height: 120px;">${themeUrls.join("\n")}</textarea>
+        <textarea id="theme-urls-textarea" class="${textareaClass}" style="height: 120px; padding-top: 28px;">${themeUrls.join("\n")}</textarea>
       </div>
       <p class="${helperClass}">
         Edit the dashboard theme CSS URLs above (one per line) and click "Save & Apply" to use your custom themes. Only applicable for dashboard pages.
@@ -242,9 +242,12 @@
         return;
       }
 
+      // Apply in place instead of reloading: after a full reload of this page Jellyfin 12 shows
+      // the Custom CSS box empty until you navigate away and back, and saving it blank would
+      // wipe the branding CSS.
       saveThemeUrls(urls);
-      showNotification('Themes saved! Refreshing page...');
-      setTimeout(() => window.location.reload(), 500);
+      applyNewTheme();
+      showNotification('Themes saved and applied.');
     };
 
     // Create reset button with icon
@@ -252,8 +255,9 @@
     resetButton.onclick = () => {
       if (window.confirm('Reset to default theme URLs?')) {
         localStorage.removeItem(STORAGE_KEY); // forget the saved list so the defaults apply again
-        showNotification('Reset to defaults! Refreshing page...');
-        setTimeout(() => window.location.reload(), 500);
+        document.getElementById('theme-urls-textarea').value = DEFAULT_THEME_URLS.join('\n');
+        applyNewTheme();
+        showNotification('Reset to defaults and applied.');
       }
     };
 
