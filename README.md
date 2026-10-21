@@ -33,7 +33,6 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 - **Jellyfin 10.11 and 12** - the Modern (React) layout, plus the legacy desktop, mobile and TV layouts, from small phones to 4K TVs.
 - **16 palettes** (including the frosted **Liquid Glass**) with readable text on every one, and an easy [way to make your own](#making-your-own-palette).
 - **Fast** - heavy blur effects are kept off the large panels, so scrolling stays smooth on modest hardware; [`lite.css`](#lite-mode) goes further for TVs and old tablets.
-- **Styled A-Z picker, toolbar buttons and badges** that fit any screen, and a **floating Save button** on settings pages.
 - **Works with** [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced), [KefinTweaks](https://github.com/ranaldsgift/KefinTweaks) and the Media Bar plugin, with an optional [add-on stylesheet](#jellyfin-enhanced-add-on) for the plugin's own panels.
 
 <a id="gallery"></a>
