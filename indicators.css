@@ -20,16 +20,9 @@
     border: 1px solid rgba(0,0,0,0.2);
   }
 
-  /* Watched check: an accent circle inset from the corner, not a flush tab. */
-  .indicator:not(.timerIndicator):not(.syncIndicator).playedIndicator,
   .playedIndicator {
-    background: var(--primary-accent-color) !important;
-    border-radius: 50% !important;
-    border: 0;
-    color: var(--text-color) !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,.35) !important;
+    background: linear-gradient(to bottom, #5fe35f, #48b648) !important;
   }
-  .cardIndicators:has(.playedIndicator) { right: 6px !important; top: 6px !important; }
 
   .mediaSourceIndicator {
     left: 0 !important;

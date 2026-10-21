@@ -1185,28 +1185,25 @@ div.card-hoverable.squareCard.card:hover {
     justify-content: center;
 }
 
-.playedIndicator { /* "Watched" check: accent circle, tick in the palette's on-accent text colour */
-    background: var(--primary-accent-color) !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .35) !important;
-    color: var(--text-color);
+.playedIndicator { /* "Watched" check: square, green, white tick */
+    background: #3fae4a !important;
+    color: #fff;
     width: var(--indicator-size);
     padding: 0;
-    border-radius: 50% !important;
 }
 /* The shared badge rule above outranks .playedIndicator; the repeated class keeps the
-   watched check round (no side padding). */
+   watched check square (no side padding). */
 .playedIndicator.playedIndicator.indicator {
     width: var(--indicator-size);
     padding: 0;
-    border-radius: 50% !important;
 }
 /* Explicit size and fill: Jellyfin sizes the icon in em and fills it black, so the tick
-   otherwise differed in size and contrast between palettes. */
+   otherwise differed in size and colour between layouts and palettes. */
 .playedIndicator .indicatorIcon {
     width: calc(var(--indicator-size) * .62);
     height: calc(var(--indicator-size) * .62);
     font-size: calc(var(--indicator-size) * .62);
-    fill: var(--text-color) !important;
+    fill: #fff !important;
 }
 
 .countIndicator { /* Unwatched episode count */
