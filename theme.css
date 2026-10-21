@@ -379,10 +379,9 @@ html
     background-color: var(--secondary-background-transparent) !important;
 }
 
-/* PERF: this used to be a full-viewport `backdrop-filter` on .backgroundContainer.
-   A backdrop-filter re-samples and re-blurs everything behind it, so on tabbed
-   pages (home, libraries) it made scrolling ~4x slower. Blurring and dimming
-   the backdrop image itself looks the same but is rasterized once and cached. */
+/* Tabbed pages (home, libraries): the backdrop image itself is blurred and dimmed (see
+   .backdropImage), which is rasterized once. A full-viewport backdrop-filter here would be
+   re-blurred on every scrolled frame. */
 .libraryDocument.withSectionTabs .backgroundContainer {
     background-color: var(--secondary-background-transparent);
 }
@@ -1155,13 +1154,11 @@ div.card-hoverable.squareCard.card {
 }
 
 /* == Indicators (Watched, Count, Media Source) == */
-/* One size token drives every card indicator, so they scale with the screen
-   instead of being fixed 20px/30px boxes that crowd narrow cards or look lost on
-   big ones. Shape: a rounded square sized from the token; counts widen into a pill
-   so "99+" never overflows. Jellyfin sizes indicators in `em` and sets a fixed
-   width, hence the explicit min-width/width overrides. */
+/* One size token drives every card indicator so they scale with the screen. Each is a
+   rounded square sized from the token; counts widen into a pill so "99+" fits. Jellyfin
+   sizes indicators in `em` with a fixed width, so min-width and width are set explicitly. */
 :root {
-    --indicator-size: 24px;      /* phones: still a comfortable 24px touch/read size */
+    --indicator-size: 24px;      /* phones */
 }
 @media (min-width: 600px)  { :root { --indicator-size: 26px; } }
 @media (min-width: 1200px) { :root { --indicator-size: 30px; } }
@@ -1190,8 +1187,8 @@ div.card-hoverable.squareCard.card {
     width: var(--indicator-size);
     padding: 0;
 }
-/* The shared badge rule above is more specific than .playedIndicator, so it gave the check
-   its side padding and made it wider than tall. Repeat the class to win and keep it square. */
+/* The shared badge rule above outranks .playedIndicator; the repeated class keeps the
+   watched check square (no side padding). */
 .playedIndicator.playedIndicator.indicator {
     width: var(--indicator-size);
     padding: 0;
@@ -1199,7 +1196,7 @@ div.card-hoverable.squareCard.card {
 .playedIndicator .indicatorIcon {
     width: auto;
     height: auto;
-    font-size: calc(var(--indicator-size) * .72);
+    font-size: calc(var(--indicator-size) * .6);
 }
 
 .countIndicator { /* Unwatched episode count */
@@ -1241,10 +1238,8 @@ div.card-hoverable.squareCard.card {
 }
 
 /* == Library toolbar buttons (Jellyfin 12 modern layout) ==
-   Play All / Shuffle, the Filter / Sort / View group and the pager used to be
-   stock MUI: flat 4px-radius blocks that ignored the theme's shape language. Now:
-   a solid pill for the primary group (accent, glossy top, readable --text-color on
-   every palette) and frosted pills for the icon groups. */
+   Play All / Shuffle, the Filter / Sort / View group and the pager. The primary group is
+   a solid accent pill with --text-color text; the icon groups are frosted pills. */
 .MuiToolbar-root .MuiButtonGroup-root {
     border-radius: 999px;
 }
@@ -1308,9 +1303,8 @@ div.card-hoverable.squareCard.card {
 }
 
 /* == Library toolbar buttons, legacy markup (TV, desktop-legacy, mobile-legacy) ==
-   Same idea as above for the old toolbar: Play All is a solid accent pill, the
-   other icon buttons are round, and every one gets a clear accent fill when it has
-   hover (mouse) or focus (D-pad / keyboard). */
+   Play All is a solid accent pill and the other icon buttons are round. Each gets an
+   accent fill on hover (mouse) or focus (D-pad / keyboard). */
 .btnPlayAll,
 .btnShuffle {
     border-radius: 999px !important;
@@ -2152,6 +2146,30 @@ div#listChildrenCollapsible { order: 6 !important; }
     background: var(--alt-accent-color);
 }
 
+/* == Floating Save button on settings pages ==
+   Preference pages are long; the Save button stays pinned near the bottom of the window
+   until the end of the form, so it never needs a scroll to the bottom. Covers the legacy
+   pages (.button-submit) and the modern Display page (MUI submit button). `position: sticky`
+   works because no ancestor on these pages scrolls on its own. */
+.userPreferencesPage .button-submit,
+#userProfilePage .button-submit,
+#displayPreferencesPage form button[type="submit"] {
+    position: sticky;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 5;
+    min-height: 3rem;
+    margin-top: 2rem !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .45), 0 0 22px color-mix(in srgb, var(--primary-accent-color) 35%, transparent);
+    backdrop-filter: blur(var(--blur));
+}
+#displayPreferencesPage form button[type="submit"] {
+    align-self: center;
+    width: 100%;
+    border-radius: var(--rounded-cards);
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+}
+
 /* == Profile Page Styling == */
 /* Fixes alignment issues and applies accent color to usernames/titles on the user profile page. */
 .layout-desktop #userProfilePage .readOnlyContent div:not([class]), div[class=""] { /* Targets specific divs that might lack classes */
@@ -2454,11 +2472,9 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* == Translucent Cards on Item Detail Page  == */
 /* Makes various sections on the item detail page translucent */
-/* PERF: these panels are huge (the whole description/ratings column), and a
-   backdrop-filter on an element that size is re-blurred on every scrolled frame -
-   the single biggest cost on item pages (22ms -> 17ms/frame here, i.e. back to
-   no-theme speed). A static accent tint over a darkened base gives the same
-   frosted-dark panel without the per-frame blur. */
+/* These panels cover the whole description/ratings column, so they use a static accent
+   tint over a darkened base rather than backdrop-filter, which would be re-blurred on
+   every scrolled frame. */
 .layout-desktop #itemDetailPage .detailSectionContent,
 .layout-desktop #itemDetailPage .trackSelections {
     background:
@@ -2846,20 +2862,17 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
     box-shadow: none !important;
 }
 
-/* Keep the toolbar in a single row on all screen sizes.
-   :where() gives this zero specificity, so it is only a default: anything that
-   deliberately sets its own wrap - e.g. KefinTweaks' breadcrumb row, which needs the
-   toolbar to wrap so the breadcrumbs sit on a second line (and now uses !important
-   precisely because this rule used to beat it) - wins without a fight. */
+/* Keep the toolbar in a single row on all screen sizes. :where() gives this zero
+   specificity, so anything that sets its own wrap (e.g. KefinTweaks' breadcrumb row)
+   overrides it. */
 :where(.MuiToolbar-root) {
     flex-wrap: nowrap !important;
 }
 
-/* Icon tray: don't stretch the gap; wrap onto a second row instead of overflowing the bar.
-   NOT applied to Jellyfin Enhanced's tray (.je-header-actions-host): the plugin measures
-   the row and collapses whatever doesn't fit into its own "More" menu, which only works
-   if the tray can use the full width in one non-wrapping line. Forcing it to wrap and
-   shrink (it ended up 240px wide) pushed most of its icons onto a hidden second row. */
+/* Icon tray: no stretched gap; wraps onto a second row instead of overflowing the bar.
+   Not applied to Jellyfin Enhanced's tray (.je-header-actions-host): the plugin measures
+   the row and moves whatever doesn't fit into its own "More" menu, so it needs the full
+   width on one non-wrapping line. */
 .MuiToolbar-root > .MuiBox-root:not(.je-header-actions-host):has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
     flex-grow: 0 !important;
     flex-shrink: 1 !important;
@@ -2934,8 +2947,8 @@ body:not(.dashboardDocument) .MuiAppBar-root {
     border-radius: 50% !important;
 }
 @media (hover: hover) and (pointer: fine) {
-    /* Drawn INSIDE the button (negative offset): an outer ring was clipped by the top of the
-       window because the avatar button is flush with the edge of the bar. */
+    /* Drawn inside the button (negative offset): the avatar button is flush with the edge
+       of the bar, so an outer ring would be clipped. */
     .MuiToolbar-root [aria-controls="app-user-menu"]:hover {
         outline: 2px solid var(--primary-accent-color);
         outline-offset: -2px;
@@ -3090,11 +3103,10 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
 }
 
 /* Bigger and centered server action buttons (Scan / Restart / Shutdown / Refresh Theme).
-   Matched structurally (the row that holds MUI's containedError buttons) instead of by
-   a generated css-hash class, which drifts on every Jellyfin rebuild - the old
-   `.css-11r6nok` rules had silently stopped matching on 12.x. Colors come from the
-   "Dashboard Server Action Buttons" rules further down. min-height (not height):
-   in a narrow content column the buttons wrap to two rows. */
+   Matched structurally (the row that holds MUI's containedError buttons) because the
+   generated css-hash classes change on every Jellyfin rebuild. Colors come from the
+   "Dashboard Server Action Buttons" rules further down. min-height rather than height,
+   since the buttons wrap to two rows in a narrow column. */
 .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) {
     align-self: center;
     min-height: 3em;
@@ -3253,7 +3265,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 .MuiDialog-paper {
   border-radius: 20px !important;
   background: var(--accent-surface) !important;
-  backdrop-filter: blur(var(--blur)); /* was 100px - cost grows with radius and the surface is near-opaque anyway */
+  backdrop-filter: blur(var(--blur));
   color: #ffffff;
 }
 
@@ -3330,7 +3342,7 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   background: var(--primary-accent-color) !important;
-  color: var(--text-color) !important; /* was white: unreadable on light accents (Liquid Glass, banana...) */
+  color: var(--text-color) !important; /* readable on light accents too */
   height: 44px;
   padding: 6px 16px;
   display: inline-flex;
@@ -3339,6 +3351,6 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
 }
 #theme-refresh-button svg,
 #theme-refresh-button .MuiButton-startIcon {
-  color: inherit !important; /* the icon kept a white colour of its own on light accents */
+  color: inherit !important; /* follow the button text colour */
   fill: currentColor !important;
 }

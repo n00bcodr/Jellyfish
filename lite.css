@@ -8,7 +8,7 @@
     --indicator-size: 24px;
 }
 
-/* No big blurred panels: solid tinted surfaces instead */
+/* Solid tinted surfaces in place of large blurred panels */
 .layout-desktop #itemDetailPage .detailSectionContent,
 .layout-desktop #itemDetailPage .trackSelections,
 .itemDetailsGroup,

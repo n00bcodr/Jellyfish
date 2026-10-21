@@ -1,27 +1,18 @@
-/* Jellyfish - Jellyfin Enhanced add-on (optional)
+/* Jellyfin Enhanced add-on (optional)
    Styles for the Jellyfin Enhanced plugin (https://github.com/n00bcodr/Jellyfin-Enhanced) that
-   do NOT go through its "Themer": its header "More" menu, the active-streams panel, the
-   plugin's own CSS variables, form-control fonts, and the KefinTweaks-breadcrumb /
-   icon-tray compatibility fix. Import it AFTER theme.css (and your palette):
-   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css");
-   theme.css alone still works with the plugin - the Themer keeps feeding it colors, and
-   theme.css no longer forces the plugin's icon tray to wrap. */
+   do not depend on its Themer: header "More" menu, active-streams panel, the plugin's CSS
+   variables, form-control fonts, the item-page metadata row and KefinTweaks breadcrumb
+   compatibility. Import it after theme.css and the palette:
+   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css"); */
 
-/* == Jellyfin Enhanced == */
-/* The little "active streams" count next to the header icon is drawn in the raw
-   accent color; the lightened accent-text tint keeps it readable on every palette
-   (forest/midnight/jellyflix were 4.1:1 against the dark bar). */
+/* Active-streams count next to the header icon, in the readable accent tint.
+   Only the active state; the plugin's own error colours are left alone. */
 #je-active-streams.je-as-active .je-as-sup {
-    color: var(--accent-text-color) !important;   /* active state only: the plugin's own error colours stay */
+    color: var(--accent-text-color) !important;
 }
 
-/* Jellyfin Enhanced, styled by the theme itself (no Themer needed).
-   The plugin's Themer reads a handful of Jellyfish variables and builds many panels from
-   inline styles - fine, and still supported. But the plugin ALSO exposes plain CSS
-   variables ("hooks") for its newer pieces, with its own defaults when nothing sets them.
-   Setting them here makes those pieces follow the palette on their own, so they keep
-   matching even if the Themer is disabled, fails, or a new plugin feature isn't wired
-   into it yet. Values the plugin sets inline (from the Themer) still win where present. */
+/* Plugin CSS variables mapped to the palette, so its panels follow the theme without the
+   Themer. Values the Themer sets inline still take precedence. */
 :root {
     --je-launcher-surface: var(--header-solid-background-color);   /* the header "More" menu */
     --je-launcher-text: #ffffff;
@@ -33,8 +24,7 @@
     --je-catchup-secondary: var(--alt-accent-color);
 }
 
-/* The header "More" menu (shown when the tray runs out of room): same glass-pill language
-   as the theme's own menus instead of a flat grey 8px box. */
+/* Header "More" menu, shown when the icon tray runs out of room. */
 .je-launcher-panel {
     border-radius: var(--rounded-cards) !important;
     border: 1px solid var(--alt-accent-color) !important;
@@ -66,18 +56,16 @@
     font-weight: 700;
 }
 
-/* Buttons, inputs and selects fall back to the browser's UI font unless told otherwise;
-   the plugin's pages (Calendar, Hidden Content, Requests...) don't, so their controls
-   rendered in Arial next to Quicksand text. Scoped to the plugin's own elements. */
+/* Form controls on the plugin's pages (Calendar, Hidden Content, Requests...) inherit the
+   theme font instead of the browser default. */
 [class*="je-"] :is(button, input, select, textarea),
 :is(button, input, select, textarea)[class*="je-"],
 [id^="je-"] :is(button, input, select, textarea) {
     font-family: inherit;
 }
 
-/* Active streams panel (hard-coded near-black card in the plugin). Same surface, radius,
-   and accent as the theme's other floating panels; the 40%-white header icons were
-   too faint to read, so they are lifted to a readable level. */
+/* Active-streams panel: same surface, radius and accent as the theme's other floating
+   panels, with higher-contrast header icons. */
 #je-active-streams-panel {
     background-color: var(--header-solid-background-color) !important;
     border: 1px solid var(--alt-accent-color) !important;
@@ -130,25 +118,23 @@
     border-radius: 999px !important;
 }
 
-/* Jellyfin Enhanced: let the plugin size its own tray, right-aligned like the native one. */
+/* Right-align the plugin's icon tray like the native toolbar icons. */
 .MuiToolbar-root > .je-header-actions-host {
     margin-left: auto;
     justify-content: flex-end;
 }
 
-/* KefinTweaks breadcrumbs + Jellyfin Enhanced icons.
-   KefinTweaks inserts its breadcrumb row INTO the toolbar as a full-width flex item and
-   makes the toolbar wrap. Jellyfin Enhanced sizes its icon tray by subtracting every
-   in-flow sibling from the row width - so the 100%-wide breadcrumb row leaves it ~0px,
-   and it folds ALL its icons into the "..." menu (this happens even without a theme).
-   The plugin ignores absolutely positioned siblings, so the breadcrumb row is pinned to
-   the bottom of the bar instead: the icons get the whole row back, and the bar reserves
-   a strip below for the breadcrumbs. */
+/* KefinTweaks breadcrumbs.
+   KefinTweaks adds its breadcrumb row to the toolbar as a full-width flex item. The plugin
+   sizes its icon tray from the width left by in-flow siblings, so that row leaves it no
+   room and every icon moves into the "..." menu. The row is pinned to the bottom of the
+   bar instead (the plugin ignores absolutely positioned siblings) and the bar reserves
+   a strip for it. */
 header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper) {
     position: relative;
 }
-/* Only reserve the strip while breadcrumbs are shown: KefinTweaks keeps the (hidden,
-   inline display:none) wrapper in the bar on pages without breadcrumbs, e.g. a movie. */
+/* The strip is reserved only while breadcrumbs are visible; KefinTweaks leaves a hidden
+   (inline display: none) wrapper in the bar on pages without them. */
 header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper:not([style*="display: none"]):not([style*="display:none"])) {
     padding-bottom: 30px;
 }
@@ -164,26 +150,10 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
 }
 
 /* Item page metadata row (desktop layout).
-   Jellyfin Enhanced appends file size, audio language, three release dates and bitrate to
-   the year / runtime / rating row. That row is pinned (position: absolute) over the top
-   of the description panel, so once it wraps onto a second line it runs into the tagline
-   or description. Two fixes: (1) tighter spacing so more of it fits on one line, and
-   (2) a taller top padding on the panel - only when the plugin's items are present, and
-   only below the width where everything fits on one line - so a wrapped second line (and
-   the tagline after it) gets its own space. */
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem {
-    margin-right: .7em;
-}
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem-fileSize,
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem-audioLanguage,
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem-releaseDate,
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem-bitrate,
-.layout-desktop .itemMiscInfo-primary .mediaInfoItem-watchProgress {
-    font-size: .92em;
-}
-.layout-desktop .itemMiscInfo-primary {
-    row-gap: .15em;
-}
+   The plugin adds file size, audio language, release dates and bitrate to the year / runtime
+   / rating row, which is pinned over the top of the description panel. When it wraps to a
+   second line, the panel gets extra top padding so the tagline is not covered. Applies only
+   when those plugin items are present and below the width where the row fits on one line. */
 @media (max-width: 2300px) {
     .layout-desktop #itemDetailPage:has(.itemMiscInfo-primary :is(.mediaInfoItem-releaseDate, .mediaInfoItem-fileSize, .mediaInfoItem-audioLanguage, .mediaInfoItem-bitrate)) .detailSectionContent {
         padding-top: 5em !important;
@@ -191,9 +161,9 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
 }
 
 /* Header icons added by the plugin (random item, active streams, Requests, Calendar,
-   Activity, Bookmarks...): the same round hover / focus highlight as the native toolbar
-   icons (SyncPlay, Cast, Search). They are legacy .headerButton elements, and theme.css
-   forces .paper-icon-button-light backgrounds to transparent, hence the extra specificity. */
+   Activity, Bookmarks...): round hover and focus highlight like the native toolbar icons.
+   The extra specificity overrides theme.css, which makes .paper-icon-button-light
+   backgrounds transparent. */
 .je-header-actions-host .headerButton.paper-icon-button-light {
     border-radius: 50%;
     transition: color .15s ease, background-color .15s ease;

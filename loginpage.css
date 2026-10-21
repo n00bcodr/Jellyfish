@@ -79,7 +79,7 @@ body:has(#loginPage) .backdropContainer {
     padding-top: 0;
 }
 
-/* Tighter rows: the default leaves a tall gap under each name (cardBox-bottompadded margin). */
+/* Tighter rows: removes the tall default margin under each name. */
 #loginPage .cardBox-bottompadded {
     margin-bottom: 0.5em !important;
 }
@@ -402,7 +402,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
     margin: 1% !important;  /* Small margin around cards */
   }
 
-  /* Smaller names so longer ones fit under the avatars instead of ending in "…". */
+  /* Smaller names so longer ones fit under the avatars. */
   #loginPage .cardText {
     font-size: 0.8em;
   }
