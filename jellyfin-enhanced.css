@@ -1,0 +1,183 @@
+/* Jellyfin Enhanced add-on (optional)
+   Styles for the Jellyfin Enhanced plugin (https://github.com/n00bcodr/Jellyfin-Enhanced) that
+   do not depend on its Themer: header "More" menu, active-streams panel, the plugin's CSS
+   variables, form-control fonts, the item-page metadata row and KefinTweaks breadcrumb
+   compatibility. Import it after theme.css and the palette:
+   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css"); */
+
+/* Active-streams count next to the header icon, in the readable accent tint.
+   Only the active state; the plugin's own error colours are left alone. */
+#je-active-streams.je-as-active .je-as-sup {
+    color: var(--accent-text-color) !important;
+}
+
+/* Plugin CSS variables mapped to the palette, so its panels follow the theme without the
+   Themer. Values the Themer sets inline still take precedence. */
+:root {
+    --je-launcher-surface: var(--header-solid-background-color);   /* the header "More" menu */
+    --je-launcher-text: #ffffff;
+    --je-as-accent: var(--accent-text-color);                      /* active-streams icon + count */
+    --je-hc-accent: var(--accent-text-color);                      /* Hidden Content */
+    --je-activity-accent: var(--accent-text-color);                /* Activity page */
+    --je-catchup-accent: var(--primary-accent-color);              /* Catch-up panel */
+    --je-catchup-panel: var(--secondary-background-color);
+    --je-catchup-secondary: var(--alt-accent-color);
+}
+
+/* Header "More" menu, shown when the icon tray runs out of room. */
+.je-launcher-panel {
+    border-radius: var(--rounded-cards) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    background-color: var(--je-launcher-surface) !important;
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5) !important;
+}
+.je-launcher-action.emby-button {
+    border-radius: 12px !important;
+    transition: background-color .15s ease, color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .je-launcher-action.emby-button:hover:not(:disabled) {
+        background: var(--accent-surface) !important;
+        color: #ffffff;
+    }
+}
+.je-launcher-action.emby-button:focus-visible,
+.je-launcher-panel button:focus-visible {
+    outline: 2px solid var(--primary-accent-color) !important;
+    outline-offset: -2px;
+}
+.je-header-launcher[aria-expanded="true"] {
+    background: var(--primary-background-transparent) !important;
+    color: var(--accent-text-color) !important;
+}
+.je-launcher-heading h2 {
+    color: var(--accent-text-color);
+    font-weight: 700;
+}
+
+/* Form controls on the plugin's pages (Calendar, Hidden Content, Requests...) inherit the
+   theme font instead of the browser default. */
+[class*="je-"] :is(button, input, select, textarea),
+:is(button, input, select, textarea)[class*="je-"],
+[id^="je-"] :is(button, input, select, textarea) {
+    font-family: inherit;
+}
+
+/* Active-streams panel: same surface, radius and accent as the theme's other floating
+   panels, with higher-contrast header icons. */
+#je-active-streams-panel {
+    background-color: var(--header-solid-background-color) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    border-radius: var(--rounded-cards) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5) !important;
+    backdrop-filter: blur(var(--blur));
+}
+#je-active-streams-panel .je-as-panel-title {
+    color: var(--accent-text-color) !important;
+    font-weight: 700;
+}
+#je-active-streams-panel .je-as-panel-header button {
+    color: rgba(255, 255, 255, .78) !important;
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    #je-active-streams-panel .je-as-panel-header button:hover {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+#je-active-streams-panel .je-as-card {
+    background-color: var(--alt-accent-color) !important;
+    border-color: var(--alt-accent-color) !important;
+    border-radius: 14px !important;
+}
+#je-active-streams-panel .je-as-user,
+#je-active-streams-panel .je-as-panel-footer {
+    color: rgba(255, 255, 255, .62) !important;
+}
+#je-active-streams-panel .je-as-broadcast-input,
+#je-active-streams-panel .je-as-broadcast-textarea,
+#je-active-streams-panel .je-as-broadcast-timeout-input {
+    border-radius: 10px !important;
+}
+#je-active-streams-panel .je-as-broadcast-input:focus,
+#je-active-streams-panel .je-as-broadcast-textarea:focus,
+#je-active-streams-panel .je-as-broadcast-timeout-input:focus {
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: 0;
+}
+#je-active-streams-panel .je-as-broadcast-send {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 999px !important;
+    font-weight: 700;
+}
+#je-active-streams-panel .je-as-broadcast-cancel {
+    border-radius: 999px !important;
+}
+
+/* Right-align the plugin's icon tray like the native toolbar icons. */
+.MuiToolbar-root > .je-header-actions-host {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+/* KefinTweaks breadcrumbs.
+   KefinTweaks adds its breadcrumb row to the toolbar as a full-width flex item. The plugin
+   sizes its icon tray from the width left by in-flow siblings, so that row leaves it no
+   room and every icon moves into the "..." menu. The row is pinned to the bottom of the
+   bar instead (the plugin ignores absolutely positioned siblings) and the bar reserves
+   a strip for it. */
+header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper) {
+    position: relative;
+}
+/* The strip is reserved only while breadcrumbs are visible; KefinTweaks leaves a hidden
+   (inline display: none) wrapper in the bar on pages without them. */
+header > .MuiToolbar-root:has(.kefinTweaks-breadcrumbs-wrapper:not([style*="display: none"]):not([style*="display:none"])) {
+    padding-bottom: 30px;
+}
+header > .MuiToolbar-root > .kefinTweaks-breadcrumbs-wrapper,
+header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
+    position: absolute !important;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    width: auto !important;
+    box-sizing: border-box;
+    padding-inline: inherit;
+}
+
+/* Item page metadata row (desktop layout).
+   The plugin adds file size, audio language, release dates and bitrate to the year / runtime
+   / rating row, which is pinned over the top of the description panel. When it wraps to a
+   second line, the panel gets extra top padding so the tagline is not covered. Applies only
+   to panels with content, when those plugin items are present and below the width where the
+   row fits on one line. */
+@media (max-width: 2300px) {
+    .layout-desktop #itemDetailPage:has(.itemMiscInfo-primary :is(.mediaInfoItem-releaseDate, .mediaInfoItem-fileSize, .mediaInfoItem-audioLanguage, .mediaInfoItem-bitrate)) .detailSectionContent:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor)) {
+        padding-top: 5em !important;
+    }
+}
+
+/* Header icons added by the plugin (random item, active streams, Requests, Calendar,
+   Activity, Bookmarks...): round hover and focus highlight like the native toolbar icons.
+   The extra specificity overrides theme.css, which makes .paper-icon-button-light
+   backgrounds transparent. */
+.je-header-actions-host .headerButton.paper-icon-button-light {
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+    .je-header-actions-host .headerButton.paper-icon-button-light:hover:not(:disabled) {
+        color: var(--accent-text-color) !important;
+        background-color: var(--primary-background-transparent) !important;
+    }
+}
+.je-header-actions-host .headerButton.paper-icon-button-light:focus-visible {
+    color: var(--accent-text-color) !important;
+    background-color: var(--primary-background-transparent) !important;
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}

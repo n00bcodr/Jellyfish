@@ -13,8 +13,10 @@
 #loginPage .padded-left.padded-right.padded-bottom-page {
   margin: 0 auto !important;
   background: rgba(0, 0, 0, 0.35) !important;
-  width: 45em !important;
-  border-radius: 15px !important;
+  width: min(45em, 94%) !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(10px); /* Additional glass effect */
 }
 
@@ -73,6 +75,13 @@ body:has(#loginPage) .backdropContainer {
 #loginPage .cardText {
     white-space: normal !important;
     font-weight: bold;
+    margin-top: 0.2em;
+    padding-top: 0;
+}
+
+/* Tighter rows: removes the tall default margin under each name. */
+#loginPage .cardBox-bottompadded {
+    margin-bottom: 0.5em !important;
 }
 /* Styling for the user image container within user cards. */
 #loginPage .cardImageContainer {
@@ -80,6 +89,7 @@ body:has(#loginPage) .backdropContainer {
     aspect-ratio: 1 / 1 !important;  /* Ensure a perfect circle */
     background-size: cover !important;
     background-position: center !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.14), 0 8px 20px rgba(0, 0, 0, 0.35);
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     will-change: transform, box-shadow;
 }
@@ -114,7 +124,7 @@ body:has(#loginPage:not(.hide)) .dialogContainer .formDialog {
 /* Styles the footer of the dialog (containing buttons). */
 body:has(#loginPage:not(.hide)) .dialogContainer .formDialogFooter .emby-button {
   background-color: var(--primary-accent-color) !important; /* Accent color for dialog buttons */
-  color: white !important;
+  color: var(--text-color) !important; /* palette text colour is the readable one on the accent */
   transition: 0.3s ease-in-out;
 }
 
@@ -147,14 +157,18 @@ body:has(#loginPage:not(.hide)) .dialogContentInner {
 
 /* ~~~~~~~~~~~~~~~~~~~~ HIDING DEFAULT ELEMENTS ~~~~~~~~~~~~~~~~~~~~ */
 
-/* Hide the default header (including hamburger menu) on the login page. */
-body:has(#loginPage:not(.hide)) .headerTop, body:has(#loginPage:not(.hide)) .header {
+/* Hide the default header on the login page: Jellyfin 12's app bar only repeats the logo
+   that the login card already shows, and the legacy header has nothing useful on this page. */
+body:has(#loginPage:not(.hide)) .headerTop,
+body:has(#loginPage:not(.hide)) .header,
+body:has(#loginPage:not(.hide)) .skinHeader,
+body:has(#loginPage:not(.hide)) .MuiAppBar-root {
     display: none !important;
 }
 
 /* Adjusts padding for standalone pages when the header is hidden. */
 body:has(#loginPage:not(.hide)) .standalonePage {
-    padding-top: 1em !important;
+    padding-top: clamp(0.5em, 4vh, 3em) !important;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ LOGO REPLACEMENT FOR "PLEASE SIGN IN" ~~~~~~~~~~~~~~~~~~~~ */
@@ -228,7 +242,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
 
 /* Styles input field labels (e.g., "User", "Password"). */
 #loginPage .inputLabel {
-    color: var(--primary-accent-color);
+    color: var(--accent-text-color, var(--primary-accent-color));
     font-weight: bolder;
 }
 
@@ -242,9 +256,9 @@ body:has(#loginPage:not(.hide)) .standalonePage {
 
 /* Styles input fields on the manual login form. */
 #loginPage .emby-input {
-  color: var(--primary-accent-color);
+  color: #1b1b1f; /* dark on the white field - the accent itself is unreadable on light palettes */
   transition: 0.3s ease-in-out;
-  border-radius: 5px;
+  border-radius: 12px;
   padding: 12px;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -269,8 +283,9 @@ body:has(#loginPage:not(.hide)) .standalonePage {
 /* Base button styling - all login buttons */
 #loginPage button.emby-button {
   transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-  border-radius: 5px;
+  border-radius: 14px;
   font-weight: 600;
+  min-height: 44px;
 }
 
 #loginPage button.emby-button:focus-visible {
@@ -330,11 +345,13 @@ body:has(#loginPage:not(.hide)) .standalonePage {
 #loginPage .btnSelectServer,
 #forgotPasswordPage .emby-button {
   background-color: var(--primary-accent-color) !important;
+  color: var(--text-color) !important;
 }
 
 
 /* ~~~~~~~~~~~~~~~~~~~~ MANUAL LOGIN FORM - Show User Image and Hide Username ~~~~~~~~~~~~~~~~~~~~ */
-/* works only with custom javascript that sets the user image in the container and hides username*/
+/* The image and the container are created by the Jellyfin Enhanced plugin (js/extras/login-image.js), which
+   also sets the image size inline; the ring/shadow below is the theme's part. Nothing shows without the plugin. */
 
 /* Style for the image container */
 #userProfileImageContainer {
@@ -369,6 +386,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
       max-width: 90% !important;
   }
   #loginPage .padded-left.padded-right.padded-bottom-page {
+      box-sizing: border-box !important; /* padding inside the width, or phones overflow the screen */
       width: 95% !important;
       padding: 1em !important; /* Reduce padding on small screens */
   }
@@ -382,6 +400,11 @@ body:has(#loginPage:not(.hide)) .standalonePage {
   #loginPage .squareCard {
     width: 30% !important; /* Smaller width for user cards */
     margin: 1% !important;  /* Small margin around cards */
+  }
+
+  /* Smaller names so longer ones fit under the avatars. */
+  #loginPage .cardText {
+    font-size: 0.8em;
   }
 
   /* Adjusts logo size on small screens. */

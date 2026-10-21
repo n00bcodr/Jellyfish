@@ -1,0 +1,54 @@
+/* Jellyfish Lite - optional low-power override. Import AFTER theme.css (and your palette).
+   For TVs, old tablets and Raspberry-Pi-class clients: smaller blur radii, no card
+   shadows, no entrance animations, shorter transitions. Same idea as Abyss's
+   "Lite" override (MIT, https://github.com/AumGupta/abyss-jellyfin).
+   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/lite.css");  */
+:root {
+    --blur: 6px;
+    --indicator-size: 24px;
+}
+
+/* Solid tinted surfaces in place of large blurred panels */
+.layout-desktop #itemDetailPage .detailSectionContent,
+.layout-desktop #itemDetailPage .trackSelections,
+.itemDetailsGroup,
+.actionSheetContent,
+.MuiMenu-paper.MuiMenu-paper,
+.MuiPaper-root.MuiPopover-paper.MuiPopover-paper,
+body:not(.dashboardDocument) .MuiDrawer-paper.MuiDrawer-paper.MuiDrawer-paper,
+.MuiDialog-paper,
+.dialog,
+.mainDrawer,
+.headerTabs,
+.headerRight,
+.toastVisible,
+.upNextContainer:not(#skipIntro),
+.alphaPicker-fixed-right > .MuiPaper-root,
+.alphaPicker-vertical {
+    backdrop-filter: none !important;
+}
+.headerTabs,
+.headerRight {
+    box-shadow: none !important;
+}
+
+/* Animations and hover lifts off */
+.detailPagePrimaryContainer,
+.detailLogo,
+.starRatingContainer:hover .starIcon {
+    animation: none !important;
+}
+.raised:hover,
+.fab:hover,
+.navMenuOption:hover:not(.navMenuOption-selected),
+.listItem:hover,
+.listItemImageButton:hover,
+.button-flat:hover,
+.button-link:hover {
+    transform: none !important;
+    translate: none !important;
+}
+.scrollSlider,
+.emby-scroller {
+    scroll-behavior: auto !important;
+}

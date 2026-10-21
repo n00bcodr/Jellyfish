@@ -1,31 +1,33 @@
-/* Cornered card indicators */
-.cardIndicators, .listItemIndicators {
-  right: -1px !important;
-  top: -1px !important;
-}
-.innerCardFooter {
-  border-radius: 0px 8px !important;
-  box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8) !important;
-}
-.countIndicator, .playedIndicator {
-  border-radius: 0px 10px !important;
-  box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8), inset 0 1px 3px rgba(255,255,255,0.2) !important;
-  border: 1px solid rgba(0,0,0,0.2);
-}
+/* Cornered card indicators.
+   Flush to the card corner on tablets and up. On phones the theme's inset,
+   rounded badges are kept (corner-hugging badges get clipped by the card's
+   rounded corner and read poorly on narrow cards). */
+@media (min-width: 600px) {
+  .cardIndicators, .listItemIndicators {
+    right: -1px !important;
+    top: -1px !important;
+    gap: 0;
+  }
+  .innerCardFooter {
+    border-radius: 0px 8px !important;
+    box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8) !important;
+  }
+  .indicator:not(.timerIndicator):not(.syncIndicator).countIndicator,
+  .indicator:not(.timerIndicator):not(.syncIndicator).playedIndicator,
+  .countIndicator, .playedIndicator {
+    border-radius: 0px calc(var(--indicator-size, 30px) * .34) !important;
+    box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8), inset 0 1px 3px rgba(255,255,255,0.2) !important;
+    border: 1px solid rgba(0,0,0,0.2);
+  }
 
-.playedIndicator {
+  .playedIndicator {
     background: linear-gradient(to bottom, #5fe35f, #48b648) !important;
-}
+  }
 
-.mediaSourceIndicator {
-  left: 0 !important;
-  top: 0 !important;
-  border-radius: 8px 0px !important;
-  box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8);
-  background: -2px 1px 4px 0 rgb(0 0 0 / .8)
+  .mediaSourceIndicator {
+    left: 0 !important;
+    top: 0 !important;
+    border-radius: calc(var(--indicator-size, 30px) * .34) 0px !important;
+    box-shadow: -2px 1px 4px 0 rgb(0 0 0 / .8);
+  }
 }
-
-.layout-mobile .playedIndicator, .layout-mobile .countIndicator {
-    font-size: 95%;
-}
-

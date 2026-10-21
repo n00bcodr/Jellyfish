@@ -15,6 +15,7 @@
         'Jellyflix': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/jellyflix.css");',
         'Jellypurple': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/jellypurple.css");',
         'Lavender': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/lavender.css");',
+        'Liquid Glass': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/liquidglass.css");',
         'Midnight': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/midnight.css");',
         'Mint': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/mint.css");',
         'Ocean': '@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/ocean.css");',

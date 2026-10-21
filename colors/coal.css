@@ -11,7 +11,7 @@
     --secondary-background-color: #181818; /* Drawer, cards, dialogs */
     --tertiary-background-color: #252525; /* Popovers */
     --alt-accent-color: #ffffff20;
-    --text-color: #ffffff; /* Text color for better contrast */
+    --text-color: #000000; /* Text on the accent color (8.9:1; white would be 2.4:1) */
     --header-background-color: #ffffff6e; /* This is header and tabs background */
     --logo: url("https://cdn.jsdelivr.net/gh/n00bcodr/jellyfish/logos/jellyfish.png");
     --background-image: url(https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/colors/images/coal.jpg);
