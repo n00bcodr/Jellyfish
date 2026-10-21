@@ -3087,19 +3087,32 @@ body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root ~ .MuiToolbar-ro
     min-height: 44px;
     border-top: 1px solid var(--bar-edge);
 }
-/* Tabs: pill-shaped, the current one a solid accent chip */
+/* Tabs: rounded; the current one is a faint accent tint with a short accent underline,
+   text stays white */
 body:not(.dashboardDocument) .MuiToolbar-root > .MuiStack-root > :is(a, button) {
     height: 40px;
     align-self: center;
     border-radius: 12px;
 }
 body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
-    background-color: var(--primary-accent-color);
-    box-shadow: 0 4px 16px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .4);
+    position: relative;
+    background-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), .16);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .28);
+}
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary::after {
+    content: "";
+    position: absolute;
+    left: 28%;
+    right: 28%;
+    bottom: 3px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--primary-accent-color);
+    box-shadow: 0 0 10px var(--primary-accent-color);
 }
 body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary,
 body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary :is(svg, span) {
-    color: var(--text-color) !important;
+    color: #fff !important;
     fill: currentColor;
 }
 @media (max-width: 600px) {
