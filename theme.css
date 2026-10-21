@@ -1619,14 +1619,19 @@ h3.tagline {
     padding: 10px 20px !important;
 }
 
-/* Hide the description panel when there is nothing in it (e.g. a person with no bio and
-   no links rendered a blank rounded bar). Jellyfin always leaves a few children in
-   the box - "Show more" controls, an empty recording editor - so "empty" means: every
-   child is .hide, :empty, or one of those two helpers. Anything else (overview,
-   tagline, genres, ratings from plugins) keeps the panel. Engines without :has()
-   simply keep showing it, as before. */
-.detailSectionContent:not(:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor))) {
+/* Hide the description panel when there is nothing in it (e.g. a person with no bio and no
+   links). Jellyfin always leaves a few children in the box ("Show more" controls, an empty
+   recording editor), so "empty" means every child is .hide, :empty or one of those helpers.
+   On the desktop layout, pages with a metadata row (year / runtime / rating) keep it: the
+   row is pinned over the top of this panel, which also reserves its space. Engines without
+   :has() keep showing the panel. */
+:is(html:not(.layout-desktop) .itemDetailPage, html.layout-desktop .itemDetailPage:not(:has(.itemMiscInfo-primary .mediaInfoItem))) .detailSectionContent:not(:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor))) {
     display: none !important;
+}
+/* Description panel with only the pinned metadata row in it: sized to that row. */
+.layout-desktop .itemDetailPage:has(.itemMiscInfo-primary .mediaInfoItem) .detailSectionContent:not(:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor))) {
+    min-height: 3.75rem;
+    padding: 0 !important;
 }
 
 /* == Card Styling for Track Selection Area == */
@@ -2606,6 +2611,21 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .layout-desktop .itemBackdrop,
 .layout-tv .itemBackdrop {
     height: 45vh !important;
+}
+/* Pages without a backdrop image (playlists, many collections) have nothing to show in the
+   hero, so it is only tall enough to hold the action buttons, and the content area uses the
+   page background instead of a flat black slab. */
+.layout-desktop #itemDetailPage.noBackdropTransparency > .itemBackdrop {
+    height: max(11rem, 22vh) !important;
+}
+#itemDetailPage.noBackdropTransparency .detailPageWrapperContainer {
+    background-color: transparent;
+    background-image: none;
+}
+/* Phones: track rows keep Play and More; watched and favorite are in the More menu, which
+   leaves room for the track name. */
+.layout-mobile #itemDetailPage .listViewUserDataButtons .listItemButton:not(.itemAction) {
+    display: none;
 }
 
 /* == Font and Overlap Fixes for Media Bar Area == */

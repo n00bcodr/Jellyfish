@@ -153,9 +153,10 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
    The plugin adds file size, audio language, release dates and bitrate to the year / runtime
    / rating row, which is pinned over the top of the description panel. When it wraps to a
    second line, the panel gets extra top padding so the tagline is not covered. Applies only
-   when those plugin items are present and below the width where the row fits on one line. */
+   to panels with content, when those plugin items are present and below the width where the
+   row fits on one line. */
 @media (max-width: 2300px) {
-    .layout-desktop #itemDetailPage:has(.itemMiscInfo-primary :is(.mediaInfoItem-releaseDate, .mediaInfoItem-fileSize, .mediaInfoItem-audioLanguage, .mediaInfoItem-bitrate)) .detailSectionContent {
+    .layout-desktop #itemDetailPage:has(.itemMiscInfo-primary :is(.mediaInfoItem-releaseDate, .mediaInfoItem-fileSize, .mediaInfoItem-audioLanguage, .mediaInfoItem-bitrate)) .detailSectionContent:has(> :not(.hide):not(:empty):not(.overview-controls):not(.seriesRecordingEditor)) {
         padding-top: 5em !important;
     }
 }
