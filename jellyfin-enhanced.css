@@ -36,7 +36,7 @@
     border-radius: 12px !important;
     transition: background-color .15s ease, color .15s ease;
 }
-@media (hover: hover) and (pointer: fine) {
+@media (any-hover: hover) {
     .je-launcher-action.emby-button:hover:not(:disabled) {
         background: var(--accent-surface) !important;
         color: #ffffff;
@@ -82,7 +82,7 @@
     border-radius: 50%;
     transition: color .15s ease, background-color .15s ease;
 }
-@media (hover: hover) and (pointer: fine) {
+@media (any-hover: hover) {
     #je-active-streams-panel .je-as-panel-header button:hover {
         color: var(--accent-text-color) !important;
         background-color: var(--primary-background-transparent) !important;
@@ -169,10 +169,11 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
     border-radius: 50%;
     transition: color .15s ease, background-color .15s ease;
 }
-@media (hover: hover) and (pointer: fine) {
+@media (any-hover: hover) {
     .je-header-actions-host .headerButton.paper-icon-button-light:hover:not(:disabled) {
-        color: var(--accent-text-color) !important;
-        background-color: var(--primary-background-transparent) !important;
+        color: #ffffff !important;
+        background-color: var(--accent-surface-strong) !important;
+        box-shadow: inset 0 0 0 1px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
     }
 }
 .je-header-actions-host .headerButton.paper-icon-button-light:focus-visible {

@@ -132,7 +132,7 @@ a:has([data-testid="FavoriteIcon"]) { display: none !important; }
     margin-left: 2.4em;
   }
 
-  @media (hover: hover) and (pointer: fine) {
+  @media (any-hover: hover) {
     .videoOsdBottom .paper-icon-button-light:hover:not(:disabled) {
       background-color: #0009 !important;
     }
