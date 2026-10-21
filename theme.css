@@ -2651,36 +2651,44 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     from { opacity: 0; } to { opacity: 1; } /* Simple fade-in from 0 to current opacity (which is .3) */
 }
 
-/* == Hides Backdrop in People Detail page and other adjustments == */
+/* == Hides Backdrop in People Detail page and other adjustments ==
+   People are a poster with no Play button; the desktop layout is handled further down. */
 
 @media (orientation: portrait) {
-    .layout-mobile #itemDetailPage:has(#itemBirthday:not(.hide)) > .itemBackdrop {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) > .itemBackdrop {
         display: none;
     }
 
-    .layout-mobile #itemDetailPage:has(#itemBirthday:not(.hide)) .mainDetailButtons {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .mainDetailButtons {
         justify-content: flex-end !important;
         margin-top: -20vh;
     }
 }
 
-.layout-mobile #itemDetailPage:has(#itemBirthday:not(.hide)) .detailRibbon {
+.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
     display: flex;
     margin-top: 20vh !important;
 }
 
-.layout-desktop #itemDetailPage:has(#itemBirthday:not(.hide)) > .itemBackdrop {
-    height: 15% !important;
+.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .itemsContainer.padded-right.vertical-wrap {
+    width: 100vw !important;
 }
 
-.layout-desktop #itemDetailPage:has(#itemBirthday:not(.hide)) .mainDetailButtons {
+/* Pages with no backdrop (people, playlists) have nothing to show in the tall hero above the
+   poster, so on the desktop layout it shrinks to just the action buttons, which are pinned
+   top right. People are a poster with no Play button; playlists are recognised by their
+   playlist rows. People also drop the description panel's top padding, which reserves room
+   for the metadata row movies pin there. */
+.layout-desktop #itemDetailPage.itemDetailPage:is(:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide), :has(.listItem[data-playlistitemid])) > #itemBackdrop {
+    height: 4.5rem !important;
+}
+.layout-desktop #itemDetailPage.itemDetailPage:is(:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide), :has(.listItem[data-playlistitemid])) .mainDetailButtons {
     position: absolute !important;
     right: 6em !important;
     top: 6em !important;
 }
-
-.layout-mobile #itemDetailPage:has(#itemBirthday:not(.hide)) .itemsContainer.padded-right.vertical-wrap {
-    width: 100vw !important;
+.layout-desktop #itemDetailPage.itemDetailPage.itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailSectionContent {
+    padding-top: 12px !important;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ RESPONSIVENESS & FIXES ~~~~~~~~~~~~~~~~~~~~ */
