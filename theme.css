@@ -1780,6 +1780,57 @@ div#listChildrenCollapsible { order: 6 !important; }
     margin-top: -4.5em !important;
 }
 
+/* == Music ==
+   Album track lists: rows about two thirds of the default height, with rounder corners. */
+#childrenContent .listItem[data-type="Audio"] {
+    padding-block: .55em !important;
+    border-radius: 16px !important;
+}
+#childrenContent .listItem[data-type="Audio"] .listItem-indexnumberleft {
+    min-width: 2.2em;
+    color: var(--accent-text-color);
+    font-weight: 600;
+}
+
+/* Queue / now playing page: the player is one glass card (artwork, title, progress,
+   controls) above a roomier track list. */
+.nowPlayingPage .remoteControlContent {
+    padding-top: 1.5rem;
+}
+.nowPlayingPage .nowPlayingInfoContainer {
+    gap: 1.5rem;
+    padding: 1.25rem;
+    border-radius: calc(var(--rounded-cards) * 1.5);
+    border: 1px solid var(--alt-accent-color);
+    background: color-mix(in srgb, var(--secondary-background-color) 70%, transparent);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+    box-sizing: border-box;
+    width: 100%;
+}
+.nowPlayingPage .nowPlayingPageImageContainer,
+.nowPlayingPage .nowPlayingPageImage {
+    border-radius: var(--rounded-cards);
+}
+.nowPlayingPage .nowPlayingPageImage {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+}
+.nowPlayingPage .nowPlayingInfoContainerMedia > :first-child {
+    font-size: 1.5em;
+    font-weight: 700;
+}
+.nowPlayingPage .nowPlayingPlaylist .listItem {
+    border-radius: 16px !important;
+}
+.nowPlayingPage .nowPlayingPlaylist .listItemImage {
+    border-radius: 10px;
+}
+@media (max-width: 599.95px) {
+    .nowPlayingPage .nowPlayingInfoContainer {
+        padding: .9rem;
+        gap: 1rem;
+    }
+}
+
 /* Desktop Play Button Styling. */
 .layout-tv .mainDetailButtons .btnPlay, .layout-desktop .mainDetailButtons .btnPlay {
     /* Primary accent background is applied globally, this ensures other properties */
@@ -2612,10 +2663,10 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .layout-tv .itemBackdrop {
     height: 45vh !important;
 }
-/* Pages without a backdrop image (playlists, many collections) have nothing to show in the
-   hero, so it is only tall enough to hold the action buttons, and the content area uses the
-   page background instead of a flat black slab. */
-.layout-desktop #itemDetailPage.noBackdropTransparency > .itemBackdrop {
+/* Pages with no logo and no backdrop image (playlists, many collections) have nothing to
+   show in the hero, so it is only tall enough to hold the action buttons, and the content
+   area uses the page background instead of a flat black slab. */
+.layout-desktop #itemDetailPage.noBackdropTransparency:not(:has(.detailLogo:not(.hide))) > .itemBackdrop {
     height: max(11rem, 22vh) !important;
 }
 #itemDetailPage.noBackdropTransparency .detailPageWrapperContainer {

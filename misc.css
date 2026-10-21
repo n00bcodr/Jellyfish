@@ -4,8 +4,9 @@
 }
 a:has([data-testid="FavoriteIcon"]) { display: none !important; }
 
-/* Hide item names on mobile */
-.layout-mobile .detailLogo:not(.hide)~.detailPageWrapperContainer .nameContainer h1 {
+/* Hide item names on mobile when a logo is shown (albums keep their title: the logo is the
+   artist's, not the album's) */
+.layout-mobile #itemDetailPage:not(:has(.listItem[data-type="Audio"])) .detailLogo:not(.hide)~.detailPageWrapperContainer .nameContainer h1 {
     display: none;
 }
 
