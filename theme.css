@@ -2523,6 +2523,40 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
     background-color: var(--primary-accent-color) !important;
 }
 
+/* Guide grid: channel column as a rounded pane, programmes as rounded tiles with a thin ring
+   (an inset shadow, so cell sizes - which the guide positions by pixel - do not change). */
+.guideVerticalScroller .channelsContainer {
+    background: var(--accent-surface) !important;
+    border-radius: 16px 0 0 16px;
+    overflow: hidden;
+}
+.guide-channelHeaderCell {
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .08);
+    font-variant-numeric: tabular-nums;
+    transition: background-color .15s ease;
+}
+.programCell {
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+.guideVerticalScroller .programCell-active {
+    background: var(--accent-surface) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+    .guideVerticalScroller .programCell-active:hover {
+        background: var(--accent-surface-strong) !important;
+        box-shadow: inset 0 0 0 1px var(--primary-accent-color);
+    }
+}
+.programCell:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--primary-accent-color);
+}
+.timeslotHeader {
+    color: var(--accent-text-color);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+}
 /* ~~~~~~~~~~~~~~~~~~~~ BACKDROP SUPPORT ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles that apply when item backdrops (background images) are enabled and visible. */
 
@@ -2835,10 +2869,9 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* Date Tabs Slider */
 .emby-tabs-slider.guideDateTabsSlider {
-    background: var(--header-background-color) !important;
-    color: var(--secondary-background-color) !important;
-    backdrop-filter: blur(24px) !important;
-    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.25) !important;
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
     align-items: inherit;
     padding: 0px 10px;
     display: flex;
@@ -2850,6 +2883,7 @@ button.emby-tab-button.guide-date-tab-button.emby-button {
     padding: 15px 20px !important;
     transition: all 0.3s ease;
     font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
 }
 
 /* Active Date Tab Button */
@@ -2877,6 +2911,9 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
 /* Button Foreground Content */
 .emby-tab-button .emby-button-foreground {
     line-height: 1;
+}
+.guideDateTabsSlider .guide-date-tab-button:not(.emby-tab-button-active) .emby-button-foreground {
+    color: inherit !important;
 }
 
 /* Responsive Design for TV Guide */
@@ -3014,11 +3051,12 @@ body:not(.dashboardDocument) .MuiAppBar-root {
 }
 
 /* Floating glass bar (modern layout, not the dashboard).
-   The AppBar itself becomes a transparent, full-width wrapper and each toolbar row is
-   drawn as an inset, rounded pane of frosted glass, so the artwork shows around and through
-   it. The fill, edge and shadow come from the palette (surface + accent), so every colour
-   file gets a matching bar; a palette can still restyle it through the --bar-* tokens.
-   Rows keep their original total height (8px gap + 56px bar), so page content is not pushed. */
+   The whole AppBar - the main row and the page row under it (library title, filters,
+   breadcrumbs) - is one inset, rounded pane of frosted glass, so the artwork shows around
+   and through it. Fill, edge and shadow come from the palette (surface + accent), so every
+   colour file gets a matching bar; a palette can restyle it through the --bar-* tokens.
+   The pane is inset 8px from the top and 12px from the sides, and the rows are slightly
+   shorter than stock, so page content is not pushed down. */
 :root {
     --bar-fill: color-mix(in srgb, var(--secondary-background-color) 66%, rgb(var(--primary-r), var(--primary-g), var(--primary-b)) 10%);
     --bar-sheen: linear-gradient(135deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 60%);
@@ -3027,29 +3065,27 @@ body:not(.dashboardDocument) .MuiAppBar-root {
     --bar-radius: 20px;
 }
 body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
-    background: transparent !important;
-    border-bottom: 0;
-    padding: 8px 12px 0;
-    box-sizing: border-box;
-    pointer-events: none;
-}
-body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root {
-    pointer-events: auto;
-    min-height: 56px;
-    height: 56px;
+    top: 8px;
+    left: 12px;
+    right: 12px;
+    width: auto;
     border-radius: var(--bar-radius);
-    background: var(--bar-sheen), var(--bar-fill);
     border: 1px solid var(--bar-edge);
-    box-shadow: var(--bar-shadow);
+    background: var(--bar-sheen), var(--bar-fill) !important;
+    box-shadow: var(--bar-shadow) !important;
     -webkit-backdrop-filter: blur(var(--blur)) saturate(1.6);
     backdrop-filter: blur(var(--blur)) saturate(1.6);
+}
+body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root {
+    min-height: 56px;
+    height: 56px;
     padding-inline: 10px;
 }
-/* The second row (library title, filters, breadcrumbs) is a slimmer pane under the bar */
+/* Second row: a hairline separates it from the main row */
 body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root ~ .MuiToolbar-root {
-    margin-top: 6px;
     height: auto;
     min-height: 44px;
+    border-top: 1px solid var(--bar-edge);
 }
 /* Tabs: pill-shaped, the current one a solid accent chip */
 body:not(.dashboardDocument) .MuiToolbar-root > .MuiStack-root > :is(a, button) {
@@ -3070,7 +3106,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     :root { --bar-radius: 16px; }
 }
 @supports not (backdrop-filter: blur(1px)) {
-    body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root { background: var(--header-solid-background-color); }
+    body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root { background: var(--header-solid-background-color) !important; }
 }
 
 /* Avatar / user menu button */
