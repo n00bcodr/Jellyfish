@@ -1731,7 +1731,10 @@ h3.tagline {
 /* == Title Positioning (Desktop) == */
 /* Repositions the main title and related info on the details page. */
 .layout-desktop .infoWrapper { /* Container for title, year, ratings etc. */
-    margin-top: 245px !important;
+    /* The title sits above the description panel, whose offset scales with the font size
+       (1.25em padding), so this scales with it too (5em); a fixed 245px put the title on
+       the panel's edge wherever the root font size is smaller than 14.9px (iPad). */
+    margin-top: calc(64px + 12em) !important;
     margin-left: 20.8vw !important; /* Offset from left, relative to viewport width */
 }
 .layout-desktop .detailPagePrimaryContainer { /* Primary container for the top section of details page */
