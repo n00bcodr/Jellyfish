@@ -107,6 +107,31 @@
     document.head.appendChild(style);
   }
 
+  // Every jsDelivr theme file this page loads: the dashboard script's own list plus the
+  // stylesheets and @imports of the server's Custom CSS (read at the first level; imports of
+  // cross-origin sheets can't be read any deeper).
+  function themeFileUrls() {
+    const urls = new Set(getThemeUrls());
+    const add = href => {
+      if (href && /cdn\.jsdelivr\.net\/gh\/n00bcodr\//i.test(href)) urls.add(href.split('?')[0]);
+    };
+    const walk = sheet => {
+      try {
+        for (const rule of sheet.cssRules) {
+          if (rule.type === CSSRule.IMPORT_RULE) { add(rule.href); if (rule.styleSheet) walk(rule.styleSheet); }
+        }
+      } catch (e) { /* cross-origin sheet: rules not readable */ }
+    };
+    for (const sheet of document.styleSheets) { add(sheet.href); walk(sheet); }
+    return [...urls];
+  }
+
+  // cache: 'reload' bypasses the browser's cached copy and stores the new response for that URL.
+  function refetchThemeFiles() {
+    return Promise.all(themeFileUrls().map(url =>
+      fetch(url, { cache: 'reload', mode: 'cors' }).catch(e => console.warn('Theme refresh failed for', url, e))));
+  }
+
   function isDashboardDocument() {
     return document.body.classList.contains('dashboardDocument');
   }
@@ -127,7 +152,10 @@
     const btn = document.createElement('button');
     btn.id = BUTTON_ID;
     btn.type = 'button';
-    btn.className = scanBtn?.className ||
+    // State classes are dropped: while a scan runs the native button is Mui-disabled
+    // (pointer-events: none), and a copy would stay unclickable for good.
+    btn.className = (scanBtn?.className || '').split(/\s+/)
+      .filter(c => c && !/^Mui-(disabled|focusVisible|focused|active|selected)$/.test(c)).join(' ') ||
       "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary";
     const iconClass = scanBtn?.querySelector('.MuiButton-startIcon')?.className ||
       "MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium";
@@ -142,9 +170,11 @@
         </svg>
       </span>
       Refresh Theme`;
-    btn.onclick = () => {
+    btn.onclick = async () => {
       console.log("Jellyfin Theme Refreshed");
-      applyNewTheme();
+      // Re-download the theme files before reloading. The reload then finds the fresh copies in
+      // the browser cache, including the ones Custom CSS imports without a ?v= suffix.
+      await Promise.race([refetchThemeFiles(), new Promise(r => setTimeout(r, 5000))]);
       window.location.reload();
     };
     return btn;
