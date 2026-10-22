@@ -1742,6 +1742,13 @@ h3.tagline {
     margin-left: 0.75em !important; /* Use em for consistent zoom behavior */
     margin-top: 1em !important; /* Use em for consistent zoom behavior */
 }
+/* The row is pinned over the description panel, so without a width limit it runs past the
+   panel's right edge and its last items (dates) spill out. It is capped at the panel's inner
+   width (page width less both 3.3% side paddings, the description's 20.4vw left offset and the
+   panel's own 16px inset on each side) and wraps there. */
+.layout-desktop .itemMiscInfo-primary {
+    max-width: calc(93.4% - 20.4vw - 32px);
+}
 
 /* == Description Box Positioning (Desktop) == */
 /* Moves the primary content (description, etc.) to align with the repositioned title. */
