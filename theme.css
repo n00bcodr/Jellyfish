@@ -1585,6 +1585,15 @@ div.card-hoverable.squareCard.card:hover {
     animation: slideInLogo 0.8s ease-out; /* Apply slide-in animation */
 }
 
+/* Jellyfin hides the logo at 1100px and narrower (an iPad in portrait, a small laptop window).
+   The desktop layout has room for it in the hero, so it stays, a little wider on narrow screens. */
+@media (max-width: 68.75em) {
+    .layout-desktop #itemDetailPage .detailLogo:not(.hide) {
+        display: block;
+        max-width: 45%;
+    }
+}
+
 /* == Transparent Detail Ribbon == */
 /* Makes the ribbon bar (often containing item title/info) transparent. */
 .detailRibbon {
