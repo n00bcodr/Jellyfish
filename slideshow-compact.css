@@ -1,0 +1,152 @@
+/*
+ * ===================================================================
+ * |              Jellyfish Slideshow: compact card                  |
+ * ===================================================================
+ *
+ * An add-on for slideshow.css. Instead of a full-height slideshow that runs under the top bar,
+ * the Media Bar and Media Bar Enhanced become a rounded card inset to the width of the home
+ * rows, shorter than the screen, with the rows starting right under it.
+ *
+ * This file loads slideshow.css itself (the relative @import below resolves to the same
+ * repository ref as this file), so import just this one in place of slideshow.css:
+ *   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow-compact.css");
+ * Importing slideshow.css as well is harmless.
+ *
+ * Not applied to the Media Bar's "plate" layout (its panel is sized for the full-height bar,
+ * so it keeps the slideshow.css look) or to the TV layout.
+ */
+
+@import url("slideshow.css");
+
+html:root:root:not(.layout-tv):not(:has(#slides-container.layout-plate)) {
+  --sl-page-pad: 3.3%; /* the home rows' side padding: the card lines up with the first card */
+  --sl-card-top: calc(66px + 1.5rem); /* the floating top bar ends at 66px; then a gap */
+  --sl-card-h: clamp(21rem, 54vh, 34rem);
+  --slideshow-height: var(--sl-card-h) !important;
+  /* rows are pushed down to the card's bottom edge plus a gap. The page already leaves about
+     56px + 6.3rem above the first row; 5.5rem of gap keeps the row's own scroll arrows, which
+     sit just above its cards, clear of the card. */
+  --slideshow-content-top: calc(var(--sl-card-top) + var(--sl-card-h) + 5.5rem - 56px - 6.3rem) !important;
+  --sl-stack-top: 1.25rem;
+  --sl-stack-bottom: calc(var(--sl-card-h) - 1.5rem) !important;
+  --slideshow-gutter: clamp(1.25rem, 3vw, 3rem) !important;
+  --sl-stack-width: min(62%, 44rem);
+}
+
+/* The marquee layout gets its inset from slideshow.css at the container; match the others. */
+html:not(.layout-tv) #slides-container.layout-marquee {
+  --slideshow-gutter: clamp(1.25rem, 3vw, 3rem) !important;
+}
+
+/* ~~~~~~ The card ~~~~~~ */
+html:not(.layout-tv) #slides-container:not(.layout-plate) {
+  top: var(--sl-card-top) !important;
+  left: var(--sl-page-pad) !important;
+  width: calc(100% - 2 * var(--sl-page-pad)) !important;
+  height: var(--sl-card-h) !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: var(--rounded-cards, 20px) !important;
+  border: 1px solid var(--alt-accent-color) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+/* The plugins fade the backdrop into the page at the bottom; inside a card it runs to the edge. */
+html:not(.layout-tv) #slides-container:not(.layout-plate) :is(.backdrop-container, .backdrop, .backdrop-overlay, .gradient-overlay) {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  border-radius: 0 !important;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) .backdrop-container {
+  filter: none;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) .backdrop-overlay {
+  background: linear-gradient(to top, rgba(16, 16, 16, 0.9) 0%, rgba(16, 16, 16, 0.45) 35%, transparent 70%) !important;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) .gradient-overlay {
+  background: linear-gradient(to right, rgba(16, 16, 16, 0.8) 8%, rgba(16, 16, 16, 0.3) 45%, transparent 75%) !important;
+}
+
+/* ~~~~~~ A tighter stack ~~~~~~ */
+html:not(.layout-tv) #slides-container:not(.layout-plate) .logo-container {
+  min-height: clamp(4.5rem, 10vh, 7rem) !important;
+  width: clamp(220px, 32vw, 520px) !important;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) .logo {
+  max-height: clamp(80px, 18vh, 170px) !important;
+}
+/* No synopsis: the card keeps the logo, ratings, genres and the buttons. */
+html:not(.layout-tv) #slides-container:not(.layout-plate) .plot-container {
+  display: none !important;
+}
+/* Play is just an icon, a little larger than the other round buttons. */
+html:not(.layout-tv) #slides-container:not(.layout-plate) .play-button {
+  width: calc(var(--sl-control) * 1.15) !important;
+  height: calc(var(--sl-control) * 1.15) !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  gap: 0 !important;
+  flex: 0 0 auto !important; /* the Media Bar's phone layout stretches it across the row */
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) .play-button .play-text {
+  display: none !important;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) :is(.info-container, .spec-line) {
+  font-size: clamp(0.85rem, 1.15vw, 1.1rem) !important;
+}
+html:not(.layout-tv) #slides-container:not(.layout-plate) :is(.slide-content, .slide:not(:has(> .slide-content))) {
+  gap: clamp(0.5rem, 1.3vh, 0.9rem) !important;
+}
+
+/* The Media Bar's settings gear sits at a fixed 5rem from the top, which is the middle of a
+   card this size. It goes in the card's top-right corner. */
+html:not(.layout-tv) #slides-container:not(.layout-plate) .ss-settings-toggle {
+  top: 0.9rem !important;
+  right: 0.9rem !important;
+}
+
+/* ~~~~~~ Phones ~~~~~~ */
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  html:root:root:not(.layout-tv):not(:has(#slides-container.layout-plate)) {
+    --sl-page-pad: 3.5%;
+    --sl-card-top: calc(66px + 1rem);
+    --sl-card-h: clamp(26rem, 64vh, 36rem);
+    --slideshow-gutter: 1rem !important;
+    --sl-stack-width: 100%;
+  }
+  /* Facts and genres read at one size */
+  html:not(.layout-tv) #slides-container:not(.layout-plate) :is(.info-container, .spec-line, .genre) {
+    font-size: clamp(0.9rem, 3.6vw, 1.05rem) !important;
+  }
+  /* The marquee layout draws its own frosted, bordered panel on phones. Inside a card that is a
+     card within a card, so the panel is dropped and its contents sit directly on the backdrop,
+     centred like the other layouts. */
+  html:not(.layout-tv) #slides-container.layout-marquee .slide-content {
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  html:not(.layout-tv) #slides-container.layout-marquee :is(.logo-container, .spec-line, .button-container) {
+    justify-content: center !important;
+  }
+  html:not(.layout-tv) #slides-container.layout-marquee .spec-rail {
+    width: min(100%, 16rem) !important;
+  }
+  html:not(.layout-tv) #slides-container.layout-marquee .logo {
+    object-position: center bottom !important;
+  }
+  /* Pause sits in the card's top-right corner, clear of the buttons; the gear is left of it */
+  html:not(.layout-tv) #slides-container:not(.layout-plate) .ss-settings-toggle {
+    right: calc(0.75rem + var(--sl-control) + 0.6rem) !important;
+    top: 0.9rem !important;
+  }
+  html:not(.layout-tv) #slides-container:not(.layout-plate) .pause-button {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}

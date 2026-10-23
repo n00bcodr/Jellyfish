@@ -1,0 +1,16 @@
+/*
+ * Jellyfish Slideshow: full bar on large screens, compact card on phones
+ *
+ * Loads slideshow.css everywhere and adds slideshow-compact.css only on a phone held upright
+ * (the same condition slideshow.css uses for its phone layout). Tablets, laptops, desktops
+ * and phones on their side get the full-height bar.
+ *
+ * Import just this file:
+ *   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow-compact-mobile.css");
+ *
+ * To change what counts as "mobile", copy these two lines into your Custom CSS and edit the
+ * media query on the second one.
+ */
+
+@import url("slideshow.css");
+@import url("slideshow-compact.css") (max-width: 767px) and (orientation: portrait);

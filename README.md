@@ -208,6 +208,105 @@ Flush to the card corner on tablets and larger screens. On phones the theme's in
 ----
 </p>
 
+**Media Bar slideshow**
+
+Styles the home-page slideshow of the [Media Bar](https://github.com/IAmParadox27/jellyfin-plugin-media-bar) and [Media Bar Enhanced](https://github.com/CodeDevMLH/jellyfin-plugin-media-bar-enhanced) plugins with one design. It was built against Media Bar 6.1.0 (all three layouts: `marquee`, `classic`, `plate`) and Media Bar Enhanced 3.10.0, on Jellyfin 12.2. Install only one of the two plugins. Nothing needs changing in either plugin.
+
+Pick **one** of these. Each file loads the ones it needs, so do not import more than one:
+
+| You want | Import |
+| --- | --- |
+| The full-height bar on every screen | `slideshow.css` |
+| A compact card on every screen | `slideshow-compact.css` |
+| Full bar on desktop and tablet, compact card on phones | `slideshow-compact-mobile.css` |
+
+``` css
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow.css");
+/* or */
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow-compact.css");
+/* or */
+@import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow-compact-mobile.css");
+```
+
+**Full bar (`slideshow.css`)**
+
+<table align="center">
+  <tr>
+    <th style="text-align:center">Media Bar Enhanced</th>
+    <th style="text-align:center">Media Bar, marquee layout</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/slideshow-full-enhanced.jpg" width="100%"/></td>
+    <td><img src="screenshots/slideshow-full-marquee.jpg" width="100%"/></td>
+  </tr>
+  <tr>
+    <th style="text-align:center">Media Bar, classic layout</th>
+    <th style="text-align:center">Media Bar, plate layout</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/slideshow-full-classic.jpg" width="100%"/></td>
+    <td><img src="screenshots/slideshow-full-plate.jpg" width="100%"/></td>
+  </tr>
+</table>
+
+The two plugins draw the same pieces (backdrop, logo, ratings, genres, synopsis, buttons, arrows) with different markup, so the stylesheet lines them up into one stack:
+
+- **One stack.** Left-aligned with the first row of cards and anchored just above the home rows, in the same order in both plugins: logo, ratings, genres, synopsis, buttons. The logo takes the free space above the info, so it sits high on tall screens.
+- **Buttons.** Play is the accent pill used on the item pages, so it follows your palette. Info, watchlist and favorite are round frosted-glass buttons of one size. Watchlist replaces the favorite button when both exist.
+- **Controls.** Previous and next sit on either side of the slide. Pause sits at the bottom right. Mute shows only while a trailer plays. The pagination dots and counter are hidden. (In the plate layout all three controls sit together at the bottom right.)
+- **Type and shading.** Quicksand throughout, accent-colored separators, a shade from the left for the text and one from the bottom into the page. The marquee layout's timer rule uses the accent.
+- **Entrance.** The pieces fade in one after another when a slide appears.
+- **Clicks.** The buttons stay clickable where the home rows overlap the bottom of the bar.
+- **Plate layout.** The plugin draws its own tinted panel and spec table, which are kept. Only the font, the Play button and the controls follow the theme.
+
+**Compact card (`slideshow-compact.css`)**
+
+<table align="center">
+  <tr>
+    <th style="text-align:center">Media Bar Enhanced</th>
+    <th style="text-align:center">Media Bar, marquee layout</th>
+  </tr>
+  <tr>
+    <td><img src="screenshots/slideshow-compact-enhanced.jpg" width="100%"/></td>
+    <td><img src="screenshots/slideshow-compact-marquee.jpg" width="100%"/></td>
+  </tr>
+</table>
+
+A smaller slideshow, in the spirit of ElegantFin's media bar support: a rounded, bordered card inset to the width of the home rows, below the floating top bar, with the rows starting right under it. The backdrop runs to the card's edges instead of fading into the page. The synopsis is left out, Play is a round icon button, and the logo, ratings, genres and buttons stay. It is about 54% of the screen height (21 to 34rem). The plate layout and the TV layout keep the full bar.
+
+**Full on desktop, compact on phones (`slideshow-compact-mobile.css`)**
+
+<table align="center">
+  <tr>
+    <th style="text-align:center">Phone, Media Bar Enhanced</th>
+    <th style="text-align:center">Phone, Media Bar marquee</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/slideshow-hybrid-phone-enhanced.jpg" width="250"/></td>
+    <td align="center"><img src="screenshots/slideshow-hybrid-phone-marquee.jpg" width="250"/></td>
+  </tr>
+</table>
+
+Desktops, laptops, tablets and phones on their side get the full bar above. A phone held upright (`max-width: 767px` and portrait, the width the plugin itself treats as a phone) gets the compact card, with the pause button in the card's corner. To change what counts as a phone, copy the two `@import` lines from the file into your Custom CSS and edit the media query on the second one.
+
+**Tuning.** Override these after the import with `html:root { ... }`:
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `--slideshow-height` | `100vh` | Height of the full bar |
+| `--slideshow-content-top` | `62vh` | How far the home rows are pushed down |
+| `--slideshow-gutter` | `calc(3.3% + 1.5rem)` | Left and right inset of the text, so it lines up with the first row of cards at any width |
+| `--sl-stack-width` | `min(54%, 48rem)` | Width of the text stack |
+| `--sl-control` | `clamp(2.6rem, 2.1rem + 1.1vw, 3.25rem)` | Size of the round buttons |
+| `--sl-card-h` | `clamp(21rem, 54vh, 34rem)` | Height of the compact card |
+
+**Known limits.** Autoplaying trailer backdrops, Media Bar Enhanced's own `media-bar-mobile-*` modes and the TV layout's focus handling were not tested, and Safari was not available for testing, so check iPad and iPhone. A black logo stays hard to read on a dark backdrop; the plugins supply the image. On a phone, the marquee layout leaves out genres, because a long list does not fit its one-line spec row.
+
+
+<p align="center">
+----
+</p>
+
 **Show Scrollbars**
 `theme.css` hides scrollbars by default. Import this to bring them back.
 

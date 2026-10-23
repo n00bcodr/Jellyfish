@@ -3,341 +3,542 @@
  * |                    Jellyfish Slideshow Theme                    |
  * ===================================================================
  *
+ * Styles the home-page slideshow of two Jellyfin plugins from one file:
+ *   - Media Bar (Jellyfin Slideshow by M0RPH3US, "slideshowpure"): layouts
+ *     marquee (default), classic and plate
+ *   - Media Bar Enhanced (CodeDevMLH's fork)
+ *
+ * Both plugins draw the same pieces (backdrop, logo, info, genres, plot, buttons,
+ * arrows) with different markup. The bar is one stack, left-aligned at the page
+ * gutter and bottom-anchored where the home rows start:
+ *   - Enhanced puts the pieces directly in .slide: .slide becomes the flex column.
+ *   - Media Bar puts them in .slide-content, which is already a flex column.
+ * Skin rules (type, colours, buttons) match the pieces wherever they are.
+ *
+ * Import after theme.css and the palette:
+ *   @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/slideshow.css");
  */
 
+/* ~~~~~~ Geometry shared by both plugins ~~~~~~ */
+/* html:root outranks the plugins' own :root declarations, whichever sheet loads last. The
+   --slideshow-* ones are the Media Bar's variables; Enhanced ignores them, so the home rows
+   are pushed below the bar here for both. */
+html:root {
+  --slideshow-height: 100vh;
+  --slideshow-content-top: 62vh; /* the home rows are pushed down by this much */
+  --sl-stack-bottom: calc(var(--slideshow-content-top) + 9vh); /* the text stack and the controls end here, a little over the rows */
+  --slideshow-gutter: calc(3.3% + 1.5rem); /* the home rows' own side padding (3.3%) plus a small inset */
+  --slideshow-dots-reserve: 2.5rem;
+  --sl-font: "Quicksand", "Archivo Narrow", sans-serif;
+  --sl-control: clamp(2.6rem, 2.1rem + 1.1vw, 3.25rem); /* round button size */
+  /* Clear of the floating top bar (it ends 66px down). The container is pulled up by 2em, so
+     the stack starts that much higher than the page and the clearance adds it back. */
+  --sl-stack-top: calc(66px + 2em + 1rem);
+  --sl-stack-width: min(54%, 48rem);
+}
+
 #slides-container {
-  height: 100vh !important;
+  height: var(--slideshow-height) !important;
   margin-top: -2em !important;
-  font-family: 'Quicksand' !important;
+  font-family: var(--sl-font) !important;
+  /* no stacking context, so the slide's text can sit above the home rows */
   z-index: auto !important;
 }
 
-.misc-info {
-  font-family: 'Quicksand' !important;
+/* The rows start below the bar. The Media Bar does this with margin-top and Enhanced with
+   top; one rule serves both. Enhanced's own phone modes (media-bar-mobile-*) keep their
+   offsets. The :not(#_) terms raise the specificity above Enhanced's body.jellyfin-v12
+   rules, which set top with !important. */
+html body:not([class*="media-bar-mobile"]):not(#_):not(#__) .homeSectionsContainer {
+  top: 0 !important;
+  margin-top: calc(var(--slideshow-content-top) - var(--slideshow-page-offset, 0px)) !important;
 }
 
-/* Animation  */
-
-/* --- Base Slide Transition (Crossfade) --- */
 .slide {
   transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   z-index: auto !important;
 }
 
-/* --- Content Animation --- */
-/* Default state for all content (when slide is NOT active) */
+/* ~~~~~~ The stack ~~~~~~ */
+/* The marquee layout sets a narrower gutter of its own; the arrows need this one. */
+#slides-container.layout-marquee {
+  --slideshow-gutter: calc(3.3% + 1.5rem) !important;
+}
+/* Enhanced: the pieces are direct children of .slide, which becomes the column. */
+#slides-container .slide:not(:has(> .slide-content)) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  gap: clamp(0.7rem, 1.9vh, 1.4rem) !important;
+  box-sizing: border-box !important;
+  padding: var(--sl-stack-top) var(--slideshow-gutter) calc(var(--slideshow-height) - var(--sl-stack-bottom)) !important;
+}
+/* Media Bar: .slide-content is the column (classic and marquee; plate keeps its own). */
+#slides-container:not(.layout-plate) .slide-content {
+  left: var(--slideshow-gutter) !important;
+  top: var(--sl-stack-top) !important;
+  bottom: calc(var(--slideshow-height) - var(--sl-stack-bottom)) !important;
+  max-height: none !important;
+  width: var(--sl-stack-width) !important;
+  /* above the home rows (z-index 6), whose container reaches into the bottom of the stack;
+     only the buttons take clicks */
+  z-index: 7 !important;
+  pointer-events: none;
+  gap: clamp(0.7rem, 1.9vh, 1.4rem) !important;
+}
+/* Enhanced's pieces carry their own absolute offsets; they join the flow instead. */
+#slides-container .slide:not(:has(> .slide-content)) > :is(.logo-container, .info-container, .genre, .plot-container, .button-container) {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  max-width: var(--sl-stack-width) !important;
+}
+#slides-container .slide:not(:has(> .slide-content)) > :is(.info-container, .genre, .plot-container, .button-container) {
+  width: auto !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+}
+/* Buttons above the home rows (z-index 6), whose container reaches into the bottom of the stack */
+#slides-container .button-container {
+  position: relative;
+  z-index: 7 !important;
+  pointer-events: auto;
+}
+/* Extra air between the logo and the facts under it */
+#slides-container:not(.layout-plate) .slide :is(.slide-content, .slide:not(:has(> .slide-content))) > .logo-container,
+#slides-container .slide:not(:has(> .slide-content)) > .logo-container {
+  margin-bottom: clamp(0.6rem, 2.2vh, 1.6rem) !important;
+}
+/* One reading order for both: logo, facts, genres, plot, buttons. */
+#slides-container:not(.layout-plate) .slide :is(.logo-container) { order: 1 !important; }
+#slides-container:not(.layout-plate) .slide :is(.info-container, .spec-line) { order: 2 !important; }
+#slides-container:not(.layout-plate) .slide .genre { order: 3 !important; }
+#slides-container:not(.layout-plate) .slide .plot-container { order: 4 !important; }
+#slides-container:not(.layout-plate) .slide .button-container { order: 5 !important; }
+
+/* ~~~~~~ Cascade-in when a slide becomes active ~~~~~~ */
 .slide .logo-container,
 .slide .info-container,
+.slide .spec-line,
 .slide .genre,
 .slide .plot-container,
 .slide .button-container {
   opacity: 0 !important;
   filter: blur(4px) !important;
   transition: opacity 0.8s ease-out, filter 0.8s ease-out !important;
-  z-index: 7 !important;
 }
-
-/* Active state for all content (when slide IS active) - with staggered delay */
 .slide.active .logo-container,
 .slide.active .info-container,
+.slide.active .spec-line,
 .slide.active .genre,
 .slide.active .plot-container,
 .slide.active .button-container {
   opacity: 1 !important;
   filter: blur(0) !important;
 }
+.slide.active .logo-container { transition-delay: 0.2s !important; }
+.slide.active :is(.info-container, .spec-line) { transition-delay: 0.35s !important; }
+.slide.active .genre { transition-delay: 0.5s !important; }
+.slide.active .plot-container { transition-delay: 0.65s !important; }
+.slide.active .button-container { transition-delay: 0.8s !important; }
 
-/* Staggered transition delays for a cascade effect */
-.slide.active .logo-container {
-  transition-delay: 0.2s !important;
+/* ~~~~~~ Backdrop and shading ~~~~~~ */
+/* The plugins fade the backdrop into the page at the bottom; the shade below keeps text
+   readable on bright art. */
+.backdrop-container {
+  filter: brightness(0.9);
 }
-
-.slide.active .info-container {
-  transition-delay: 0.35s !important;
-}
-
-.slide.active .genre {
-  transition-delay: 0.5s !important;
-}
-
-.slide.active .plot-container {
-  transition-delay: 0.65s !important;
-}
-
-.slide.active .button-container {
-  transition-delay: 0.8s !important;
-}
-
-.homeSectionsContainer {
-  margin-top: 0vh !important;
-}
-
-
-/* --- Backdrop & Gradient Styling --- */
-.backdrop {
-  filter: brightness(0.9) !important;
-}
-
 .backdrop-overlay {
   background: linear-gradient(to top, rgba(16, 16, 16, 0.95) 5%, rgba(16, 16, 16, 0.5) 25%, transparent 50%) !important;
 }
-
 .gradient-overlay {
-  background: linear-gradient(to right, rgba(16, 16, 16, 0.75) 20%, transparent 50%) !important;
+  background: linear-gradient(to right, rgba(16, 16, 16, 0.78) 15%, rgba(16, 16, 16, 0.3) 45%, transparent 70%) !important;
 }
 
-/* --- Logo Styling --- */
-.logo-container {
-  left: 5vw !important;
-  top: 20vh !important;
-  width: clamp(300px, 45vw, 700px) !important;
-  height: clamp(150px, 25vh, 350px) !important;
+/* ~~~~~~ Logo ~~~~~~ */
+/* The logo takes the free space between the top bar and the facts and sits in the middle of
+   it, so it rides high on tall screens and tucks down on short ones. */
+#slides-container:not(.layout-plate) .logo-container {
+  width: clamp(260px, 40vw, 640px) !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 3.5rem !important;
+  max-height: 50vh !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  position: relative !important;
+  flex: 1 1 0 !important; /* shrinks first when the screen is short */
 }
-
-.logo-container:has(img[src*="Logo"]) {
-  opacity: 1 !important;
-}
-
-.logo {
-  max-width: 90% !important;
-  max-height: 90% !important;
+#slides-container:not(.layout-plate) .logo {
+  max-width: 100% !important;
+  max-height: min(100%, clamp(110px, 26vh, 300px)) !important;
   object-fit: contain !important;
-  filter: drop-shadow(1px 1px 10px rgba(255, 255, 255, 0.15)) brightness(1.1) blur(0) !important;
+  object-position: left center !important;
+}
+.logo.high-quality {
+  filter: drop-shadow(1px 1px 10px rgba(255, 255, 255, 0.15)) brightness(1.1);
 }
 
-
-/* --- Text & Info Styling --- */
-.info-container {
-  left: 5vw !important;
-  top: 50vh !important;
-  color: #ffffff !important;
-  font-size: clamp(0.9rem, 1.5vw, 1.3rem) !important;
+/* ~~~~~~ Facts, genres, plot ~~~~~~ */
+#slides-container .misc-info,
+#slides-container .genre,
+#slides-container .spec-line,
+#slides-container .plot-container {
+  font-family: var(--sl-font) !important;
 }
-
-.genre {
-  left: 5vw !important;
-  top: 57vh !important;
+#slides-container:not(.layout-plate) .info-container,
+#slides-container:not(.layout-plate) .spec-line {
+  color: #fff !important;
+  font-size: clamp(0.9rem, 1.35vw, 1.25rem) !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  justify-content: flex-start !important;
+}
+#slides-container:not(.layout-plate) .genre {
   color: #cfcfcf !important;
-  font-size: clamp(0.8rem, 1.2vw, 1rem) !important;
+  font-size: clamp(0.8rem, 1.1vw, 1rem) !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
 }
-
-.plot-container {
-  left: 5vw !important;
-  top: 63vh !important;
-  width: clamp(300px, 45vw, 700px) !important;
+#slides-container:not(.layout-plate) .plot-container {
+  width: 100% !important;
+  height: auto !important;
   color: #cfcfcf !important;
-  font-size: clamp(0.8rem, 1.2vw, 1rem) !important;
+  font-size: clamp(0.8rem, 1.1vw, 1rem) !important;
   line-height: 1.5 !important;
+  text-align: left !important;
 }
-
+#slides-container:not(.layout-plate) .plot {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-align: left !important;
+}
+/* The facts line wraps between items, never inside one ("Ends at 18:29") */
+#slides-container .misc-info > div {
+  white-space: nowrap !important;
+}
 .separator-icon {
   color: var(--primary-accent-color) !important;
   font-size: clamp(9px, 0.85vw, 13px) !important;
   margin: 0 clamp(6px, 0.6vw, 10px) !important;
 }
-
-/* --- Buttons (Restored Style) --- */
-.button-container {
-  left: 5vw !important;
-  top: 72vh !important;
-  gap: clamp(12px, 1.2vw, 24px) !important;
+/* Marquee: the spec line is the facts and genres in one row; the rule under the logo is
+   the slide timer, in the accent colour. */
+#slides-container.layout-marquee .spec-item {
+  padding: 0 clamp(6px, 0.7vw, 12px) !important;
+  white-space: nowrap !important; /* wrap between items, not inside "2h 6m" */
+}
+#slides-container.layout-marquee .spec-genre {
+  white-space: normal !important; /* the one item allowed to wrap, so long genre lists fit */
+}
+#slides-container.layout-marquee .spec-item:first-child {
+  padding-left: 0 !important;
+}
+#slides-container.layout-marquee .spec-divider {
+  background: var(--primary-accent-color) !important;
+  opacity: 0.8;
+}
+#slides-container.layout-marquee .spec-cert {
+  margin-left: clamp(6px, 0.7vw, 12px) !important;
+  border-radius: 6px !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  letter-spacing: normal !important;
+}
+#slides-container.layout-marquee .spec-rail {
+  background: rgba(255, 255, 255, 0.18) !important;
+  order: 2 !important;
+}
+#slides-container.layout-marquee .spec-progress {
+  background: var(--primary-accent-color) !important;
+}
+#slides-container.layout-marquee .plot {
+  color: #cfcfcf !important;
 }
 
-
-/* ----------- Icon buttons styling ----------- */
-
+/* ~~~~~~ Buttons ~~~~~~ */
 .play-button,
 .detail-button,
 .favorite-button,
 .slide .watchlist-button {
   color: #ffffff !important;
+  font-family: var(--sl-font) !important;
   transition: all 0.3s ease !important;
-  backdrop-filter: blur(var(--blur)) !important;
+  backdrop-filter: blur(var(--blur, 12px)) !important;
 }
-
+#slides-container .button-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: clamp(10px, 1vw, 20px) !important;
+  margin-top: clamp(0.35rem, 1.2vh, 0.9rem) !important;
+}
+/* Round icon buttons: frosted glass, one size */
 .detail-button,
 .favorite-button,
 .slide .watchlist-button {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Hide Favorite button if Watchlist button is present */
-.button-container:has(.watchlist-button) .favorite-button {
-  display: none;
-}
-
-
-/* Different styling for playbutton */
-.play-button {
-  background-color: var(--secondary-accent-color) !important;
-  border-radius: var(--rounded-cards) !important;
-  font-size: clamp(0.9rem, 1.3vw, 1.2rem) !important;
-}
-
-
-/* Hover Effects */
-.play-button:hover {
-  background-color: var(--primary-accent-color) !important;
-  transform: scale(1.05) !important;
-  color: var(--text-color) !important;
-}
-
-.detail-button:hover {
-  background-color: #fff !important;
-  transform: scale(1.05) !important;
-  color: #000 !important;
-
-}
-
-.favorite-button:hover {
-  background-color: #fff !important;
-  transform: scale(1.05) !important;
-  color: #ff0000 !important;
-}
-
-.slide .watchlist-button:hover {
-  background-color: #fff !important;
-  transform: scale(1.05) !important;
-  color: rgb(34, 197, 94) !important;
-}
-
-/* --- Navigation --- */
-.arrow {
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  width: var(--sl-control) !important;
+  height: var(--sl-control) !important;
+  min-width: 0 !important;
+  padding: 0 !important;
   border-radius: 50% !important;
-  transition: all 0.3s ease !important;
-  display: flex !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
-
-.arrow:hover {
-  background-color: var(--primary-accent-color) !important;
+/* Play: the accent pill used on the item pages */
+.play-button {
+  height: var(--sl-control) !important;
+  padding-inline: clamp(1.1rem, 1.6vw, 1.8rem) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: var(--primary-accent-color) !important;
+  color: var(--text-color) !important;
+  font-size: clamp(0.9rem, 1.2vw, 1.15rem) !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  white-space: nowrap !important;
+}
+/* Hide Favorite if Watchlist is present */
+.button-container:has(.watchlist-button) .favorite-button {
+  display: none !important;
+}
+/* Hover */
+.play-button:hover,
+.play-button:focus-visible {
+  filter: brightness(1.12);
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 18px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.45);
+}
+.detail-button:hover,
+.detail-button:focus-visible {
+  background-color: #fff !important;
+  transform: scale(1.08) !important;
+  color: #000 !important;
+}
+.favorite-button:hover,
+.favorite-button:focus-visible {
+  background-color: #fff !important;
+  transform: scale(1.08) !important;
+  color: #ff2d2d !important;
+}
+.slide .watchlist-button:hover,
+.slide .watchlist-button:focus-visible {
+  background-color: #fff !important;
+  transform: scale(1.08) !important;
+  color: rgb(34, 197, 94) !important;
 }
 
+/* ~~~~~~ Controls: arrows, pause, mute ~~~~~~ */
+/* Previous and next sit on either side of the slide, centred vertically. Pause (and mute,
+   when a trailer plays) sit at the bottom right, level with the end of the stack. */
+#slides-container :is(.arrow, .pause-button, .mute-button, .volume-toggle) {
+  position: absolute !important;
+  bottom: auto !important;
+  width: var(--sl-control) !important;
+  height: var(--sl-control) !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(var(--blur, 12px)) !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.7 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+  z-index: 8 !important;
+  transition: background-color 0.3s ease, opacity 0.3s ease, color 0.3s ease, transform 0.2s ease !important;
+}
+#slides-container :is(.arrow, .pause-button, .mute-button, .volume-toggle) i {
+  font-size: clamp(1.2rem, 1.6vw, 1.5rem) !important;
+  line-height: 1 !important;
+  width: auto !important;
+  height: auto !important;
+}
+#slides-container .arrow {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  /* a little smaller than the other buttons so it fits in the page gutter */
+  width: calc(var(--sl-control) * 0.85) !important;
+  height: calc(var(--sl-control) * 0.85) !important;
+}
+#slides-container .arrow:hover {
+  transform: translateY(-50%) scale(1.08) !important;
+}
+#slides-container .left-arrow { left: clamp(0.4rem, 1vw, 1.25rem) !important; right: auto !important; }
+#slides-container .right-arrow { right: clamp(0.4rem, 1vw, 1.25rem) !important; left: auto !important; }
+#slides-container :is(.pause-button, .mute-button, .volume-toggle) {
+  top: calc(var(--sl-stack-bottom) - var(--sl-control)) !important;
+  transform: none !important;
+}
+#slides-container .pause-button { right: var(--slideshow-gutter) !important; }
+#slides-container :is(.mute-button, .volume-toggle) { right: calc(var(--slideshow-gutter) + var(--sl-control) + 0.6rem) !important; }
+#slides-container :is(.arrow, .pause-button, .mute-button, .volume-toggle):hover {
+  background: var(--primary-accent-color) !important;
+  color: var(--text-color) !important;
+  opacity: 1 !important;
+}
+/* Mute only means something while a trailer plays. Enhanced hides its button itself (inline
+   display: none) and shows it with display: block; the Media Bar's toggle is always in the
+   page, so it is hidden until a trailer is active. */
+#slides-container .mute-button {
+  display: none !important;
+}
+#slides-container .mute-button[style*="display: block"] {
+  display: flex !important;
+}
+#slides-container:not(:has(.video-container.active)) .volume-toggle {
+  display: none !important;
+}
+/* The pagination dots and counter are replaced by the controls above. */
 .dots-container {
   display: none !important;
 }
 
-/* --- Tablet & iPad Layout Fixes --- */
-@media only screen and (min-width: 768px) and (max-width: 1024px) {
-
-  /* Landscape */
-  .logo-container {
-    width: clamp(280px, 42vw, 650px) !important;
-    height: clamp(140px, 22vh, 300px) !important;
-    top: 20vh !important;
-  }
-
-  .info-container {
-    top: 50vh !important;
-  }
-
-  .genre {
-    top: 56vh !important;
-  }
-
-  .plot-container {
-    top: 63vh !important;
-    width: clamp(300px, 45vw, 650px) !important;
-  }
-
-  .button-container {
-    top: 74vh !important;
-  }
-
-  /* Portrait */
-  @media (orientation: portrait) {
-    .gradient-overlay {
-      background: linear-gradient(to top, rgba(16, 16, 16, .75) 20%, transparent 50%) !important;
-    }
-
-    .logo-container {
-      width: clamp(250px, 55vw, 500px) !important;
-      height: clamp(120px, 18vh, 250px) !important;
-      top: 25vh !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-    }
-
-    .info-container,
-    .genre,
-    .plot-container,
-    .button-container {
-      width: clamp(300px, 80vw, 600px) !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      text-align: center !important;
-      justify-content: center !important;
-    }
-
-    .info-container {
-      top: 50vh !important;
-    }
-
-    .genre {
-      top: 58vh !important;
-    }
-
-    .plot-container {
-      top: 64vh !important;
-    }
-
-    .button-container {
-      top: 72vh !important;
-    }
-  }
+/* ~~~~~~ Plate layout (Media Bar) ~~~~~~ */
+/* Plate draws its own panel and spec table; only the type and the buttons follow the theme. */
+#slides-container.layout-plate {
+  font-family: var(--sl-font) !important;
+  /* plate anchors its panel with the Media Bar's own formula (content-top less the reserve);
+     the controls follow it */
+  --sl-stack-bottom: calc(var(--slideshow-content-top) - var(--slideshow-dots-reserve));
+}
+#slides-container.layout-plate .play-button {
+  background: var(--primary-accent-color) !important;
+  color: var(--text-color) !important;
 }
 
+/* The plate panel fills the left edge, so its arrows join pause at the bottom right instead of
+   sitting on either side. */
+#slides-container.layout-plate :is(.left-arrow, .right-arrow) {
+  top: calc(var(--sl-stack-bottom) - var(--sl-control)) !important;
+  transform: none !important;
+  width: var(--sl-control) !important;
+  height: var(--sl-control) !important;
+}
+#slides-container.layout-plate .right-arrow { right: var(--slideshow-gutter) !important; left: auto !important; }
+#slides-container.layout-plate .left-arrow { right: calc(var(--slideshow-gutter) + var(--sl-control) + 0.6rem) !important; left: auto !important; }
+#slides-container.layout-plate .pause-button { right: calc(var(--slideshow-gutter) + 2 * (var(--sl-control) + 0.6rem)) !important; }
 
-/* --- Mobile Layout Fixes --- */
-@media only screen and (max-width: 767px) and (orientation: portrait) {
-  .gradient-overlay {
-    background: linear-gradient(to top, rgba(16, 16, 16, .75) 20%, transparent 50%) !important;
+/* ~~~~~~ Short screens (a phone on its side) ~~~~~~ */
+/* There is not room for a full-size logo and a synopsis under the top bar. */
+@media (max-height: 520px) and (orientation: landscape) {
+  #slides-container:not(.layout-plate) .logo-container {
+    min-height: 3.5rem !important;
   }
-
-  .logo-container {
-    width: clamp(200px, 75vw, 400px) !important;
-    height: clamp(100px, 18vh, 200px) !important;
-    top: 25vh !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    justify-content: center !important;
+  #slides-container:not(.layout-plate) .logo {
+    max-height: 22vh !important;
   }
-
-  .info-container,
-  .genre,
-  .button-container,
-  .plot-container {
-    width: clamp(280px, 85vw, 500px) !important;
-    text-align: center !important;
-    justify-content: center !important;
-    font-size: clamp(0.85rem, 3.5vw, 1.1rem) !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-  }
-
-  .info-container {
-    top: 55vh !important;
-  }
-
-  .genre {
-    top: 60vh !important;
-  }
-
-  .plot-container {
+  #slides-container:not(.layout-plate) .plot-container {
     display: none !important;
   }
 }
 
-/* Move Pause Button to Bottom */
-.pause-button,
-.mute-button {
-  top: auto !important;
-  bottom: 10rem !important;
-  z-index: 10 !important;
+/* ~~~~~~ Tablets ~~~~~~ */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  html:root {
+    --sl-stack-width: min(62%, 40rem);
+  }
+  #slides-container:not(.layout-plate) .plot-container {
+    font-size: clamp(0.8rem, 1.6vw, 0.95rem) !important;
+  }
+
+  /* Portrait: centred stack, light shade from the bottom */
+  @media (orientation: portrait) {
+    html:root {
+      --sl-stack-width: min(84%, 38rem);
+    }
+    .gradient-overlay {
+      background: linear-gradient(to top, rgba(16, 16, 16, 0.75) 20%, transparent 55%) !important;
+    }
+    #slides-container:not(.layout-plate) .slide:not(:has(> .slide-content)) {
+      align-items: center !important;
+      text-align: center !important;
+    }
+    #slides-container:not(.layout-plate) .slide-content {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+    #slides-container:not(.layout-plate) .slide :is(.logo-container, .info-container, .spec-line, .genre, .plot-container, .button-container) {
+      justify-content: center !important;
+      text-align: center !important;
+    }
+    #slides-container:not(.layout-plate) .logo { object-position: center center !important; }
+    #slides-container:not(.layout-plate) .plot { text-align: center !important; }
+  }
+}
+
+/* ~~~~~~ Phones ~~~~~~ */
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  /* The Media Bar sets its own phone stage (66vh tall, rows at 54vh); this is for Enhanced. */
+  html:root {
+    --slideshow-content-top: 60vh;
+    --sl-stack-width: 100%;
+  }
+  .gradient-overlay {
+    background: linear-gradient(to top, rgba(16, 16, 16, 0.78) 20%, transparent 55%) !important;
+  }
+  #slides-container:not(.layout-plate) .slide:not(:has(> .slide-content)) {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  #slides-container:not(.layout-plate) .slide-content {
+    left: var(--slideshow-gutter) !important;
+    right: var(--slideshow-gutter) !important;
+    width: auto !important;
+    transform: none !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  #slides-container:not(.layout-plate) .slide :is(.logo-container, .info-container, .genre, .button-container) {
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: clamp(0.85rem, 3.5vw, 1.1rem) !important;
+  }
+  /* the marquee's phone panel is left-aligned and its spec line wraps inside it; a long genre
+     list does not fit the one-line row, so genres are left out on phones */
+  #slides-container.layout-marquee .spec-genre {
+    display: none !important;
+  }
+  #slides-container.layout-marquee .slide-content {
+    align-items: stretch !important;
+    text-align: left !important;
+  }
+  #slides-container:not(.layout-plate) .logo-container {
+    width: clamp(200px, 75vw, 400px) !important;
+    height: clamp(90px, 16vh, 180px) !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+  }
+  #slides-container:not(.layout-plate) .logo { object-position: center bottom !important; max-height: 100% !important; }
+  #slides-container:not(.layout-plate) .slide-content { top: auto !important; }
+  html:root { --sl-stack-top: 5.5rem; }
+  /* Swipe to change slides; the controls would crowd the buttons */
+  #slides-container :is(.arrow, .mute-button, .volume-toggle) {
+    display: none !important;
+  }
+  #slides-container .pause-button {
+    right: var(--slideshow-gutter) !important;
+    top: 5.5rem !important;
+  }
+  /* the plot is left out of the phone bar */
+  #slides-container:not(.layout-plate) .plot-container {
+    display: none !important;
+  }
 }
