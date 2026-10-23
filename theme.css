@@ -17,7 +17,7 @@
 /* ~~~~~~~~~~~~~~~~~~~~ GLOBAL CSS VARIABLES ~~~~~~~~~~~~~~~~~~~~ */
 /* Defines core variables used throughout the theme for consistency. */
 :root {
-    --theme-updated-on: "23 October 2026 - 05:14 P.M."; /* Date of last theme update */
+    --theme-updated-on: "23 October 2026 - 08:15 P.M."; /* Date of last theme update */
     --theme-name: 'Jellyfish';
     --rounded-cards: 15px; /* Standard border-radius */
     --blur: 15px;           /* Default blur intensity */
