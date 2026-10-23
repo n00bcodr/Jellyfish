@@ -33,6 +33,7 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 - **Jellyfin 10.11 and 12** - the Modern (React) layout, plus the legacy desktop, mobile and TV layouts, from small phones to 4K TVs.
 - **16 palettes** (including the frosted **Liquid Glass**) with readable text on every one, and an easy [way to make your own](#making-your-own-palette).
 - **Fast** - heavy blur effects are kept off the large panels, so scrolling stays smooth on modest hardware; [`lite.css`](#lite-mode) goes further for TVs and old tablets.
+- **[Theme Builder](https://n00bcodr.github.io/Jellyfish/)** - pick a palette (or make your own), switch the optional modules and the slideshow on and off with a live preview, and copy the exact lines to paste into Jellyfin.
 - **Works with** [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced), [KefinTweaks](https://github.com/ranaldsgift/KefinTweaks) and the Media Bar plugin, with an optional [add-on stylesheet](#jellyfin-enhanced-add-on) for the plugin's own panels.
 
 <a id="gallery"></a>
@@ -86,6 +87,9 @@ Login page backgrounds from [@ksushlapush](https://unsplash.com/@ksushlapush)
 
 
 ## Installation
+
+> [!TIP]
+> Don't want to write the imports by hand? The **[Theme Builder](https://n00bcodr.github.io/Jellyfish/)** lets you pick a palette and modules, shows them live, and gives you the lines to copy.
 
 ### Globally for all users
 
@@ -358,7 +362,7 @@ Styles the plugin's header "More" menu, the active-streams panel, form-control f
 **Text Instead of Icons**
 \
 \
-In the item details page (desktop layout), show text for Play, Trailer, Mark as watched, Add to Watchlist and more. Buttons added by Jellyfin Enhanced and KefinTweaks (Hide, Report issue, Spoiler blur, Watchlist) are labelled the same way.
+In the item details page (desktop layout), show text for Trailer, Mark as watched, Add to Watchlist and more. Play keeps its icon. Buttons added by Jellyfin Enhanced and KefinTweaks (Hide, Report issue, Spoiler blur, Watchlist) are labelled the same way.
 
 ``` css
 @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/icontext.css");
@@ -381,6 +385,9 @@ In the item details page (desktop layout), show text for Play, Trailer, Mark as 
 </p>
 
 **Coloured Parental Ratings**
+
+> [!TIP]
+> [Jellyfin Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) now colour-codes age ratings by rating board on its own, so you no longer need this module or its script if you use that plugin.
 
 <img src="screenshots/ratings.png" width="500"/>
 

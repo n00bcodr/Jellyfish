@@ -1,0 +1,42 @@
+name: Deploy theme builder
+
+# Publishes site/ (the colour and module picker) to GitHub Pages. In the repository settings,
+# set Pages > Build and deployment > Source to "GitHub Actions" once.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'site/**'
+      - '*.css'
+      - 'colors/*.css'
+      - 'fonts/**'
+      - 'logos/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the site
+        run: python3 site/build.py _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

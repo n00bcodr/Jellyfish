@@ -54,6 +54,12 @@ html body:not([class*="media-bar-mobile"]):not(#_):not(#__) .homeSectionsContain
   margin-top: calc(var(--slideshow-content-top) - var(--slideshow-page-offset, 0px)) !important;
 }
 
+/* Room for the first row's title under the slideshow. (misc.css hides that title and uses the
+   same padding; this keeps the layout the same without it.) */
+#indexPage .homeSectionsContainer .verticalSection.section0 {
+  padding-top: 3em;
+}
+
 .slide {
   transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   z-index: auto !important;

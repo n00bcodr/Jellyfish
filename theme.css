@@ -17,7 +17,7 @@
 /* ~~~~~~~~~~~~~~~~~~~~ GLOBAL CSS VARIABLES ~~~~~~~~~~~~~~~~~~~~ */
 /* Defines core variables used throughout the theme for consistency. */
 :root {
-    --theme-updated-on: "22 October 2026 - 06:10 P.M."; /* Date of last theme update */
+    --theme-updated-on: "23 October 2026 - 05:14 P.M."; /* Date of last theme update */
     --theme-name: 'Jellyfish';
     --rounded-cards: 15px; /* Standard border-radius */
     --blur: 15px;           /* Default blur intensity */
@@ -2785,6 +2785,11 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 /* Add some breathing space for now playing container or others */
 .sections.homeSectionsContainer {
     padding-bottom: 100px;
+}
+/* Without a slideshow the first row's title would sit under the floating top bar. (A slideshow
+   stylesheet pushes the rows down itself.) */
+body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
+    padding-top: 1.5rem;
 }
 
 /* Standardizes font family for various text elements often found near or related to the media bar. */

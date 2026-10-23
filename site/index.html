@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jellyfish Theme Builder</title>
+<meta name="description" content="Pick a palette, switch optional modules on and off, see it live, and copy the import statements for the Jellyfish Jellyfin theme.">
+<link rel="icon" href="logos/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --acc: #00a4dc; --acc-r: 0; --acc-g: 164; --acc-b: 220;
+  --acc-text: color-mix(in srgb, var(--acc) 70%, #fff);
+  --on-acc: #000;
+  --ui-bg: #0b0c0f; --ui-panel: #14161b; --ui-panel2: #1b1e25; --ui-line: #ffffff1a; --ui-text: #eceef2; --ui-dim: #9aa1ad;
+  --radius: 16px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ui-bg); color: var(--ui-text); font: 15px/1.5 "Quicksand", system-ui, sans-serif; }
+a { color: var(--acc-text); }
+button, input, select { font: inherit; color: inherit; }
+header.top { display: flex; align-items: center; gap: 14px; padding: 18px max(20px, 4vw); border-bottom: 1px solid var(--ui-line); }
+header.top h1 { margin: 0; font-size: 1.3rem; letter-spacing: .01em; display: flex; align-items: center; gap: 10px; }
+header.top h1 img { height: 38px; width: auto; flex: none; }
+header.top p { margin: 0; color: var(--ui-dim); font-size: .85rem; }
+header.top .links { margin-left: auto; display: flex; gap: 16px; font-size: .9rem; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 28px; padding: 24px max(20px, 4vw) 120px; align-items: start; }
+@media (max-width: 1050px) { main { grid-template-columns: minmax(0, 1fr); } .preview-col { position: static !important; order: -1; max-height: none; overflow: visible; } .wide-only { display: none; } .narrow-only { display: block; } }
+section.card { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: var(--radius); padding: 20px; margin-bottom: 18px; }
+section.card > h2 { margin: 0 0 4px; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
+section.card > h2 .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--acc); color: var(--on-acc); font-size: .8rem; font-weight: 700; }
+section.card > p.lead { margin: 0 0 14px; color: var(--ui-dim); font-size: .9rem; }
+.palettes { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.pal { position: relative; border: 2px solid transparent; border-radius: 12px; background: var(--ui-panel2); padding: 8px; cursor: pointer; text-align: left; }
+.pal:hover { border-color: #ffffff30; }
+.pal[aria-pressed="true"] { border-color: var(--acc); }
+.pal .sw { height: 44px; border-radius: 8px; display: flex; align-items: flex-end; padding: 6px; }
+.pal .sw i { display: block; width: 26px; height: 8px; border-radius: 4px; }
+.pal .nm { display: block; margin-top: 6px; font-size: .8rem; font-weight: 600; }
+#lg-thumb { height: 44px; max-width: 160px; object-fit: contain; background: #000; border: 1px solid var(--ui-line); border-radius: 8px; padding: 4px 8px; }
+#lg-custom { margin-top: 14px; }
+#lg-hint code { font-size: .78rem; background: var(--ui-panel2); border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+.custom { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--ui-line); }
+.row { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin: 10px 0; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; color: var(--ui-dim); }
+.field input[type=color] { width: 56px; height: 36px; border: 1px solid var(--ui-line); border-radius: 8px; background: none; padding: 2px; cursor: pointer; }
+.field input[type=range] { width: 170px; accent-color: var(--acc); }
+.field output { color: var(--ui-text); font-weight: 600; }
+.seg { flex: none; display: inline-flex; border: 1px solid var(--ui-line); border-radius: 10px; overflow: hidden; }
+.seg button { background: none; border: 0; padding: 7px 12px; cursor: pointer; font-size: .85rem; }
+.seg button[aria-pressed="true"] { background: var(--acc); color: var(--on-acc); font-weight: 700; }
+.note { font-size: .8rem; color: var(--ui-dim); margin: 6px 0 0; }
+.note b { color: var(--ui-text); }
+.warn { color: #ffb86b; }
+.mods { display: grid; gap: 8px; }
+.mod { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: start; padding: 10px 12px; border-radius: 12px; background: var(--ui-panel2); border: 1px solid transparent; cursor: pointer; }
+.mod:has(input:checked) { border-color: color-mix(in srgb, var(--acc) 60%, transparent); }
+.mod input { margin-top: 4px; accent-color: var(--acc); width: 18px; height: 18px; }
+.mod b { font-size: .92rem; }
+.mod small { grid-column: 2; color: var(--ui-dim); font-size: .8rem; }
+.tag { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 99px; font-size: .68rem; font-weight: 700; vertical-align: 1px; background: #ffffff1a; color: var(--ui-dim); }
+.tag.plug { background: color-mix(in srgb, var(--acc) 25%, transparent); color: var(--acc-text); }
+.ss-opts { display: grid; gap: 8px; }
+.ss-opts label { display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--ui-panel2); cursor: pointer; border: 1px solid transparent; }
+.ss-opts label:has(input:checked) { border-color: color-mix(in srgb, var(--acc) 60%, transparent); }
+.ss-opts input { accent-color: var(--acc); margin-top: 4px; }
+.ss-opts small { display: block; color: var(--ui-dim); font-size: .8rem; }
+.preview-col, .controls { min-width: 0; }
+.preview-col { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; scrollbar-width: thin; }
+.thanks-row { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.thanks-row h2 { font-size: .98rem; }
+.thanks-row .lead { margin: 2px 0 0; font-size: .8rem; max-width: 46ch; }
+.preview-col .thanks { margin: 12px 0 0; padding: 14px; }
+#pv-note, #pv-bd { font-size: .76rem; margin: 4px 0; }
+.preview-col .repos { margin-top: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.preview-col .repo { padding: 10px 12px; }
+.preview-col .repo p { font-size: .74rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.narrow-only { display: none; }
+.pv-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+.pv-tools .spacer { flex: 1; }
+.frame { border: 1px solid var(--ui-line); border-radius: var(--radius); overflow: hidden; background: #000; margin-inline: auto; transition: max-width .25s; }
+.frame { container-type: inline-size; }
+.frame.phone { max-width: 392px; }
+@container (max-width: 520px) {
+  .row-s { grid-auto-columns: 150px; }
+  .ip { flex-direction: column; margin-top: -60px; }
+  .ip h3 { margin-top: 6px; }
+  .hero .txt { max-width: 92%; }
+  .hero h3 { font-size: 22px; }
+}
+@container (max-width: 420px) { .pv-tab:nth-child(6) { display: none; } }
+@media (max-width: 600px) { #pv-dev { display: none; } }
+/* ---------- live preview (real Jellyfin markup + the real theme files) ---------- */
+.vp { position: relative; overflow: hidden; background: #000; }
+.vp iframe { display: block; border: 0; transform-origin: 0 0; background: #000; }
+.vp .ld { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ui-dim); font-size: .85rem; pointer-events: none; transition: opacity .2s; }
+.vp.ready .ld { opacity: 0; }
+/* output */
+.out { position: relative; }
+.out pre { margin: 0; padding: 16px; background: #07080a; border: 1px solid var(--ui-line); border-radius: 12px; overflow: auto; max-height: 420px; font: 12.5px/1.55 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; color: #d6e2ff; white-space: pre; }
+.out pre .c { color: #6d7a8c; }
+.copy { position: absolute; top: 10px; right: 10px; background: var(--acc); color: var(--on-acc); border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; }
+.copy:hover { filter: brightness(1.1); }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.steps { margin: 10px 0 0; padding-left: 20px; color: var(--ui-dim); font-size: .85rem; }
+.steps li { margin: 3px 0; }
+.starbtn { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border: 1px solid var(--ui-line); border-radius: 99px; background: var(--ui-panel2); color: var(--ui-text); text-decoration: none; font-weight: 600; font-size: .85rem; white-space: nowrap; }
+.starbtn svg { color: #e3b341; }
+.starbtn.gh svg { color: var(--ui-text); }
+.starbtn:hover { border-color: #e3b34188; background: #e3b34118; }
+.starbtn.gh:hover { border-color: #ffffff55; background: #ffffff12; }
+.starbtn .cnt { padding-left: 8px; border-left: 1px solid var(--ui-line); color: var(--ui-dim); font-weight: 600; }
+.thanks .starbtn { font-size: .95rem; padding: 9px 18px; }
+.repos { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 16px; }
+.repo { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; background: var(--ui-panel2); border: 1px solid transparent; color: var(--ui-text); text-decoration: none; }
+.repo:hover { border-color: color-mix(in srgb, var(--acc) 60%, transparent); }
+.repo b { font-size: .95rem; display: flex; align-items: center; gap: 8px; }
+.repo b .kind { font-size: .66rem; font-weight: 700; padding: 0 7px; border-radius: 99px; background: #ffffff1a; color: var(--ui-dim); }
+.repo p { margin: 0; color: var(--ui-dim); font-size: .82rem; flex: 1; }
+.repo .st { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--ui-dim); }
+.repo .st svg { color: #e3b341; }
+@media (max-width: 600px) { header.top .links .gh { display: none; } }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; padding: 12px; pointer-events: none; }
+.bar a { pointer-events: auto; background: var(--acc); color: var(--on-acc); text-decoration: none; font-weight: 700; padding: 11px 22px; border-radius: 99px; box-shadow: 0 8px 28px #000a; }
+input[type=text] { background: var(--ui-panel2); border: 1px solid var(--ui-line); border-radius: 8px; padding: 7px 10px; width: 220px; }
+footer { padding: 24px max(20px, 4vw) 60px; color: var(--ui-dim); font-size: .85rem; border-top: 1px solid var(--ui-line); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div><h1 aria-label="Jellyfish Theme Builder"><img src="logos/jellyfish.png" alt="Jellyfish"> Theme Builder</h1><p>Pick, preview, copy.</p></div>
+  <div class="links"><a class="starbtn" data-repo="Jellyfish" href="https://github.com/n00bcodr/Jellyfish" target="_blank" rel="noopener" title="Opens the repository on GitHub, where you can star it"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg> Star <span class="cnt" hidden></span></a><a class="starbtn gh" href="https://github.com/n00bcodr/Jellyfish" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg> GitHub</a></div>
+</header>
+
+<main>
+<div class="controls">
+
+  <section class="card" id="s-palette">
+    <h2><span class="n">1</span> Palette</h2>
+    <p class="lead">Pick one, or start from one and make it yours.</p>
+    <div class="palettes" id="palettes"></div>
+    <div class="custom" id="custom" hidden>
+      <div class="row">
+        <label class="field">Accent <input type="color" id="c-acc"></label>
+        <label class="field">Page background <input type="color" id="c-bg1"></label>
+        <label class="field">Cards &amp; drawer <input type="color" id="c-bg2"></label>
+        <div class="field">Text on the accent
+          <div class="seg" id="c-text"><button data-v="auto">Auto</button><button data-v="#000000">Black</button><button data-v="#ffffff">White</button></div>
+        </div>
+      </div>
+      <div class="row" id="bgpresets"></div>
+      <p class="note" id="contrast"></p>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <label class="field">Corner radius <input type="range" id="t-rad" min="0" max="30" step="1"><output id="o-rad"></output></label>
+      <label class="field">Blur (frosted bar &amp; menus) <input type="range" id="t-blur" min="0" max="30" step="1"><output id="o-blur"></output></label>
+      <label class="field">Badge size <input type="range" id="t-ind" min="18" max="44" step="1"><output id="o-ind"></output></label>
+    </div>
+  </section>
+
+  <section class="card" id="s-logo">
+    <h2><span class="n">2</span> Logo</h2>
+    <p class="lead">Shown in the top bar. Use your own to brand your server.</p>
+    <div class="seg" id="lg-mode"><button data-v="default">Jellyfish</button><button data-v="streamberry">Streamberry</button><button data-v="custom">Your own</button></div>
+    <div id="lg-custom" hidden>
+      <div class="row">
+        <label class="field">Upload an image <input type="file" id="lg-file" accept="image/png,image/svg+xml,image/webp,image/jpeg,image/gif"></label>
+        <label class="field">or paste its address <input type="text" id="lg-url" placeholder="https://i.ibb.co/…/logo.png or a GitHub file link"></label>
+        <img id="lg-thumb" alt="" hidden>
+      </div>
+      <p class="note" id="lg-hint">Upload an image or paste an address, and the preview updates as soon as you do. Addresses that work: a file in your <b>GitHub</b> repo (the normal <code>github.com/you/repo/blob/main/logo.png</code> link is fine), an <a href="https://imgbb.com">ImgBB</a> <b>direct link</b> (<code>https://i.ibb.co/…</code>), an <a href="https://imgur.com">Imgur</a> link, or any other <code>https</code> link straight to a PNG, SVG, WebP or JPEG.</p>
+      <p class="note" id="lg-note"></p>
+    </div>
+  </section>
+
+  <section class="card" id="s-mods">
+    <h2><span class="n">3</span> Optional modules</h2>
+    <p class="lead">Everything here is optional, and the preview on the right shows what each one does, except the plugin add-ons.</p>
+    <div class="mods" id="mods"></div>
+  </section>
+
+  <section class="card" id="s-ss">
+    <h2><span class="n">4</span> Home-page slideshow</h2>
+    <p class="lead">For the <a href="https://github.com/IAmParadox27/jellyfin-plugin-media-bar">Media Bar</a> or <a href="https://github.com/CodeDevMLH/jellyfin-plugin-media-bar-enhanced">Media Bar Enhanced</a> plugin. Skip it if you don't use one.</p>
+    <div class="ss-opts" id="ss-opts"></div>
+    <div class="row">
+      <div class="field">Plugin
+        <div class="seg" id="ss-plugin"><button data-v="enhanced">Media Bar Enhanced</button><button data-v="marquee">Media Bar</button></div>
+      </div>
+      <div class="field" id="ss-layout-wrap">Media Bar layout
+        <div class="seg" id="ss-layout"><button data-v="marquee">marquee</button><button data-v="classic">classic</button><button data-v="plate">plate</button></div>
+      </div>
+    </div>
+    <p class="note">The layout is chosen in the Media Bar plugin's own settings; the stylesheet adapts to all three. The slideshow shows at the top of the Home preview.</p>
+  </section>
+
+  <section class="card" id="s-scripts">
+    <h2><span class="n">5</span> Companion scripts</h2>
+    <p class="lead">Extra behaviour that CSS can't do. These are added with the <a href="https://github.com/n00bcodr/Jellyfin-JavaScript-Injector">JavaScript Injector</a> plugin, not Custom CSS.</p>
+    <div class="mods" id="scripts"></div>
+  </section>
+
+  <section class="card" id="s-out">
+    <h2><span class="n">6</span> Copy</h2>
+    <div class="row">
+      <div class="field">Where to paste it
+        <div class="seg" id="o-target"><button data-v="server">Everyone (Dashboard)</button><button data-v="user">Just me (Display settings)</button></div>
+      </div>
+      <label class="field">Version (branch or tag, optional) <input type="text" id="o-ref" placeholder="latest, or e.g. main"></label>
+    </div>
+    <div class="out"><button class="copy" id="copy">Copy</button><pre id="out"></pre></div>
+    <ol class="steps" id="steps"></ol>
+    <div class="out" id="js-out" hidden style="margin-top:16px"><button class="copy" id="copy-js">Copy</button><pre id="outjs"></pre></div>
+    <p class="note" id="share"></p>
+  </section>
+
+  <section class="card thanks narrow-only" id="s-thanks-m">
+    <h2>Enjoying Jellyfish?</h2>
+    <p class="lead">A star on GitHub helps other people find the theme. It takes a second, but GitHub only lets you star while you are signed in there, so the button opens the repository.</p>
+    <a class="starbtn" data-repo="Jellyfish" href="https://github.com/n00bcodr/Jellyfish" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg> Star Jellyfish on GitHub <span class="cnt" hidden></span></a>
+    <div class="repos" class="repos"></div>
+  </section>
+
+</div>
+
+<div class="preview-col">
+  <div class="pv-tools">
+    <div class="seg" id="pv-view"><button data-v="home">Home</button><button data-v="item">Item page</button></div>
+    <div class="seg" id="pv-dev"><button data-v="desktop">Desktop</button><button data-v="phone">Phone</button></div>
+    <span class="spacer"></span>
+    <span class="note" style="margin:0">Mock-up of Jellyfin 12, modern layout, with your selected options.</span>
+  </div>
+  <p class="note" id="pv-note"></p>
+  <p class="note" id="pv-bd">Works best with <b>Backdrops</b> enabled (Settings → Display → Backdrops). The preview is shown that way.</p>
+  <div class="frame" id="frame"><div class="vp" id="vp"><iframe id="pvf" title="Live preview of Jellyfin with your choices"></iframe><div class="ld">Loading preview…</div></div></div>
+  <section class="card thanks wide-only" id="s-thanks">
+    <div class="thanks-row"><div><h2>Enjoying Jellyfish?</h2><p class="lead">A star helps other people find it. GitHub only lets you star while signed in there, so this opens the repository.</p></div><a class="starbtn" data-repo="Jellyfish" href="https://github.com/n00bcodr/Jellyfish" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg> Star Jellyfish <span class="cnt" hidden></span></a></div>
+    <div class="repos"></div>
+  </section>
+</div>
+</main>
+
+<div class="bar"><a href="#s-out">Copy current setup</a></div>
+<footer>Made for the <a href="https://github.com/n00bcodr/Jellyfish">Jellyfish</a> theme. Nothing you choose here is sent anywhere; it is only written into the lines above (the only request this page makes to GitHub is for the star counts). The preview is Jellyfin 12's real markup running this theme's own CSS, with sample titles and artwork from the public <a href="https://demo.jellyfin.org">Jellyfin demo server</a> (see <a href="preview/NOTICE.md">credits</a>). Your choices are saved in this page's address, so you can bookmark or share a setup.</footer>
+
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const BASE = "https://cdn.jsdelivr.net/gh/n00bcodr/";
+
+/* ---------- data ---------- */
+const MODULES = [
+  { id: "indicators", file: "indicators.css", name: "Cornered card badges", desc: "Watched and unwatched-count badges sit flush in the card's corner (tablets and up).", cls: "corner" },
+  { id: "progress_bar", file: "progress_bar.css", name: "Floating progress bar", desc: "A rounded progress bar floating over the bottom of the card.", cls: "float-pb" },
+  { id: "card_buttons", file: "card_buttons.css", name: "Watched / favourite buttons on hover", desc: "Shows the watched and favourite buttons when you hover a card (first card shown).", cls: "card-btns" },
+  { id: "icontext", file: "icontext.css", name: "Text instead of icons on item pages", desc: "Labels on the item page buttons: Trailer, Watched, Favourite, More…", cls: "icontext", view: "item" },
+  { id: "scrollbar", file: "scrollbar.css", name: "Show scrollbars", desc: "The theme hides them by default.", cls: "show-sb" },
+  { id: "bg_scroll", file: "bg_scroll.css", name: "Slowly moving backdrops", desc: "A gentle pan on item backdrops.", cls: "bg-scroll" },
+  { id: "lite", file: "lite.css", name: "Lite mode", desc: "Turns off the costly effects. For TVs, old tablets and Raspberry-Pi-class clients.", cls: "lite" },
+  { id: "misc", file: "misc.css", name: "Misc. tweaks", desc: "Hides the Favourites tab, smaller loading spinner, award banners on collections, tidier mobile player controls. Opinionated.", cls: "hide-fav", tag: "opinionated" },
+  { id: "je", file: "jellyfin-enhanced.css", name: "Jellyfin Enhanced add-on", desc: "Styles the plugin's \"More\" menu, active-streams panel and variables.", tag: "needs plugin", plugin: true, nopreview: true },
+  { id: "arr", file: "arr-tags-links.css", name: "Streaming-service logos on arr tags", desc: "Shows each service's logo for the Jellyfin Enhanced arr tag links.", tag: "needs plugin", plugin: true, nopreview: true },
+];
+const SCRIPTS = [
+  { id: "title", file: "title.js", name: "title.js", desc: "Browser tab title says \"Jellyfish\" instead of \"Jellyfin\"." },
+  { id: "theme_selector", file: "theme_selector.js", name: "theme_selector.js", desc: "Adds a palette dropdown to each user's settings, so people can switch palettes without editing CSS." },
+  { id: "dashboard_theming", file: "dashboard_theming.js", name: "dashboard_theming.js", desc: "Themes the Dashboard itself (Jellyfin removed Custom CSS there). Hacky, use at your own risk; needs the File Transformation plugin.", warn: true },
+];
+const SLIDESHOW = [
+  { id: "none", name: "No slideshow styling", desc: "I don't use a Media Bar plugin." },
+  { id: "full", file: "slideshow.css", name: "Full-height bar", desc: "The slideshow fills the top of the home page on every screen." },
+  { id: "compact", file: "slideshow-compact.css", name: "Compact card", desc: "A rounded card the width of the home rows, no synopsis, round Play button. On every screen." },
+  { id: "mobile", file: "slideshow-compact-mobile.css", name: "Full on desktop, compact on phones", desc: "The full bar everywhere except a phone held upright, which gets the compact card." },
+];
+const BG_PRESETS = [
+  ["Black", "#000000", "#181818"], ["Graphite", "#0a0a0a", "#1c1c1f"], ["Navy", "#0a0a14", "#1a1a2e"],
+  ["Forest", "#0d1b0d", "#1a2e1a"], ["Wine", "#120a0e", "#26141c"], ["Slate", "#0b1014", "#18222b"],
+];
+const DEFAULTS = { rad: 15, blur: 15, ind: 30 };
+
+/* ---------- state ---------- */
+const S = {
+  palette: "jellyblue", palettes: [], custom: null,
+  tweaks: { ...DEFAULTS },
+  modules: new Set(), scripts: new Set(),
+  ss: "none", ssPlugin: "enhanced", ssLayout: "marquee",
+  logo: { mode: "default", src: "", from: "", bytes: 0 },
+  target: "server", ref: "", view: "home", dev: "desktop",
+};
+
+/* ---------- colour helpers ---------- */
+const hex2rgb = h => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map(c => c + c).join(""); const n = parseInt(h.slice(0, 6), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgb2hex = (r, g, b) => "#" + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+const lum = ([r, g, b]) => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; return .2126 * f(r) + .7152 * f(g) + .0722 * f(b); };
+const contrast = (a, b) => { const l1 = lum(a), l2 = lum(b); return (Math.max(l1, l2) + .05) / (Math.min(l1, l2) + .05); };
+const mixWhite = (hex, t) => { const [r, g, b] = hex2rgb(hex); return rgb2hex(r + (255 - r) * t, g + (255 - g) * t, b + (255 - b) * t); };
+const hexOf = c => /^#/.test(c) ? c.slice(0, 7) : "#000000";
+
+function activePalette() {
+  if (S.palette === "custom" && S.custom) return S.custom;
+  const p = S.palettes.find(x => x.id === S.palette) || S.palettes[0];
+  return paletteToCustom(p);
+}
+function paletteToCustom(p) {
+  return { acc: rgb2hex(p["primary-r"], p["primary-g"], p["primary-b"]), bg1: hexOf(p["primary-background-color"]), bg2: hexOf(p["secondary-background-color"]),
+    bg3: hexOf(p["tertiary-background-color"]), text: p["text-color"].toLowerCase().slice(0, 7), textMode: "fixed", header: p["header-background-color"] };
+}
+function resolvedText(c) {
+  if (c.textMode === "auto" || !c.text) {
+    const a = hex2rgb(c.acc);
+    return contrast(a, [0, 0, 0]) >= contrast(a, [255, 255, 255]) ? "#000000" : "#ffffff";
+  }
+  return c.text;
+}
+
+/* ---------- build UI ---------- */
+function buildPalettes() {
+  const box = $("#palettes"); box.innerHTML = "";
+  for (const p of S.palettes) {
+    const c = paletteToCustom(p);
+    const b = document.createElement("button");
+    b.className = "pal"; b.dataset.id = p.id; b.type = "button";
+    b.innerHTML = `<span class="sw" style="background:${c.bg2}"><i style="background:${c.acc}"></i></span><span class="nm">${p.name}</span>`;
+    b.onclick = () => { S.palette = p.id; render(); };
+    box.append(b);
+  }
+  const cu = document.createElement("button");
+  cu.className = "pal"; cu.dataset.id = "custom"; cu.type = "button";
+  cu.innerHTML = `<span class="sw" style="background:conic-gradient(#f55,#fa5,#ee5,#5e5,#5ee,#55f,#e5e,#f55)"></span><span class="nm">Custom…</span>`;
+  cu.onclick = () => { if (!S.custom) S.custom = { ...paletteToCustom(S.palettes.find(x => x.id === S.palette) || S.palettes[0]), textMode: "auto" }; S.palette = "custom"; render(); };
+  box.append(cu);
+  const bp = $("#bgpresets"); bp.innerHTML = '<span class="note" style="margin:0">Background:</span>';
+  for (const [n, a, b] of BG_PRESETS) {
+    const x = document.createElement("button"); x.className = "pal"; x.type = "button"; x.style.padding = "4px 8px"; x.style.minWidth = "auto";
+    x.innerHTML = `<span style="display:flex;align-items:center;gap:6px;font-size:.78rem"><i style="width:14px;height:14px;border-radius:4px;background:${b};border:1px solid #fff3"></i>${n}</span>`;
+    x.onclick = () => { S.custom.bg1 = a; S.custom.bg2 = b; S.custom.bg3 = mixWhite(b, .07); render(); };
+    bp.append(x);
+  }
+}
+function buildMods() {
+  const mk = (list, set, box, key) => {
+    box.innerHTML = "";
+    for (const m of list) {
+      const l = document.createElement("label"); l.className = "mod";
+      const tag = (m.tag ? `<span class="tag ${m.plugin ? "plug" : ""}">${m.tag}</span>` : "") + (m.nopreview ? '<span class="tag">not in the preview</span>' : "");
+      l.innerHTML = `<input type="checkbox" data-id="${m.id}"><span><b>${m.name}</b>${tag}</span><small>${m.desc}</small>`;
+      $("input", l).onchange = e => { e.target.checked ? set.add(m.id) : set.delete(m.id); if (key === "m" && e.target.checked && m.view) { S.view = m.view; } render(); };
+      box.append(l);
+    }
+  };
+  mk(MODULES, S.modules, $("#mods"), "m");
+  mk(SCRIPTS, S.scripts, $("#scripts"), "s");
+  const so = $("#ss-opts"); so.innerHTML = "";
+  for (const o of SLIDESHOW) {
+    const l = document.createElement("label");
+    l.innerHTML = `<input type="radio" name="ss" value="${o.id}"><span><b>${o.name}</b><small>${o.desc}</small></span>`;
+    $("input", l).onchange = () => { S.ss = o.id; S.view = "home"; render(); };
+    so.append(l);
+  }
+}
+function seg(sel, key, after) {
+  $$(sel + " button").forEach(b => b.onclick = () => { S[key] = b.dataset.v; (after || render)(); });
+}
+
+/* ---------- render ---------- */
+function render() {
+  const c = activePalette();
+  const txt = resolvedText(c);
+  const [r, g, b] = hex2rgb(c.acc);
+  // page chrome follows the chosen accent
+  const root = document.documentElement.style;
+  root.setProperty("--acc", c.acc); root.setProperty("--on-acc", txt);
+  const view = S.view;
+  $("#frame").classList.toggle("phone", S.dev === "phone");
+  setPreview(view);
+  // logo
+  $$("#lg-mode button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === S.logo.mode));
+  $("#lg-custom").hidden = S.logo.mode !== "custom";
+  const th = $("#lg-thumb"); th.hidden = !(S.logo.mode === "custom" && S.logo.src); if (!th.hidden) th.src = S.logo.src;
+  $("#lg-note").textContent = S.logo.error || (S.logo.mode !== "custom" ? "" : !S.logo.src ? ""
+    : S.logo.from === "upload" ? `Embedded in your CSS: ${(S.logo.bytes / 1024).toFixed(1)} KB (resized to fit the top bar). For a bigger or animated logo, host it yourself and paste its address instead.`
+    : (S.logo.state === "bad" ? "That address didn't load as an image. Make sure it is a direct link to the picture itself (it usually ends in .png, .jpg, .webp or .svg). "
+       : S.logo.state === "ok" ? "Loaded. " : "") + (S.logo.note ? S.logo.note + " " : "") + "It is loaded from that address, so the file has to stay online and be reachable from your users' browsers.");
+  // controls
+  $$("#palettes .pal").forEach(x => x.setAttribute("aria-pressed", x.dataset.id === S.palette));
+  $("#custom").hidden = S.palette !== "custom";
+  if (S.palette === "custom") {
+    $("#c-acc").value = c.acc; $("#c-bg1").value = c.bg1; $("#c-bg2").value = c.bg2;
+    $$("#c-text button").forEach(x => x.setAttribute("aria-pressed", (x.dataset.v === "auto") === (c.textMode === "auto") && (c.textMode === "auto" || x.dataset.v === c.text)));
+    const cr = contrast(hex2rgb(c.acc), hex2rgb(txt));
+    $("#contrast").innerHTML = `Text on the accent (Play button, active tab): <b>${txt === "#000000" ? "black" : "white"}</b>, contrast <b>${cr.toFixed(1)}:1</b> ${cr < 4.5 ? '<span class="warn">- low, try the other colour or a stronger accent</span>' : "- good"}.`;
+  }
+  for (const k of ["rad", "blur", "ind"]) { $("#t-" + k).value = S.tweaks[k]; $("#o-" + k).textContent = S.tweaks[k] + "px"; }
+  $$("#mods input").forEach(i => i.checked = S.modules.has(i.dataset.id));
+  $$("#scripts input").forEach(i => i.checked = S.scripts.has(i.dataset.id));
+  $$('#ss-opts input').forEach(i => i.checked = i.value === S.ss);
+  for (const [sel, key] of [["#pv-view", "view"], ["#pv-dev", "dev"], ["#ss-plugin", "ssPlugin"], ["#ss-layout", "ssLayout"], ["#o-target", "target"]])
+    $$(sel + " button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === (key === "view" ? view : S[key])));
+  $("#ss-layout-wrap").style.display = S.ssPlugin === "marquee" ? "" : "none";
+  $("#ss-plugin").closest(".row").style.display = S.ss === "none" ? "none" : "";
+  const hidden = MODULES.filter(m => m.nopreview && S.modules.has(m.id)).map(m => m.name);
+  $("#pv-note").textContent = hidden.length ? `Not in the mock-up: ${hidden.join("; ")} (still included in what you copy).` : "Not in the mock-up: plugin add-ons (Jellyfin Enhanced, arr tag logos) and scripts. They are still included in what you copy.";
+  writeOutput(c, txt);
+  PV.css = importList("../jf/").map(x => x.line).join("\n") + (customBlock(c, txt) ? "\n" + customBlock(c, txt) : "");
+  applyTheme();
+  saveHash();
+}
+
+/* ---------- live preview: a captured Jellyfin page with the theme's real CSS loaded into it ---------- */
+const PV = { css: "", src: "" };
+/* ---------- logo ---------- */
+/* Turns what people paste into an address a browser can use as an image. Returns { url, note } or { error }. */
+function normalizeLogoUrl(raw) {
+  let u = raw.trim(), note = "";
+  if (!/^https?:\/\//i.test(u) && /^[\w.-]+\.[a-z]{2,}\//i.test(u)) u = "https://" + u;
+  let url;
+  try { url = new URL(u); } catch { return { error: "That doesn't look like a web address (it should start with https://)." }; }
+  if (/["')\s]/.test(raw.trim())) return { error: "That address has characters that can't go in CSS (quotes, brackets or spaces). Remove them or encode them as %xx." };
+  const host = url.hostname.replace(/^www\./, ""), parts = url.pathname.split("/").filter(Boolean);
+  if (host === "github.com" && parts[2] === "blob" && parts.length >= 5) {
+    const [o, r, , ref, ...rest] = parts;
+    url = new URL(`https://cdn.jsdelivr.net/gh/${o}/${r}@${ref}/${rest.join("/")}`); note = "GitHub file link converted to a jsDelivr address, which is what the theme itself uses.";
+  } else if (host === "github.com" && parts[2] === "raw" && parts.length >= 5) {
+    const [o, r, , ref, ...rest] = parts;
+    url = new URL(`https://cdn.jsdelivr.net/gh/${o}/${r}@${ref}/${rest.join("/")}`); note = "Converted to a jsDelivr address.";
+  } else if (host === "ibb.co" && parts.length) {
+    return { error: "That is the page for the image on ImgBB. Open it and copy the \"Direct link\" instead, which starts with https://i.ibb.co/ and ends in .png or .jpg." };
+  } else if (host === "imgur.com" && parts.length === 1 && !/\./.test(parts[0])) {
+    url = new URL(`https://i.imgur.com/${parts[0]}.png`); note = "Imgur page link converted to the direct image address.";
+  }
+  if (url.protocol === "http:") { url.protocol = "https:"; note = (note ? note + " " : "") + "Upgraded to https, because Jellyfin servers on https block plain-http images."; }
+  return { url: url.href, note };
+}
+function checkLogo(src) {
+  const i = new Image();
+  i.onload = () => { if (S.logo.src === src && S.logo.state !== "ok") { S.logo.state = "ok"; render(); } };
+  i.onerror = () => { if (S.logo.src === src) { S.logo.state = "bad"; render(); } };
+  i.src = src;
+}
+async function logoFromFile(file) {
+  const b64 = buf => { let t = ""; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) t += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(t); };
+  if (file.type === "image/svg+xml" && file.size <= 30000) { const src = "data:image/svg+xml;base64," + b64(await file.arrayBuffer()); return { src, from: "upload", bytes: src.length }; }
+  const url = URL.createObjectURL(file);
+  const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
+  URL.revokeObjectURL(url);
+  const iw = img.naturalWidth || 300, ih = img.naturalHeight || 100;
+  let out = "";
+  // The top bar shows the logo about 40px tall; keep up to 120px for sharp screens, smaller if the file is big.
+  for (let h = Math.min(ih, 120); h >= 40; h = Math.round(h * 0.8)) {
+    const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(iw * h / ih)); c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    out = c.toDataURL("image/webp", 0.9); if (!out.startsWith("data:image/webp")) out = c.toDataURL("image/png");
+    if (out.length <= 40000) break;
+  }
+  return { src: out, from: "upload", bytes: out.length };
+}
+
+/* The frosted bar only blurs what is behind it, so scroll the page until content passes underneath. */
+function showBlur() {
+  const w = $("#pvf").contentWindow;
+  if (w && w.scrollY < 100) w.scrollTo({ top: S.view === "item" ? 130 : 230, behavior: "smooth" });
+}
+function layoutPreview() {
+  // The iframe is a real browser window (1440x900 or 390x844) scaled down to fit, so vh-based
+  // layouts such as the slideshow keep their proportions.
+  const frame = $("#frame"), vp = $("#vp"), f = $("#pvf");
+  const phone = S.dev === "phone", W = frame.clientWidth || 700;
+  const dw = phone ? 390 : 1440, dh = phone ? 844 : 900;
+  const scale = Math.max(.4, Math.min(1, W / dw, phone ? (innerHeight - 190) / dh : 1));
+  f.style.width = dw + "px"; f.style.height = dh + "px"; f.style.transform = `scale(${scale})`;
+  vp.style.width = Math.round(dw * scale) + "px"; vp.style.height = Math.round(dh * scale) + "px";
+  vp.style.marginInline = "auto";
+}
+function setPreview(view) {
+  const src = `preview/${view}-${S.dev === "phone" ? "mobile" : "desktop"}.html`;
+  layoutPreview();
+  if (src === PV.src) return;
+  PV.src = src; $("#vp").classList.remove("ready"); $("#pvf").src = src;
+}
+const SSCACHE = {};
+async function ssAsset(url, json) {
+  if (!SSCACHE[url]) SSCACHE[url] = fetch(url).then(r => json ? r.json() : r.text());
+  return SSCACHE[url];
+}
+/* The slideshow is a real capture of the plugin's markup and its own stylesheet, added to the Home page. */
+async function syncSlideshow() {
+  const d = $("#pvf").contentDocument;
+  if (!d || !d.head || !d.body || !$("#vp").classList.contains("ready")) return;
+  const want = S.view === "home" && S.ss !== "none" ? (S.ssPlugin === "enhanced" ? "enhanced" : S.ssLayout) : "";
+  if (d.documentElement.dataset.ss === want) return;
+  d.documentElement.dataset.ss = want;
+  const sc = d.getElementById("slides-container"); if (sc) sc.remove();
+  const old = d.getElementById("pv-plugin"); if (old) old.remove();
+  (d.documentElement.dataset.ssClasses || "").split(" ").filter(Boolean).forEach(c => { d.documentElement.classList.remove(c); });
+  d.documentElement.dataset.ssClasses = "";
+  if (!want) return;
+  const kind = want === "enhanced" ? "enhanced" : "pure";
+  const [meta, css] = await Promise.all([ssAsset(`preview/ss-${want}.json`, true), ssAsset(`preview/plugin-${kind}.css`, false)]);
+  if (d.documentElement.dataset.ss !== want) return;           // the choice changed while loading
+  const st = d.createElement("style"); st.id = "pv-plugin"; st.textContent = css;
+  const theme = d.getElementById("jfp-theme") || d.querySelector("style[data-pending]");
+  d.head.insertBefore(st, theme);
+  const added = meta.htmlClass.filter(c => !d.documentElement.classList.contains(c));
+  added.forEach(c => d.documentElement.classList.add(c));
+  d.documentElement.dataset.ssClasses = added.join(" ");
+  meta.bodyClass.forEach(c => d.body.classList.add(c));
+  const parent = d.querySelector(meta.parent) || d.body;
+  parent.insertAdjacentHTML("afterbegin", meta.html);
+}
+function applyTheme() {
+  const d = $("#pvf").contentDocument;
+  if (!d || !d.head || !d.body || !PV.css || !$("#vp").classList.contains("ready")) return;
+  d.querySelectorAll("style[data-pending]").forEach(x => x.remove());
+  const st = d.createElement("style"); st.dataset.pending = "1"; st.textContent = PV.css;
+  let done = false;
+  const swap = () => { if (done || !st.isConnected) return; done = true; const old = d.getElementById("jfp-theme"); if (old) old.remove(); st.id = "jfp-theme"; delete st.dataset.pending; };
+  st.addEventListener("load", swap); st.addEventListener("error", swap);
+  d.head.append(st); setTimeout(swap, 2500);
+  syncSlideshow();
+}
+
+/* ---------- output ---------- */
+function refPath() {
+  const r = S.ref.trim();
+  return BASE + "Jellyfish" + (r ? "@" + r : "") + "/";
+}
+function customBlock(c, txt) {
+  const [r, g, b] = hex2rgb(c.acc);
+  if (!/^#[0-9a-f]{6}$/i.test(c.bg3 || "")) c.bg3 = mixWhite(c.bg2, .07);
+  const lines = [];
+  const isCustom = S.palette === "custom";
+  if (isCustom) {
+    const dark = n => Math.max(0, n - 30);
+    lines.push(
+      `  --primary-r: ${r};`, `  --primary-g: ${g};`, `  --primary-b: ${b};`,
+      `  --primary-accent-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 1.0);`,
+      `  --secondary-accent-color: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.6);`,
+      `  --primary-background-transparent: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.1);`,
+      `  --secondary-background-transparent: rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.2);`,
+      `  --primary-background-color: ${c.bg1};`, `  --secondary-background-color: ${c.bg2};`, `  --tertiary-background-color: ${c.bg3};`,
+      `  --alt-accent-color: #ffffff20;`, `  --text-color: ${txt};`, `  --header-background-color: #ffffff6e;`);
+    [1, .85, .7, .55, .4].forEach((a, i) => lines.push(`  --primary-alt${i + 1}: rgba(${dark(r)}, ${dark(g)}, ${dark(b)}, ${a});`));
+  }
+  if (S.tweaks.rad !== DEFAULTS.rad) lines.push(`  --rounded-cards: ${S.tweaks.rad}px;`);
+  if (S.tweaks.blur !== DEFAULTS.blur) lines.push(`  --blur: ${S.tweaks.blur}px;`);
+  if (S.tweaks.ind !== DEFAULTS.ind) lines.push(`  --indicator-size: ${S.tweaks.ind}px;`);
+  if (S.logo.mode === "custom" && S.logo.src) lines.push(S.logo.from === "upload" ? `  /* your logo, embedded (${(S.logo.bytes / 1024).toFixed(1)} KB) */` : "", `  --logo: url("${S.logo.src}");`);
+  return lines.filter(Boolean).length ? ":root {\n" + lines.join("\n") + "\n}" : "";
+}
+function importList(base = refPath()) {
+  const out = [];
+  out.push(["theme.css", "the theme"]);
+  if (S.palette !== "custom" && S.palette !== "jellyblue") out.push([`colors/${S.palette}.css`, "palette"]);
+  const ss = SLIDESHOW.find(x => x.id === S.ss);
+  if (ss && ss.file) out.push([ss.file, "slideshow"]);
+  const mods = MODULES.filter(m => S.modules.has(m.id));
+  for (const m of mods.filter(x => !x.last)) out.push([m.file, ""]);
+  for (const m of mods.filter(x => x.last)) out.push([m.file, "keep last"]);
+  if (S.logo.mode === "streamberry") out.push(["streamberry_logo.css", "logo; keep last"]);
+  return out.map(([f, note]) => ({ line: `@import url("${base}${f}");`, note }));
+}
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function writeOutput(c, txt) {
+  const list = importList();
+  const block = customBlock(c, txt);
+  let text = list.map(x => x.line + (x.note ? ` /* ${x.note} */` : "")).join("\n");
+  if (block) text += "\n\n" + (S.palette === "custom" ? "/* your palette, after all the imports */\n" : "/* your settings, after all the imports */\n") + block;
+  window.__out = text;
+  const shown = text.replace(/(data:[\w/+.-]+;base64,)[A-Za-z0-9+/=]{40,}/g, "$1…(embedded image)");
+  $("#out").innerHTML = esc(shown).replace(/\/\*[^*]*\*\//g, m => `<span class="c">${m}</span>`);
+  const scripts = SCRIPTS.filter(s => S.scripts.has(s.id));
+  $("#js-out").hidden = !scripts.length;
+  if (scripts.length) {
+    const t = scripts.map(s => `// ${s.file}\n${BASE}Jellyfish/scripts/${s.file}`).join("\n\n");
+    window.__js = t;
+    $("#outjs").innerHTML = '<span class="c">// Companion scripts. In the JavaScript Injector plugin, add each as a script:\n// paste the contents of the file at that address.</span>\n\n' + esc(t);
+  }
+  const steps = S.target === "server"
+    ? ["Open your Jellyfin <b>Dashboard</b>, then <b>General</b>, then <b>Custom CSS code</b>.", "Paste the text above, replacing anything you have from this theme.", "<b>Save</b>, then refresh your browser."]
+    : ["Click your profile picture, then <b>Settings</b>, then <b>Display</b>, then <b>Custom CSS code</b>.", "Paste the text above.", "<b>Save</b>, then refresh the page. To use only these lines on this device, tick <b>Disable server-provided custom CSS code</b>."];
+  $("#steps").innerHTML = steps.map(s => `<li>${s}</li>`).join("");
+  $("#share").innerHTML = `Plugin-only modules do nothing without their plugin. Bookmark this page to keep your choices; they are saved in the address.`;
+}
+
+/* ---------- state in the address ---------- */
+function saveHash() {
+  const p = new URLSearchParams();
+  p.set("p", S.palette);
+  if (S.palette === "custom" && S.custom) p.set("c", [S.custom.acc, S.custom.bg1, S.custom.bg2, S.custom.bg3, S.custom.textMode === "auto" ? "auto" : S.custom.text].map(v => v.replace("#", "")).join("-"));
+  const t = S.tweaks; if (t.rad !== DEFAULTS.rad || t.blur !== DEFAULTS.blur || t.ind !== DEFAULTS.ind) p.set("t", [t.rad, t.blur, t.ind].join("-"));
+  if (S.modules.size) p.set("m", [...S.modules].join(","));
+  if (S.scripts.size) p.set("j", [...S.scripts].join(","));
+  if (S.ss !== "none") p.set("s", S.ss);
+  if (S.ssPlugin !== "enhanced") p.set("sp", S.ssPlugin);
+  if (S.ssLayout !== "marquee") p.set("sl", S.ssLayout);
+  if (S.logo.mode === "streamberry") p.set("lg", "s");
+  if (S.logo.mode === "custom" && S.logo.from === "url" && S.logo.src) p.set("lg", "u" + S.logo.src);
+  if (S.target !== "server") p.set("o", S.target);
+  if (S.ref) p.set("r", S.ref);
+  history.replaceState(null, "", "#" + p.toString());
+}
+function loadHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const okp = id => id === "custom" || S.palettes.some(x => x.id === id);
+  if (p.get("p") && okp(p.get("p"))) S.palette = p.get("p");
+  if (p.get("c")) { const [a, b1, b2, b3, t] = p.get("c").split("-"); if (a && b1 && b2) S.custom = { acc: "#" + a, bg1: "#" + b1, bg2: "#" + b2, bg3: "#" + (b3 || ""), text: t === "auto" ? "" : "#" + t, textMode: t === "auto" ? "auto" : "fixed" }; }
+  if (S.palette === "custom" && !S.custom) S.palette = "jellyblue";
+  if (p.get("t")) { const [a, b, c] = p.get("t").split("-").map(Number); if ([a, b, c].every(Number.isFinite)) S.tweaks = { rad: a, blur: b, ind: c }; }
+  (p.get("m") || "").split(",").filter(x => MODULES.some(m => m.id === x)).forEach(x => S.modules.add(x));
+  (p.get("j") || "").split(",").filter(x => SCRIPTS.some(m => m.id === x)).forEach(x => S.scripts.add(x));
+  if (SLIDESHOW.some(x => x.id === p.get("s"))) S.ss = p.get("s");
+  if (["enhanced", "marquee"].includes(p.get("sp"))) S.ssPlugin = p.get("sp");
+  if (["marquee", "classic", "plate"].includes(p.get("sl"))) S.ssLayout = p.get("sl");
+  if (p.get("o") === "user") S.target = "user";
+  const lg = p.get("lg") || "";
+  if (lg === "s" || (p.get("m") || "").split(",").includes("streamberry")) S.logo.mode = "streamberry";
+  else if (/^uhttps?:\/\/[^"')\s]+$/i.test(lg)) S.logo = { mode: "custom", src: lg.slice(1), from: "url", bytes: 0 };
+  if (p.get("r")) S.ref = p.get("r").replace(/[^\w.\-\/]/g, "");
+}
+
+/* ---------- GitHub: star counts and other projects ---------- */
+const PROJECTS = [
+  { repo: "Jellyfin-Enhanced", name: "Jellyfin Enhanced", kind: "plugin", desc: "Keyboard shortcuts, subtitle styling, TMDB and user reviews, Seerr requests, a media calendar, coloured ratings and more for the Jellyfin web UI." },
+  { repo: "JellyfinTweaks", name: "Jellyfin Tweaks", kind: "plugin", desc: "Force a few Jellyfin settings without editing any web files." },
+  { repo: "Jellyfin-JavaScript-Injector", name: "JavaScript Injector", kind: "plugin", desc: "Add your own JavaScript to Jellyfin. It is how the companion scripts here are installed." },
+];
+const STAR_SVG = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>';
+const fmtStars = n => n >= 10000 ? Math.round(n / 1000) + "k" : n >= 1000 ? (Math.floor(n / 100) / 10).toFixed(1).replace(/\.0$/, "") + "k" : String(n);
+async function loadStars() {
+  const names = ["Jellyfish", ...PROJECTS.map(p => p.repo)];
+  let data = null;
+  try { const c = JSON.parse(localStorage.getItem("jfp-stars") || "null"); if (c && Date.now() - c.t < 3600e3) data = c.d; } catch (e) {}
+  if (!data) {
+    data = {};
+    await Promise.all(names.map(async n => {
+      try { const r = await fetch(`https://api.github.com/repos/n00bcodr/${n}`); if (r.ok) data[n] = (await r.json()).stargazers_count; } catch (e) {}
+    }));
+    if (Object.keys(data).length) { try { localStorage.setItem("jfp-stars", JSON.stringify({ t: Date.now(), d: data })); } catch (e) {} }
+  }
+  $$(".starbtn[data-repo]").forEach(a => { const n = data[a.dataset.repo]; const c = $(".cnt", a); if (Number.isFinite(n)) { c.textContent = fmtStars(n); c.hidden = false; } });
+  $$(".repo .st[data-repo]").forEach(el => { const n = data[el.dataset.repo]; if (Number.isFinite(n)) el.innerHTML = STAR_SVG + " " + fmtStars(n); });
+}
+function buildProjects() {
+  $$(".repos").forEach(el => el.innerHTML = PROJECTS.map(p => `<a class="repo" href="https://github.com/n00bcodr/${p.repo}" target="_blank" rel="noopener"><b>${p.name} <span class="kind">${p.kind}</span></b><p>${p.desc}</p><span class="st" data-repo="${p.repo}">${STAR_SVG} Star</span></a>`).join(""));
+}
+
+/* ---------- wire up ---------- */
+async function init() {
+  try { S.palettes = await (await fetch("palettes.json")).json(); }
+  catch (e) { S.palettes = [{ id: "jellyblue", name: "Jelly Blue", "primary-r": 0, "primary-g": 164, "primary-b": 220, "primary-background-color": "#000000", "secondary-background-color": "#181818", "tertiary-background-color": "#252525", "text-color": "#000000", "header-background-color": "#ffffff6e" }]; }
+  loadHash();
+  buildPalettes(); buildMods(); buildProjects(); loadStars();
+  seg("#pv-view", "view"); seg("#pv-dev", "dev"); const toHome = () => { S.view = "home"; render(); };
+  seg("#ss-plugin", "ssPlugin", toHome); seg("#ss-layout", "ssLayout", toHome); seg("#o-target", "target");
+  const edit = (k, v) => { S.custom[k] = v; render(); };
+  $("#c-acc").oninput = e => edit("acc", e.target.value);
+  $("#c-bg1").oninput = e => edit("bg1", e.target.value);
+  $("#c-bg2").oninput = e => { S.custom.bg3 = mixWhite(e.target.value, .07); edit("bg2", e.target.value); };
+  $$("#c-text button").forEach(b => b.onclick = () => { if (b.dataset.v === "auto") { S.custom.textMode = "auto"; } else { S.custom.textMode = "fixed"; S.custom.text = b.dataset.v; } render(); });
+  for (const k of ["rad", "blur", "ind"]) $("#t-" + k).oninput = e => { S.tweaks[k] = +e.target.value; render(); if (k === "blur") showBlur(); };
+  if (S.logo.from === "url") { $("#lg-url").value = S.logo.src; S.logo.state = "checking"; checkLogo(S.logo.src); }
+  $("#o-ref").value = S.ref; $("#o-ref").oninput = e => { S.ref = e.target.value.replace(/[^\w.\-\/]/g, ""); render(); };
+  const copy = (btn, getter) => btn.onclick = async () => { try { await navigator.clipboard.writeText(getter()); } catch (e) { const r = document.createRange(); r.selectNodeContents(btn.nextElementSibling); getSelection().removeAllRanges(); getSelection().addRange(r); } const t = btn.textContent; btn.textContent = "Copied"; setTimeout(() => btn.textContent = t, 1400); };
+  copy($("#copy"), () => window.__out); copy($("#copy-js"), () => window.__js);
+  $$("#lg-mode button").forEach(b => b.onclick = () => { S.logo.mode = b.dataset.v; S.logo.error = ""; render(); });
+  let lgTimer = 0;
+  $("#lg-url").oninput = e => {
+    const raw = e.target.value.trim();
+    clearTimeout(lgTimer);
+    S.logo.error = "";
+    if (!raw) { if (S.logo.from === "url") S.logo = { mode: "custom", src: "", from: "", bytes: 0 }; render(); return; }
+    lgTimer = setTimeout(() => {
+      const r = normalizeLogoUrl(raw);
+      if (r.error) { S.logo = { mode: "custom", src: "", from: "", bytes: 0, error: r.error }; render(); return; }
+      S.logo = { mode: "custom", src: r.url, from: "url", bytes: 0, note: r.note, state: "checking" };
+      render(); checkLogo(r.url);
+    }, 350);
+  };
+  $("#lg-file").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { S.logo = { mode: "custom", ...(await logoFromFile(f)) }; $("#lg-url").value = ""; }
+    catch (err) { S.logo.error = "Couldn't read that image. Try a PNG, SVG, WebP or JPEG."; }
+    render();
+  };
+  const f = $("#pvf");
+  f.addEventListener("load", () => { $("#vp").classList.add("ready"); applyTheme(); });
+  new ResizeObserver(layoutPreview).observe($("#frame"));
+  render();
+}
+init();
+</script>
+</body>
+</html>
