@@ -5,8 +5,10 @@
    compatibility. Import it after theme.css and the palette:
    @import url("https://cdn.jsdelivr.net/gh/n00bcodr/Jellyfish/jellyfin-enhanced.css"); */
 
-/* Active-streams count next to the header icon, in the readable accent tint.
+/* Active-streams icon and count in the readable accent tint. The icon is set directly because
+   the plugin's own --je-as-accent (#00A4DC) is set inline and wins over the :root mapping below.
    Only the active state; the plugin's own error colours are left alone. */
+#je-active-streams.je-as-active .je-as-icon,
 #je-active-streams.je-as-active .je-as-sup {
     color: var(--accent-text-color) !important;
 }
@@ -175,6 +177,72 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
     background-color: var(--primary-background-transparent) !important;
     outline: 2px solid var(--primary-accent-color);
     outline-offset: -2px;
+}
+
+/* Active-streams icon in the video player's top bar. It is not a .headerButton and sits
+   outside the plugin's icon tray, so the rules above don't reach it: same round hover and
+   focus highlight here. */
+#je-active-streams.je-as-in-osd {
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
+}
+#je-active-streams.je-as-in-osd:hover:not(:disabled) {
+    background-color: var(--accent-surface-strong) !important;
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
+}
+#je-active-streams.je-as-in-osd:focus-visible {
+    background-color: var(--primary-background-transparent) !important;
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}
+
+/* Bookmarks modal (Add Bookmark, opened from the video player).
+   The plugin injects its own <style> after this file, so these selectors are one class
+   longer to win over it. Surface, borders and buttons follow the palette. */
+.je-bm-player-modal-container {
+    background: var(--secondary-background-color) !important;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5) !important;
+}
+.je-bm-player-modal-container .je-bookmark-hero-title {
+    color: var(--accent-text-color);
+}
+.je-bm-player-modal-container .je-bookmark-input {
+    background: var(--primary-background-transparent);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 10px;
+    transition: border-color .15s ease, background-color .15s ease;
+}
+.je-bm-player-modal-container .je-bookmark-input:focus {
+    border-color: var(--primary-accent-color);
+    outline: none;
+}
+.je-bm-player-modal-container .je-bookmark-btn-submit {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 999px;
+    transition: filter .15s ease;
+}
+.je-bm-player-modal-container .je-bookmark-btn-submit:hover:not(:disabled) {
+    filter: brightness(1.12);
+}
+.je-bm-player-modal-container .je-bookmark-btn-cancel {
+    background: var(--alt-accent-color) !important;
+    border-radius: 999px;
+    transition: background-color .15s ease;
+}
+.je-bm-player-modal-container .je-bookmark-btn-cancel:hover:not(:disabled) {
+    background: var(--accent-surface-strong) !important;
+}
+.je-bm-player-modal-container .je-bookmark-modal-close:hover {
+    background: var(--accent-surface-strong);
+}
+.je-bm-player-modal-container .je-bookmark-btn-submit:focus-visible,
+.je-bm-player-modal-container .je-bookmark-btn-cancel:focus-visible,
+.je-bm-player-modal-container .je-bookmark-modal-close:focus-visible {
+    outline: 2px solid var(--accent-text-color);
+    outline-offset: 2px;
 }
 
 /* Reviews section (TMDB, AniList and user reviews).

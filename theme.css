@@ -3115,7 +3115,7 @@ header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
 /* A hairline under the bar separates it from page content without a heavy shadow.
    Not on the dashboard: there the bar is transparent and starts 240px from the left while
    the sidebar is 260px wide, so the line floated over the sidebar edge. */
-body:not(.dashboardDocument) .MuiAppBar-root {
+body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root {
     border-bottom: 1px solid var(--alt-accent-color);
 }
 
@@ -3133,7 +3133,7 @@ body:not(.dashboardDocument) .MuiAppBar-root {
     --bar-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 12px 30px rgba(0, 0, 0, .4);
     --bar-radius: 20px;
 }
-body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root {
     top: 8px;
     left: 12px;
     right: 12px;
@@ -3197,7 +3197,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     :root { --bar-radius: 16px; }
 }
 @supports not (backdrop-filter: blur(1px)) {
-    body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root { background: var(--header-solid-background-color) !important; }
+    body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root { background: var(--header-solid-background-color) !important; }
 }
 
 /* Avatar / user menu button */
@@ -3225,6 +3225,89 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     background-color: var(--accent-surface-strong) !important;
     outline: 2px solid var(--primary-accent-color);
     outline-offset: -2px;
+}
+
+/* SyncPlay and Cast menus in the video player's top bar. Their Paper doesn't carry the
+   .MuiMenu-paper class, so the menu rules above miss it: same solid surface, border,
+   rounded corners and row styling here. */
+.MuiMenu-root .MuiPaper-root.MuiPaper-root {
+    background: var(--header-solid-background-color) !important;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5);
+}
+.MuiMenu-root .MuiPaper-root .MuiMenuItem-root {
+    margin: 1px 6px;
+    border-radius: 10px;
+    transition: background-color .15s ease;
+}
+.MuiMenu-root .MuiPaper-root .MuiMenuItem-root:hover:not(.Mui-disabled),
+.MuiMenu-root .MuiPaper-root .MuiMenuItem-root.Mui-focusVisible {
+    background-color: var(--accent-surface-strong) !important;
+}
+.MuiMenu-root .MuiPaper-root .MuiMenuItem-root.Mui-focusVisible {
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: -2px;
+}
+
+/* Playback Info overlay (player Settings > Playback Info). Same solid surface, border and
+   rounded corners as the menus. Labels sit in a dim fixed-width column with the values
+   aligned beside them; each section title is an accent heading with a hairline under it. */
+.playerStats {
+    background: var(--header-solid-background-color) !important;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5);
+    backdrop-filter: blur(var(--blur));
+    min-width: 22em;
+    max-width: min(34em, 90vw);
+}
+.playerStats .playerStats-stats {
+    padding: 1em 3.2em 1em 1.2em !important;
+}
+.playerStats .playerStats-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    margin: 0 !important;
+    padding: .22em 0;
+    line-height: 1.4;
+}
+.playerStats .playerStats-stat-label {
+    flex: 0 0 11em;
+    margin: 0 !important;
+    color: rgba(255, 255, 255, .6);
+    font-weight: 600;
+}
+.playerStats .playerStats-stat-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+.playerStats .playerStats-stat-header {
+    display: block;
+    margin: 1em 0 .4em !important;
+    padding: 0 0 .5em;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+.playerStats .playerStats-stat-header:first-child {
+    margin-top: 0 !important;
+}
+.playerStats .playerStats-stat-header .playerStats-stat-label {
+    flex: none;
+    color: var(--accent-text-color);
+    font-size: 1.05em;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+.playerStats .playerStats-closeButton {
+    transition: color .15s ease, background-color .15s ease;
+}
+.playerStats .playerStats-closeButton:hover {
+    color: #ffffff;
+    background-color: var(--accent-surface-strong);
 }
 .MuiToolbar-root > .MuiBox-root:has([aria-controls="app-user-menu"]) {
     flex-shrink: 0 !important;
