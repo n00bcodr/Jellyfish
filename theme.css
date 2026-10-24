@@ -3626,3 +3626,13 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
   color: inherit !important; /* follow the button text colour */
   fill: currentColor !important;
 }
+
+/*
+================================================================================
+|                               Plugin Pages
+================================================================================
+*/
+
+main.MuiBox-root .customPage.libraryPage:not(.noSecondaryNavPage)[data-kefin-custom-page], div#je-native-tab-panel-bookmarks {
+    padding-top: 2rem !important;
+}
