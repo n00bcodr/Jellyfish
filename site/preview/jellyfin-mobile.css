@@ -4022,4 +4022,167 @@ html { font-size: 82% !important; }
 .mediaInfoCriticRatingRotten { background-image: url("assets/img/rotten.svg"); }
 .mediaInfoProgramAttribute { border-radius: 0.15em; font-size: 80%; padding: 0.16em 0.6em; text-transform: uppercase; }
 .closedCaptionMediaInfoText { font-weight: 700; }
+.css-133e01t { position: relative; padding-left: calc(2 * var(--jf-spacing)); padding-right: calc(2 * var(--jf-spacing)); min-height: 48px; display: flex; flex-wrap: wrap; -webkit-box-align: center; align-items: center; }
+@media (min-width: 600px) {
+  .css-133e01t { padding-left: calc(3 * var(--jf-spacing)); padding-right: calc(3 * var(--jf-spacing)); }
+}
+.css-rtsren { margin: 0px; font-family: "Noto Sans", sans-serif; font-weight: 300; font-size: 1.5rem; line-height: 1.2; }
+.css-19oo937 { display: inherit; margin-right: -4px; margin-left: 8px; }
+.css-19oo937 > :nth-of-type(1) { font-size: 22px; }
+.css-1vcbmdn { width: auto; padding-top: 0px; display: flex !important; padding-bottom: 0px !important; top: 0px !important; }
+.emby-scrollbuttons { align-items: center; color: rgb(255, 255, 255); display: flex; justify-content: center; min-height: 24px; min-width: 104px; padding-top: 0.85em; position: absolute; top: 0px; z-index: 1; }
+[dir="ltr"] .emby-scrollbuttons { right: 0px; }
+[dir="rtl"] .emby-scrollbuttons { left: 0px; }
+.emby-scrollbuttons-button > .material-icons { display: block; min-height: 24px; min-width: 24px; }
+.alphaPicker { align-self: center; display: flex; flex-direction: column; text-align: center; }
+.alphaPicker-vertical { line-height: 1; }
+.alphaPicker-fixed { bottom: 5.5em; position: fixed; }
+@supports (width:max(1px,1px)) {
+  .alphaPicker-fixed { bottom: max(env(safe-area-inset-bottom),5.5em); }
+}
+.alphaPickerRow { align-items: center; display: flex; flex-direction: row; justify-content: center; }
+.alphaPickerRow-vertical { flex-direction: column; }
+.alphaPickerButton { border-radius: 0.1em; cursor: pointer; flex-grow: 1; flex-shrink: 0; font-family: inherit; font-size: inherit; font-weight: 400; margin: 0px; min-width: auto; padding: 0.1em 0.4em; vertical-align: middle; width: auto; border: 0px !important; outline: none !important; }
+@media (max-height: 50em) {
+  .alphaPicker-fixed { bottom: 5em; }
+  @supports (width:max(1px,1px)) {
+  .alphaPicker-fixed { bottom: max(env(safe-area-inset-bottom),5em); }
+}
+  .alphaPickerButton-vertical { padding-bottom: 1px !important; padding-top: 1px !important; }
+}
+@media (max-height: 49em) {
+  .alphaPicker-vertical { font-size: 94%; }
+}
+@media (max-height: 44em) {
+  .alphaPicker-vertical { font-size: 90%; }
+  .alphaPickerButton-vertical { padding-bottom: 0px !important; padding-top: 0px !important; }
+}
+@media (max-height: 37em) {
+  .alphaPicker-vertical { font-size: 82%; }
+}
+@media (max-height: 32em) {
+  .alphaPicker-vertical { font-size: 74%; }
+}
+.alphaPicker-vertical.alphaPicker-tv { font-size: 86%; }
+.alphaPickerButton-tv.alphaPickerButton-vertical { padding: 0px; }
+.alphaPickerButton-vertical { display: flex; justify-content: center; text-align: center; width: 1.5em; }
+.alphaPickerButtonIcon { font-size: 100% !important; }
+.alphaPicker-fixed.alphaPicker-tv { bottom: 1%; }
+@supports (width:max(1px,1px)) {
+  .alphaPicker-fixed.alphaPicker-tv { bottom: max(env(safe-area-inset-bottom),1%); }
+}
+[dir="ltr"] .alphaPicker-fixed-right { right: 0.4em; }
+@supports (width:max(1px,1px)) {
+  [dir="ltr"] .alphaPicker-fixed-right { right: max(env(safe-area-inset-right),.4em); }
+}
+[dir="rtl"] .alphaPicker-fixed-right { left: 0.4em; }
+@supports (width:max(1px,1px)) {
+  [dir="rtl"] .alphaPicker-fixed-right { left: max(env(safe-area-inset-left),.4em); }
+}
+@media (min-width: 62.5em) {
+  [dir="ltr"] .alphaPicker-fixed-right { right: 1em; }
+  @supports (width:max(1px,1px)) {
+  [dir="ltr"] .alphaPicker-fixed-right { right: max(env(safe-area-inset-right),1em); }
+}
+  [dir="rtl"] .alphaPicker-fixed-right { left: 1em; }
+  @supports (width:max(1px,1px)) {
+  [dir="rtl"] .alphaPicker-fixed-right { left: max(env(safe-area-inset-left),1em); }
+}
+}
+@media (max-height: 31.25em) {
+  .alphaPicker-fixed { display: none !important; }
+}
+.tvguide { align-items: normal; }
+.tvGuideHeader, .tvguide { display: flex; flex-direction: column; }
+.tvGuideHeader { contain: layout style paint; flex-shrink: 0; white-space: nowrap; width: 100%; }
+.layout-desktop .tvGuideHeader { margin-bottom: 0.5em; }
+.guideHeaderDateSelection { font-size: 86%; padding: 0.4em 0px; }
+.guide-headerTimeslots { display: flex; }
+.tvProgramSectionHeader { margin: 0px; }
+.tvProgram { display: block; position: relative; text-decoration: none; white-space: nowrap; }
+.guideProgramIndicator { align-items: center; border-radius: 0.25em; display: inline-flex; font-size: 82%; margin-left: 1em; margin-right: 0.5em; padding: 0.2em 0.25em; text-align: center; text-transform: uppercase; }
+.guide-channelTimeslotHeader, .guideProgramIndicator { justify-content: center; }
+.guide-channelTimeslotHeader { flex-shrink: 0; border: 0px !important; }
+.timeslotHeaders { font-size: 120%; font-weight: 500; white-space: nowrap; }
+.programContainer { align-items: flex-start; contain: strict; position: relative; white-space: nowrap; }
+.programContainer.emby-scroller { margin: 0px; }
+.channelPrograms { border-style: solid; border-width: 1px 0px; box-sizing: border-box; contain: strict; display: flex; flex-direction: column; height: 4.42em; white-space: nowrap; }
+.channelPrograms, .timeslotHeadersInner { position: relative; }
+.guideSpacer { flex-shrink: 0; width: 0.3em; }
+.channelPrograms, .timeslotHeadersInner { width: 1800vw; }
+@media (min-width: 37.5em) {
+  .channelPrograms, .timeslotHeadersInner { width: 1400vw; }
+}
+@media (min-width: 50em) {
+  .channelPrograms, .timeslotHeadersInner { width: 1200vw; }
+}
+@media (min-width: 80em) {
+  .channelPrograms, .timeslotHeadersInner { width: 810vw; }
+}
+.timeslotHeader { align-items: center; display: inline-flex; text-indent: 0.25em; width: 2.08333%; }
+.guide-channelHeaderCell, .programCell { outline: none !important; }
+.guide-channelHeaderCell, .guide-channelTimeslotHeader { align-items: center; border-radius: 0.12em; color: inherit; contain: strict; cursor: pointer; display: flex; flex-shrink: 0; font-family: inherit; font-size: inherit; margin: 0px 1px 0px 0px; overflow: hidden; text-align: left; text-decoration: none; text-overflow: ellipsis; vertical-align: middle; width: 100%; outline: none !important; padding: 0px !important; }
+.guide-channelHeaderCell { background: transparent; border-style: solid; border-width: 1px 1px 1px 0px; contain: strict; height: 4.42em; position: relative; width: 100%; }
+.channelsContainer, .guide-channelTimeslotHeader { width: 24vw; }
+@media (min-width: 31.25em) {
+  .channelsContainer, .guide-channelTimeslotHeader { width: 16vw; }
+}
+@media (min-width: 37.5em) {
+  .channelsContainer, .guide-channelTimeslotHeader { width: 16vw; }
+}
+@media (min-width: 50em) {
+  .channelsContainer, .guide-channelTimeslotHeader { width: 14vw; }
+}
+@media (min-width: 80em) {
+  .channelsContainer, .guide-channelTimeslotHeader { width: 12vw; }
+}
+.btnGuideViewSettings { flex-shrink: 0; margin: 0px; }
+.btnGuideViewSettingsIcon { font-size: 1.5em !important; }
+.selectDateIcon { flex-shrink: 0; }
+.channelPrograms + .channelPrograms, .guide-channelHeaderCell + .guide-channelHeaderCell { margin-top: -1px; }
+.channelPrograms-tv, .guide-channelHeaderCell-tv { height: 3em; }
+.guide-channelTimeslotHeader, .timeslotHeader { height: 2.8em; background: transparent !important; }
+.programGrid { padding-bottom: 4px; }
+.programCell, .programGrid { flex-grow: 1; }
+.programCell { align-items: center; background: transparent; border-style: solid; border-width: 0px 0px 0px 1px; bottom: 0px; color: inherit; contain: strict; cursor: pointer; display: flex; font-family: inherit; font-size: inherit; overflow: hidden; position: absolute; text-align: left; text-decoration: none; top: 0px; vertical-align: middle; width: 100%; margin: 0px !important; outline: none !important; padding: 0px !important; }
+@media (max-width: 50em) {
+  .programCell .guideHdIcon, .programCell .liveTvProgram, .programCell .newTvProgram, .programCell .premiereTvProgram { display: none; }
+}
+.guideProgramName { contain: layout style paint; flex-grow: 1; overflow: hidden; padding: 0px 0.7em; position: relative; text-overflow: ellipsis; }
+.guide-programNameCaret, .guideProgramName { align-items: center; display: flex; }
+.guide-programNameCaret { font-size: 200%; justify-content: center; }
+.guideProgramNameText { font-weight: 400; margin: 0px; overflow: hidden; text-overflow: ellipsis; }
+.guideProgramSecondaryInfo { align-items: center; display: flex; margin-top: 0.1em; }
+.programIcon { color: rgb(221, 221, 221); flex-grow: 0; flex-shrink: 0; font-size: 1.6em; height: 1em; width: 1em; }
+[dir="ltr"] .programIcon { margin-left: 0.5em; }
+[dir="rtl"] .programIcon { margin-right: 0.5em; }
+.guide-programTextIcon { border-radius: 0.25em; font-size: 0.9em; font-weight: 700; height: auto; margin-right: 0.35em; padding: 0.16em 0.3em; width: auto; }
+.guide-programTextIcon-tv { font-size: 0.74em; }
+.guideChannelNumber { font-weight: 400; margin: 0px; max-width: 30%; padding-left: 1em; }
+.guideChannelName, .guideChannelNumber { overflow: hidden; text-overflow: ellipsis; }
+.guideChannelName { max-width: 70%; }
+[dir="ltr"] .guideChannelName { margin-left: auto; margin-right: 1em; }
+[dir="rtl"] .guideChannelName { margin-left: 1em; margin-right: auto; }
+.guideChannelImage { background-position: 100% center; background-repeat: no-repeat; background-size: contain; bottom: 15%; position: absolute; right: 8%; top: 15%; width: 40%; }
+@media (min-width: 62.5em) {
+  .guideChannelName { max-width: 40%; }
+}
+@media (max-width: 62.5em) {
+  .guideChannelNumber { display: none; }
+  .guideChannelImage { width: 70%; }
+}
+.channelsContainer { display: flex; flex-direction: column; flex-shrink: 0; }
+.channelsContainer, .programGrid { contain: layout style paint; }
+.seriesTimerIcon, .timerIcon { color: rgb(204, 51, 51) !important; }
+.seriesTimerIcon-inactive { color: inherit !important; opacity: 0.7; }
+.guideOptions { align-items: center; display: flex; flex-shrink: 0; }
+@media (max-width: 50em), (max-height: 37.5em) {
+  .tvGuideHeader { padding-left: 0px; }
+}
+.guideRequiresUnlock { flex-shrink: 0; margin: 1em auto; padding: 1em; text-align: center; }
+.noRubberBanding { padding-bottom: 7em; }
+.guideDateTabsSlider { text-align: center; }
+.guide-date-tab-button { font-weight: 400; margin: 0px 0.3em !important; padding: 0.3em 0.7em !important; }
+.guide-date-tab-button.emby-tab-button-active { border-color: transparent !important; }
+.guide-date-tab-button.show-focus:focus { border-radius: 0.15em !important; transform: none !important; }
 @font-face { font-family: "Material Icons"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/MaterialIcons-Regular.woff2") format("woff2"); }

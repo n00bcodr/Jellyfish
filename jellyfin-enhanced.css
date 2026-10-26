@@ -54,6 +54,43 @@
 .je-launcher-heading h2 {
     color: var(--accent-text-color);
     font-weight: 700;
+    letter-spacing: .02em;
+}
+/* The plugin copies the nav drawer's grey into --je-launcher-surface inline; an !important
+   rule here wins over that, so the menu takes the palette's header colour like the other panels. */
+.je-launcher-panel {
+    --je-launcher-surface: color-mix(in srgb, var(--header-solid-background-color) 90%, transparent) !important;
+    padding: 10px !important;
+}
+/* A hairline under the title separates it from the actions. */
+.je-launcher-heading {
+    padding: 0 0 8px 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+.je-launcher-heading h2 {
+    margin: 0 !important;
+}
+.je-launcher-close.paper-icon-button-light {
+    border-radius: 50%;
+    transition: background-color .15s ease, color .15s ease;
+}
+.je-launcher-close.paper-icon-button-light:hover {
+    background: var(--accent-surface-strong);
+    color: #ffffff;
+}
+.je-launcher-grid {
+    gap: 2px;
+}
+.je-launcher-icon {
+    color: var(--accent-text-color);
+    transition: color .15s ease;
+}
+.je-launcher-action.emby-button:hover:not(:disabled) .je-launcher-icon {
+    color: #ffffff;
+}
+.je-launcher-label {
+    font-weight: 600;
 }
 
 /* Form controls on the plugin's pages (Calendar, Hidden Content, Requests...) inherit the

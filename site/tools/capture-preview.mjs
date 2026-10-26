@@ -32,6 +32,7 @@ const JF = (process.env.JF_URL || 'http://localhost:8096').replace(/\/$/, '');  
 // DEMO=1: titles, posters and details come from the public Jellyfin demo server (open-licensed and
 // public-domain films) instead of a private library. The web client still comes from JF.
 const DEMO = process.env.DEMO === '1';
+const ONLY = process.env.ONLY || '';   // e.g. ONLY=livetv: capture just those pages and add them to what is already saved
 const API = DEMO ? (process.env.DEMO_URL || 'https://demo.jellyfin.org/stable').replace(/\/$/, '') : JF;
 const REAL = DEMO;   // real titles and artwork; otherwise everything is generated
 const { JF_USER, JF_PASS } = process.env;
@@ -67,6 +68,48 @@ const libName = (id, type) => {
   }
   return libNames.get(id);
 };
+// Live TV: neither server has a schedule worth showing, so the guide is generated. Titles are open-licensed
+// or public-domain films and shorts, and made-up channels and programmes; nothing here is a real broadcast.
+const CHANNELS = [
+  ['Movies', [['Behind the Scenes', 30], ['Big Buck Bunny', 30], ['Sintel', 60], ['Tears of Steel', 30], ['Cosmos Laundromat', 30]]],
+  ['Classics', [['Night of the Living Dead', 120], ['His Girl Friday', 105], ['Dracula', 90]]],
+  ['Silent', [['Nosferatu', 90], ['The General', 120], ['Sherlock Jr.', 60]]],
+  ['News', [['The World Tonight', 60], ['News at the Hour', 30], ['Business Today', 45], ['Weather Watch', 15]], { IsNews: true }],
+  ['Sports', [['Tennis Tonight', 150], ['Football Highlights', 90], ['Cycling: Mountain Stage', 120]], { IsSports: true }],
+  ['Kids', [['Drawing Time', 30], ['Caminandes', 30], ['Sprite Fright', 30], ['Spring', 20]], { IsKids: true }],
+  ['Nature', [['Wild Coasts', 60], ['Life in the Forest', 120], ['Night Skies', 60]]],
+];
+const hex32 = (seed) => [0, 1, 2, 3].map((i) => hash(seed + i).toString(16).padStart(8, '0')).join('');
+const channelId = (i) => hex32('channel' + i);
+function liveTv(p, url) {
+  const day = 86400000;
+  if (/\/LiveTv\/GuideInfo$/i.test(p)) {
+    const start = new Date(); start.setMinutes(0, 0, 0);
+    return { StartDate: start.toISOString(), EndDate: new Date(+start + 7 * day).toISOString() };
+  }
+  if (/\/LiveTv\/Channels$/i.test(p)) {
+    const Items = CHANNELS.map(([Name], i) => ({ Name, ServerId: hex32('server'), Id: channelId(i), ChannelId: null, Number: String(i + 1), ChannelNumber: String(i + 1), IsFolder: false, Type: 'TvChannel', ImageTags: {}, LocationType: 'Remote', MediaType: 'Video', ChannelType: 'TV' }));
+    return { Items, TotalRecordCount: Items.length, StartIndex: 0 };
+  }
+  if (/\/LiveTv\/Programs$/i.test(p)) {
+    const q = url.searchParams, ids = (q.get('channelIds') || q.get('ChannelIds') || '').split(',').filter(Boolean);
+    const from = new Date(q.get('MinEndDate') || Date.now()), to = new Date(q.get('MaxStartDate') || +from + day);
+    const Items = [];
+    CHANNELS.forEach(([ChannelName, list, flags = {}], i) => {
+      if (!ids.includes(channelId(i))) return;
+      // every channel runs from the previous midnight, so the schedule is the same whichever day is asked for
+      const t0 = new Date(from); t0.setHours(0, 0, 0, 0);
+      let t = +t0 - (i % 3) * 30 * 60000, n = i;
+      while (t < +to) {
+        const [Name, mins] = list[n++ % list.length], end = t + mins * 60000;
+        if (end > +from) Items.push({ Name, ServerId: hex32('server'), Id: hex32(`program${i}-${t}`), ChannelId: channelId(i), ChannelName, ChannelNumber: String(i + 1), StartDate: new Date(t).toISOString(), EndDate: new Date(end).toISOString(), Type: 'Program', IsMovie: mins >= 90 && !Object.keys(flags).length, IsSeries: false, IsLive: false, IsNews: false, IsKids: false, IsSports: false, ImageTags: {}, ...flags });
+        t = end;
+      }
+    });
+    return { Items, TotalRecordCount: Items.length, StartIndex: 0 };
+  }
+  return null;
+}
 const names = new Map();   // item id -> title (used for generated artwork)
 const kinds = new Map();   // item id -> item type
 const people = new Set();  // ids of cast and crew (their photos are never shown)
@@ -229,7 +272,7 @@ async function findId(auth, re) {
   return (r.Items.find((i) => re.test(i.Name)) || r.Items[0]).Id;
 }
 
-async function capture(browser, auth, { name, width, height, mobile, hash, plugin, backdropOf }, localAuth) {
+async function capture(browser, auth, { name, width, height, mobile, hash, plugin, backdropOf, livetv }, localAuth) {
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, isMobile: !!mobile, hasTouch: !!mobile, userAgent: mobile ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' : undefined });
   await ctx.addInitScript(({ auth, base, layout }) => {
     localStorage.setItem('jellyfin_credentials', JSON.stringify({ Servers: [{ ManualAddress: base, manualAddressOnly: true, Id: auth.serverId, UserId: auth.userId, AccessToken: auth.token, DateLastAccessed: Date.now(), LastConnectionMode: 2, Name: 'Jellyfin Server' }] }));
@@ -249,6 +292,7 @@ async function capture(browser, auth, { name, width, height, mobile, hash, plugi
     }
     if (PLUGIN.test(p)) return route.abort();
     if (/^\/Branding\/Css/i.test(p)) return route.fulfill({ status: 200, contentType: 'text/css', body: '' });
+    if (livetv && /^\/LiveTv\//i.test(p)) { const data = liveTv(p, url); if (data) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) }); }
     if (/\/Images\//.test(p) || /^\/Users\/[^/]+\/Images\//.test(p)) { const rec = await imageForUrl(url); return route.fulfill({ status: 200, contentType: rec.ctype, body: rec.body }); }
     if (p === '/' || p.startsWith('/web')) return route.continue();
     let res;
@@ -272,6 +316,7 @@ async function capture(browser, auth, { name, width, height, mobile, hash, plugi
     // TV shows first, so the rows with unwatched-episode counts come before the movie rows
     const views = Array.isArray(body.Items) && /\/Views\b|\/UserViews\b/i.test(p) ? body.Items : null;
     if (views) views.sort((a, b) => (b.CollectionType === 'tvshows') - (a.CollectionType === 'tvshows'));
+    if (livetv && views && !views.some((i) => i.CollectionType === 'livetv')) views.push({ Name: 'Live TV', ServerId: hex32('server'), Id: hex32('livetv'), Type: 'UserView', CollectionType: 'livetv', ImageTags: {}, IsFolder: true });
     return route.fulfill({ response: res, body: JSON.stringify(body), contentType: 'application/json' });
   });
   const page = await ctx.newPage();
@@ -364,7 +409,7 @@ async function write(name, snap, sheet) {
 }
 
 (async () => {
-  fs.rmSync(path.join(OUT, 'art'), { recursive: true, force: true });   // start from a clean set of images
+  if (!ONLY) fs.rmSync(path.join(OUT, 'art'), { recursive: true, force: true });   // start from a clean set of images
   fs.mkdirSync(OUT, { recursive: true });
   const auth = DEMO ? await login(API, process.env.DEMO_USER || 'demo', process.env.DEMO_PASS || '') : await login(JF, JF_USER, JF_PASS);
   AUTH_HEADER = authHeader(auth);
@@ -383,12 +428,14 @@ async function write(name, snap, sheet) {
     { name: 'item-desktop', width: 1440, height: 900, hash: `/details?id=${item.Id}` },
     { name: 'home-mobile', width: 390, height: 844, mobile: true, hash: '/home', backdropOf: bdId },
     { name: 'item-mobile', width: 390, height: 844, mobile: true, hash: `/details?id=${item.Id}` },
+    { name: 'livetv-desktop', width: 1440, height: 900, hash: '/livetv.html?tab=1', livetv: true },
+    { name: 'livetv-mobile', width: 390, height: 844, mobile: true, hash: '/livetv.html?tab=1', livetv: true },
   ];
   // One stylesheet per layout: each page adds the stylesheets its own views load, and the phone
   // layout sets global rules (e.g. a smaller root font size) that must not reach the desktop one.
   const rules = { desktop: new Set(), mobile: new Set() };
   let iconFontUrl = null;
-  for (const s of shots) {
+  for (const s of shots.filter((x) => !ONLY || x.name.startsWith(ONLY))) {
     const layout = s.mobile ? 'mobile' : 'desktop';
     const snap = await capture(browser, auth, s, localAuth);
     await write(s.name, snap, `jellyfin-${layout}`);
@@ -396,17 +443,20 @@ async function write(name, snap, sheet) {
     if (snap.iconFont) iconFontUrl = snap.iconFont;
     console.log('captured', s.name, `${(snap.html.length / 1024) | 0} KB`);
   }
-  for (const v of variants) {
+  for (const v of ONLY ? [] : variants) {
     const snap = await capture(browser, auth, { ...v, name: `ss-${v.name}`, width: 1440, height: 900, hash: '/home', backdropOf: bdId }, localAuth);
     await writeSlideshow(v.name, snap);
     console.log('captured slideshow', v.name);
   }
   // Jellyfin's own stylesheets, flattened. Fonts and server URLs are dropped (the theme brings its own).
   for (const layout of ['desktop', 'mobile']) {
-    const css = [...rules[layout]].filter((r) => !r.startsWith('@font-face') && !/Jellyfish|jellyfish/.test(r)).join('\n').replaceAll(JF, '')
+    const file = path.join(OUT, `jellyfin-${layout}.css`);
+    // With ONLY, the saved stylesheet is kept and just the rules it does not have yet are added.
+    const saved = ONLY && fs.existsSync(file) ? fs.readFileSync(file, 'utf8').replace(/\n@font-face \{ font-family: "Material Icons".*\n/, '\n') : '';
+    const css = [...rules[layout]].filter((r) => !r.startsWith('@font-face') && !/Jellyfish|jellyfish/.test(r)).map((r) => r.replaceAll(JF, '')).filter((r) => !saved.includes(r)).join('\n').replace(/^/, saved ? saved.trimEnd() + '\n' : '')
       // The slideshow plugins write icon names ("play_arrow") with Jellyfin's Material Icons font.
       + '\n@font-face { font-family: "Material Icons"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/MaterialIcons-Regular.woff2") format("woff2"); }\n';
-    fs.writeFileSync(path.join(OUT, `jellyfin-${layout}.css`), css);
+    fs.writeFileSync(file, css);
   }
   await browser.close();
   // stock images the markup refers to (rating icons, logo placeholder)

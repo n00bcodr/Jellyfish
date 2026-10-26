@@ -2922,21 +2922,22 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
 
 /* Date Selection Container */
 .guideHeaderDateSelection {
-    padding-top: 2em;
+    padding-top: 1.5em;
     width: fit-content;
+    max-width: 100%;
     margin: 0 auto;
     display: flex;
     justify-content: center;
 }
 
-/* Date Tabs Container */
+/* Date Tabs Container: one frosted pill holding the days. */
 .guideDateTabs.focuscontainer-x.emby-tabs.focusable.scrollX {
-    border-radius: 100px;
+    border-radius: calc(var(--rounded-cards) + 5px);
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-weight: 500 ;
+    background: var(--accent-surface);
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--alt-accent-color);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* Date Tabs Slider */
@@ -2944,45 +2945,56 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
     background: transparent !important;
     color: inherit !important;
     box-shadow: none !important;
-    align-items: inherit;
-    padding: 0px 10px;
+    align-items: stretch;
+    padding: 5px;
     display: flex;
     gap: 4px;
 }
 
-/* Date Tab Buttons */
+/* Date Tab Buttons: equal-width chips, weekday above the day number. Jellyfin writes the
+   label as "Mon<br>26" in one block, so ::first-line styles the weekday and the rest is the date. */
 button.emby-tab-button.guide-date-tab-button.emby-button {
-    padding: 15px 20px !important;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.78);
+    flex: 1 0 auto;
+    height: auto !important; /* Jellyfin fixes tab buttons at one line tall; these hold two */
+    min-width: 4.25rem;
+    padding: 0.5rem 0.9rem !important;
+    margin: 0 !important; /* the general tab rule adds a margin; the slider already has a gap */
+    border-radius: var(--rounded-cards) !important; /* the general tab rule makes every tab a pill */
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.82);
+}
+.guide-date-tab-button .emby-button-foreground {
+    display: block;
+    line-height: 1.25;
+}
+.guide-date-tab-button .emby-button-foreground::first-line {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.8;
 }
 
 /* Active Date Tab Button */
 button.emby-tab-button.guide-date-tab-button.emby-tab-button-active.emby-button {
-    padding: 12px 24px !important;
     background: var(--primary-accent-color) !important;
     color: var(--text-color) !important;
-    box-shadow: 0 4px 12px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.35);
 }
 
 /* Hover Effects */
 button.emby-tab-button.guide-date-tab-button.emby-button:hover:not(.emby-tab-button-active) {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.9);
-    transform: translateY(-1px);
+    background: var(--accent-surface-strong);
+    color: #ffffff;
 }
 
 /* Focus Effects */
-button.emby-tab-button.guide-date-tab-button.emby-button:focus {
+button.emby-tab-button.guide-date-tab-button.emby-button:focus-visible {
     outline: 2px solid var(--primary-accent-color);
     outline-offset: 2px;
-}
-
-/* Button Foreground Content */
-.emby-tab-button .emby-button-foreground {
-    line-height: 1;
 }
 .guideDateTabsSlider .guide-date-tab-button:not(.emby-tab-button-active) .emby-button-foreground {
     color: inherit !important;
@@ -2991,24 +3003,21 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus {
 /* Responsive Design for TV Guide */
 @media (max-width: 768px) {
     .guideHeaderDateSelection {
-        padding-top: 1em;
-        width: 100%;
+        padding-top: 1.75rem; /* clear of the floating top bar */
+        width: calc(100% - 1rem);
+        margin-inline: auto;
         overflow-x: auto;
     }
 
     .emby-tabs-slider.guideDateTabsSlider {
-        padding: 6px;
+        padding: 4px;
         gap: 2px;
     }
 
     button.emby-tab-button.guide-date-tab-button.emby-button {
-        padding: 10px 16px !important;
-        min-width: 50px;
-        font-size: 0.8rem;
-    }
-
-    button.emby-tab-button.guide-date-tab-button.emby-tab-button-active.emby-button {
-        padding: 10px 20px !important;
+        padding: 0.4rem 0.6rem !important;
+        min-width: 3.4rem;
+        font-size: 1rem;
     }
 }
 

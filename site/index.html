@@ -228,7 +228,7 @@ footer { padding: 24px max(20px, 4vw) 60px; color: var(--ui-dim); font-size: .85
 
 <div class="preview-col">
   <div class="pv-tools">
-    <div class="seg" id="pv-view"><button data-v="home">Home</button><button data-v="item">Item page</button></div>
+    <div class="seg" id="pv-view"><button data-v="home">Home</button><button data-v="item">Item page</button><button data-v="livetv">Live TV</button></div>
     <div class="seg" id="pv-dev"><button data-v="desktop">Desktop</button><button data-v="phone">Phone</button></div>
     <span class="spacer"></span>
     <span class="note" style="margin:0">Mock-up of Jellyfin 12, modern layout, with your selected options.</span>
@@ -462,6 +462,7 @@ async function logoFromFile(file) {
 /* The frosted bar only blurs what is behind it, so scroll the page until content passes underneath. */
 function showBlur() {
   const w = $("#pvf").contentWindow;
+  if (S.view === "livetv") return;   // the guide has no content to scroll under the bar
   if (w && w.scrollY < 100) w.scrollTo({ top: S.view === "item" ? 130 : 230, behavior: "smooth" });
 }
 function layoutPreview() {
