@@ -10,7 +10,7 @@
 
 Run from the repository root:  python3 site/build.py _site
 """
-import json, os, re, shutil, sys
+import hashlib, json, os, re, shutil, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -74,6 +74,17 @@ def main():
                 (jf / sub).mkdir(parents=True, exist_ok=True)
                 shutil.copy(f, jf / sub / f.name)
     shutil.copytree(ROOT / "site" / "preview", OUT / "preview", ignore=shutil.ignore_patterns("_*"))
+    # Pages caches files for 10 minutes; a page and its stylesheet must never come from different builds.
+    for name in ("desktop", "mobile"):
+        css = OUT / "preview" / f"jellyfin-{name}.css"
+        tag = hashlib.md5(css.read_bytes()).hexdigest()[:10]
+        for page in (OUT / "preview").glob(f"*-{name}.html"):
+            page.write_text(page.read_text(encoding="utf8").replace(f'href="jellyfin-{name}.css"', f'href="jellyfin-{name}.css?v={tag}"'), encoding="utf8")
+    h = hashlib.md5()
+    for f in sorted((OUT / "jf").rglob("*.css")):
+        h.update(f.read_bytes())
+    index = OUT / "index.html"
+    index.write_text(index.read_text(encoding="utf8").replace("__BUILD__", h.hexdigest()[:10]), encoding="utf8")
     (OUT / ".nojekyll").write_text("")
     print(f"built {OUT}: {len(palettes)} palettes")
 

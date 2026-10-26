@@ -32,7 +32,8 @@ const JF = (process.env.JF_URL || 'http://localhost:8096').replace(/\/$/, '');  
 // DEMO=1: titles, posters and details come from the public Jellyfin demo server (open-licensed and
 // public-domain films) instead of a private library. The web client still comes from JF.
 const DEMO = process.env.DEMO === '1';
-const ONLY = process.env.ONLY || '';   // e.g. ONLY=livetv: capture just those pages and add them to what is already saved
+const ONLY = process.env.ONLY || '';   // e.g. ONLY='livetv|lib': capture just the pages whose names start so, and add them to what is already saved
+const wanted = (name) => !ONLY || new RegExp(`^(${ONLY})`).test(name);
 const API = DEMO ? (process.env.DEMO_URL || 'https://demo.jellyfin.org/stable').replace(/\/$/, '') : JF;
 const REAL = DEMO;   // real titles and artwork; otherwise everything is generated
 const { JF_USER, JF_PASS } = process.env;
@@ -190,10 +191,24 @@ function art(id, type, w, h) {
 /* Every image the page asks for is turned into a file under art/. Posters, backdrops, logos and
    thumbnails of real titles are fetched small from the API (DEMO mode); cast photos, user avatars
    and anything else are generated. */
+// The demo server has no collections, so a few are made from its films: each has its own id and borrows the artwork
+// of one film (src). Everything a collection page asks for is answered from real films.
+let BOXES = [];   // { id, src, name, skip }
+const COLLECTIONS_VIEW = hex32('collections-view');
+const param = (url, name) => [...url.searchParams].find(([k]) => k.toLowerCase() === name.toLowerCase())?.[1];
+const boxOf = (text) => BOXES.find((b) => text.includes(b.id));
+function boxItem(src, box) {
+  const body = { ...src };
+  Object.assign(body, { Id: box.id, Type: 'BoxSet', Name: box.name, IsFolder: true, ChildCount: 8, People: [], Overview: box.overview, Taglines: [], RemoteTrailers: [], Chapters: [], Genres: [], GenreItems: [], Tags: [], TagItems: [], Studios: [] });
+  ['MediaSources', 'MediaStreams', 'RunTimeTicks', 'MediaType', 'Video3DFormat', 'Path', 'Container', 'Width', 'Height', 'CriticRating', 'CommunityRating', 'ProviderIds', 'ExternalUrls', 'ProductionYear', 'PremiereDate', 'OriginalTitle', 'OfficialRating', 'ParentLogoItemId', 'ParentLogoImageTag', 'UserData'].forEach((k) => delete body[k]);
+  if (body.ImageTags) body.ImageTags = { ...body.ImageTags, Logo: undefined };   // the title shows as text
+  return body;
+}
 const imageStore = new Map();   // key -> { file }
 let AUTH_HEADER = {};
 const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
 async function imageFile(url) {
+  { const b = boxOf(url.href); if (b) url = new URL(url.href.replaceAll(b.id, b.src)); }
   const m = url.pathname.match(/\/Items\/([^/]+)\/Images\/(\w+)(?:\/(\d+))?/);
   const type = m ? m[2] : 'User';
   const id = m ? m[1] : 'user';
@@ -272,7 +287,16 @@ async function findId(auth, re) {
   return (r.Items.find((i) => re.test(i.Name)) || r.Items[0]).Id;
 }
 
-async function capture(browser, auth, { name, width, height, mobile, hash, plugin, backdropOf, livetv }, localAuth) {
+async function findNamed(auth, type, re) {
+  const r = await (await fetch(`${API}/Items?IncludeItemTypes=${type}&Recursive=true&userId=${auth.userId}`, { headers: authHeader(auth) })).json();
+  return (r.Items.find((i) => re.test(i.Name)) || r.Items[0]).Id;
+}
+async function findPerson(auth, re) {
+  const r = await (await fetch(`${API}/Persons?userId=${auth.userId}&Limit=500`, { headers: authHeader(auth) })).json();
+  return (r.Items.find((i) => re.test(i.Name)) || r.Items.find((i) => i.ImageTags?.Primary)).Id;
+}
+
+async function capture(browser, auth, { name, width, height, mobile, hash, plugin, backdropOf, livetv, views: withViews }, localAuth) {
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, isMobile: !!mobile, hasTouch: !!mobile, userAgent: mobile ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' : undefined });
   await ctx.addInitScript(({ auth, base, layout }) => {
     localStorage.setItem('jellyfin_credentials', JSON.stringify({ Servers: [{ ManualAddress: base, manualAddressOnly: true, Id: auth.serverId, UserId: auth.userId, AccessToken: auth.token, DateLastAccessed: Date.now(), LastConnectionMode: 2, Name: 'Jellyfin Server' }] }));
@@ -292,15 +316,36 @@ async function capture(browser, auth, { name, width, height, mobile, hash, plugi
     }
     if (PLUGIN.test(p)) return route.abort();
     if (/^\/Branding\/Css/i.test(p)) return route.fulfill({ status: 200, contentType: 'text/css', body: '' });
-    if (livetv && /^\/LiveTv\//i.test(p)) { const data = liveTv(p, url); if (data) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) }); }
+    // Live TV answers from the generated schedule; other pages (home) just find nothing to show
+    if (/^\/LiveTv\//i.test(p)) {
+      const data = livetv ? liveTv(p, url) : null;
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data || { Items: [], TotalRecordCount: 0, StartIndex: 0 }) });
+    }
     if (/\/Images\//.test(p) || /^\/Users\/[^/]+\/Images\//.test(p)) { const rec = await imageForUrl(url); return route.fulfill({ status: 200, contentType: rec.ctype, body: rec.body }); }
     if (p === '/' || p.startsWith('/web')) return route.continue();
-    let res;
-    try { res = await route.fetch(DEMO ? { url: API + p + url.search } : undefined); } catch { return route.continue(); }
+    let res, target = p + url.search;
+    const box = boxOf(target);
+    if (box) {
+      const sp = new URLSearchParams(url.search);
+      if (sp.get('ParentId') === box.id) { sp.delete('ParentId'); sp.set('StartIndex', String(box.skip)); sp.set('Recursive', 'true'); sp.set('IncludeItemTypes', 'Movie'); sp.set('SortBy', 'SortName'); sp.set('Limit', '8'); }
+      target = p.replaceAll(box.id, box.src) + '?' + sp.toString().replaceAll(box.id, box.src);
+    }
+    // the Collections library: its contents are the made-up collections
+    if (BOXES.length && /\/Items\/Latest$/.test(p) && param(url, 'parentId') === COLLECTIONS_VIEW) return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    if (BOXES.length && (param(url, 'parentId') === COLLECTIONS_VIEW || p.endsWith('/Items/' + COLLECTIONS_VIEW))) {
+      const base = p.endsWith('/Items/' + COLLECTIONS_VIEW)
+        ? { Id: COLLECTIONS_VIEW, Name: 'Collections', Type: 'CollectionFolder', CollectionType: 'boxsets', IsFolder: true, ServerId: hex32('server'), ImageTags: {} }
+        : { Items: await Promise.all(BOXES.map(async (b) => boxItem(await (await fetch(`${API}/Users/${auth.userId}/Items/${b.src}`, { headers: AUTH_HEADER })).json(), b))), StartIndex: 0 };
+      if (base.Items) base.TotalRecordCount = base.Items.length;
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(sanitize(base)) });
+    }
+    try { res = await route.fetch(DEMO ? { url: API + target } : undefined); } catch { return route.continue(); }
+    if (process.env.DEBUG && !res.ok()) console.warn(res.status(), p + url.search.slice(0, 120));
     const ct = res.headers()['content-type'] || '';
     if (!ct.includes('json')) return route.fulfill({ response: res });
     let body;
     try { body = sanitize(await res.json()); } catch { return route.fulfill({ response: res }); }
+    if (box && p.endsWith('/Items/' + box.id) && body.Id) body = boxItem(body, box);
     // Media Bar Enhanced draws a logo when a title has one: offer it only titles that do.
     if (plugin === 'enhanced' && Array.isArray(body.Items) && /\/Items$/.test(p)) body.Items = body.Items.filter((i) => i.ImageTags?.Logo);
     // The demo user has nothing in progress: show a few titles part-way through instead.
@@ -316,13 +361,19 @@ async function capture(browser, auth, { name, width, height, mobile, hash, plugi
     // TV shows first, so the rows with unwatched-episode counts come before the movie rows
     const views = Array.isArray(body.Items) && /\/Views\b|\/UserViews\b/i.test(p) ? body.Items : null;
     if (views) views.sort((a, b) => (b.CollectionType === 'tvshows') - (a.CollectionType === 'tvshows'));
-    if (livetv && views && !views.some((i) => i.CollectionType === 'livetv')) views.push({ Name: 'Live TV', ServerId: hex32('server'), Id: hex32('livetv'), Type: 'UserView', CollectionType: 'livetv', ImageTags: {}, IsFolder: true });
+    // Collections and Live TV libraries, as a fuller server would have. Only the library pages ask for them: the home page
+    // loads a row per library and stops when it meets one it cannot fill, so the other pages get the two links added to their
+    // header afterwards (see addNavLinks).
+    if (withViews && views && !views.some((i) => i.CollectionType === 'boxsets')) views.push({ Name: 'Collections', ServerId: hex32('server'), Id: COLLECTIONS_VIEW, Type: 'UserView', CollectionType: 'boxsets', ImageTags: {}, IsFolder: true });
+    if (withViews && views && !views.some((i) => i.CollectionType === 'livetv')) views.push({ Name: 'Live TV', ServerId: hex32('server'), Id: hex32('livetv'), Type: 'UserView', CollectionType: 'livetv', ImageTags: {}, IsFolder: true });
     return route.fulfill({ response: res, body: JSON.stringify(body), contentType: 'application/json' });
   });
   const page = await ctx.newPage();
   if (plugin && plugin.startsWith('pure:')) await ctx.addInitScript((layout) => { window.SlideshowConfig = { layout, enableTrailers: false }; }, plugin.slice(5));
+  if (process.env.DEBUG) { page.on('requestfailed', (r) => console.warn('failed', r.url().slice(0, 140), r.failure()?.errorText)); page.on('console', (m) => m.type() === 'error' && console.warn('console', m.text().slice(0, 200))); }
+  if (process.env.DEBUG) page.on('pageerror', (e) => console.warn('pageerror', e.message.slice(0, 200)));
   await page.goto(`${JF}/web/#${hash}`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(plugin ? 3000 : 7000);
+  await page.waitForTimeout(plugin ? 3000 : Number(process.env.WAIT) || 7000);
   if (plugin && plugin.startsWith('pure:')) {
     const [css, js] = await Promise.all([fetch(`${PURE}.css`).then((r) => r.text()), fetch(`${PURE}.js`).then((r) => r.text())]);
     await page.evaluate((c) => { const st = document.createElement('style'); st.id = 'pure-css'; st.textContent = c; document.head.prepend(st); }, css);
@@ -369,6 +420,7 @@ async function capture(browser, auth, { name, width, height, mobile, hash, plugi
       htmlAttrs: Object.fromEntries([...document.documentElement.attributes].map((a) => [a.name, a.value])),
       bodyAttrs: Object.fromEntries([...document.body.attributes].map((a) => [a.name, a.value])),
       title: document.title,
+      nav: [...document.querySelectorAll('.MuiToolbar-root a[href^="#/"]')].map((a) => a.getAttribute('href')),
     };
   }, bdUrl);
   await page.screenshot({ path: path.join(OUT, `_${name}.png`) });
@@ -408,6 +460,22 @@ async function write(name, snap, sheet) {
   fs.writeFileSync(path.join(OUT, `${name}.html`), doc);
 }
 
+/* The top bar of pages captured without the Collections and Live TV libraries gets their two links, copied from a page that has them. */
+function addNavLinks() {
+  const src = path.join(OUT, 'lib-movies-desktop.html');
+  if (!fs.existsSync(src)) return;
+  const html = fs.readFileSync(src, 'utf8');
+  const anchor = (key) => (html.match(new RegExp(`<a [^>]*href="#/${key}[^"]*"[^>]*>.*?</a>`)) || [])[0];
+  const links = [anchor('boxsets'), anchor('livetv')];
+  if (links.some((l) => !l)) { console.warn('Collections / Live TV links not found'); return; }
+  for (const f of fs.readdirSync(OUT).filter((n) => /^(home|item-\w+)-desktop\.html$/.test(n))) {
+    const file = path.join(OUT, f), page = fs.readFileSync(file, 'utf8');
+    if (page.includes('href="#/boxsets')) continue;
+    const next = page.replace(/(<a [^>]*href="#\/playlists[^"]*"[^>]*>.*?<\/a>)/, `$1${links.join('')}`);
+    if (next !== page) fs.writeFileSync(file, next);
+  }
+}
+
 (async () => {
   if (!ONLY) fs.rmSync(path.join(OUT, 'art'), { recursive: true, force: true });   // start from a clean set of images
   fs.mkdirSync(OUT, { recursive: true });
@@ -423,26 +491,58 @@ async function write(name, snap, sheet) {
     { name: 'enhanced', plugin: 'enhanced' }, { name: 'marquee', plugin: 'pure:marquee' },
     { name: 'classic', plugin: 'pure:classic' }, { name: 'plate', plugin: 'pure:plate' },
   ];
+  // The item page in each kind of item. The demo server has no collection, so BOX stands in for one.
+  BOXES = [
+    { name: 'Open Movie Collection', src: bdId, overview: 'Public-domain and openly licensed films: silent-era landmarks, early horror and Blender Foundation shorts.' },
+    { name: 'Silent Era', src: await findNamed(auth, 'Movie', /Great Train Robbery/), overview: 'Landmarks from before sound.' },
+    { name: 'Horror Classics', src: item.Id, overview: 'Early horror, now in the public domain.' },
+    { name: 'Blender Open Movies', src: await findNamed(auth, 'Movie', /Caminandes/), overview: 'Short films made in the open with Blender.' },
+  ].map((b, i) => ({ ...b, id: hex32('boxset' + i), skip: i * 2 }));
+  const kinds2 = {
+    movie: item.Id,
+    series: await findNamed(auth, 'Series', /Pioneer One/),
+    person: await findPerson(auth, /Dwight Frye/),
+    collection: BOXES[0].id,
+    playlist: await findNamed(auth, 'Playlist', /Binaerpilot/),
+    album: await findNamed(auth, 'MusicAlbum', /Nemesis/),
+  };
+  const itemShots = Object.entries(kinds2).flatMap(([kind, id]) => [
+    { name: `item-${kind}-desktop`, width: 1440, height: 900, hash: `/details?id=${id}` },
+    { name: `item-${kind}-mobile`, width: 390, height: 844, mobile: true, hash: `/details?id=${id}` },
+  ]);
   const shots = [
     { name: 'home-desktop', width: 1440, height: 900, hash: '/home', backdropOf: bdId },
-    { name: 'item-desktop', width: 1440, height: 900, hash: `/details?id=${item.Id}` },
     { name: 'home-mobile', width: 390, height: 844, mobile: true, hash: '/home', backdropOf: bdId },
-    { name: 'item-mobile', width: 390, height: 844, mobile: true, hash: `/details?id=${item.Id}` },
-    { name: 'livetv-desktop', width: 1440, height: 900, hash: '/livetv.html?tab=1', livetv: true },
-    { name: 'livetv-mobile', width: 390, height: 844, mobile: true, hash: '/livetv.html?tab=1', livetv: true },
+    { name: 'livetv-desktop', width: 1440, height: 900, hash: '/livetv.html?tab=1', livetv: true, views: true },
+    { name: 'livetv-mobile', width: 390, height: 844, mobile: true, hash: '/livetv.html?tab=1', livetv: true, views: true },
+    ...itemShots,
   ];
   // One stylesheet per layout: each page adds the stylesheets its own views load, and the phone
   // layout sets global rules (e.g. a smaller root font size) that must not reach the desktop one.
   const rules = { desktop: new Set(), mobile: new Set() };
   let iconFontUrl = null;
-  for (const s of shots.filter((x) => !ONLY || x.name.startsWith(ONLY))) {
+  let nav = [];
+  const run = async (s) => {
     const layout = s.mobile ? 'mobile' : 'desktop';
     const snap = await capture(browser, auth, s, localAuth);
     await write(s.name, snap, `jellyfin-${layout}`);
     snap.css.forEach((r) => rules[layout].add(r));
     if (snap.iconFont) iconFontUrl = snap.iconFont;
+    if (s.name === 'home-desktop') { nav = snap.nav; console.log('nav', nav.join(' ')); }
     console.log('captured', s.name, `${(snap.html.length / 1024) | 0} KB`);
+  };
+  for (const s of shots.filter((x) => wanted(x.name))) await run(s);
+  // the library pages behind the top bar's links, found from the links themselves
+  const links = { favourites: /^#\/home\?tab=1/, shows: /^#\/tv\?/, movies: /^#\/movies\?.*collectionType=movies/, music: /^#\/music\?/, playlists: /^#\/(list|playlists)\b.*|^#\/\w+\?.*collectionType=playlists/, collections: /collectionType=boxsets/ };
+  for (const [lib, re] of Object.entries(links)) {
+    const href = lib === 'collections' ? `#/boxsets?topParentId=${COLLECTIONS_VIEW}&collectionType=boxsets` : nav.find((h) => re.test(h));
+    if (!href) { if (nav.length) console.warn('no link for', lib); continue; }
+    for (const mobile of [false, true]) {
+      const s = { name: `lib-${lib}-${mobile ? 'mobile' : 'desktop'}`, width: mobile ? 390 : 1440, height: mobile ? 844 : 900, mobile, hash: href.slice(1).replaceAll('&amp;', '&'), views: true };
+      if (wanted(s.name)) await run(s);
+    }
   }
+  addNavLinks();
   for (const v of ONLY ? [] : variants) {
     const snap = await capture(browser, auth, { ...v, name: `ss-${v.name}`, width: 1440, height: 900, hash: '/home', backdropOf: bdId }, localAuth);
     await writeSlideshow(v.name, snap);

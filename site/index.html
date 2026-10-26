@@ -51,6 +51,12 @@ section.card > p.lead { margin: 0 0 14px; color: var(--ui-dim); font-size: .9rem
 .field output { color: var(--ui-text); font-weight: 600; }
 .seg { flex: none; display: inline-flex; border: 1px solid var(--ui-line); border-radius: 10px; overflow: hidden; }
 .seg button { background: none; border: 0; padding: 7px 12px; cursor: pointer; font-size: .85rem; }
+.seg[hidden] { display: none; }
+.callout { margin: 0 0 12px; padding: 10px 14px 10px 16px; border: 1px solid var(--ui-line); border-left: 3px solid var(--acc); border-radius: 10px; background: rgba(255,255,255,.03); }
+.callout .note { margin: 2px 0; font-size: .84rem; }
+.seg .sub { display: inline-flex; background: rgba(255,255,255,.05); border-inline: 1px solid var(--ui-line); }
+.seg .sub[hidden] { display: none; }
+.seg .sub button { padding: 7px 10px; font-size: .8rem; }
 .seg button[aria-pressed="true"] { background: var(--acc); color: var(--on-acc); font-weight: 700; }
 .note { font-size: .8rem; color: var(--ui-dim); margin: 6px 0 0; }
 .note b { color: var(--ui-text); }
@@ -227,14 +233,16 @@ footer { padding: 24px max(20px, 4vw) 60px; color: var(--ui-dim); font-size: .85
 </div>
 
 <div class="preview-col">
+  <div class="callout">
+    <p class="note" id="pv-note"></p>
+    <p class="note" id="pv-bd">Works best with <b>Backdrops</b> enabled (Settings → Display → Backdrops). The preview is shown that way.</p>
+  </div>
   <div class="pv-tools">
-    <div class="seg" id="pv-view"><button data-v="home">Home</button><button data-v="item">Item page</button><button data-v="livetv">Live TV</button></div>
+    <div class="seg" id="pv-view"><button data-v="home">Home</button><button data-v="item">Item page</button><span class="sub" id="pv-item" hidden aria-label="Kind of item"><button data-v="movie">Movie</button><button data-v="series">TV show</button><button data-v="person">Person</button><button data-v="collection">Collection</button><button data-v="playlist">Playlist</button><button data-v="album">Music album</button></span><button data-v="livetv">Live TV</button></div>
     <div class="seg" id="pv-dev"><button data-v="desktop">Desktop</button><button data-v="phone">Phone</button></div>
     <span class="spacer"></span>
     <span class="note" style="margin:0">Mock-up of Jellyfin 12, modern layout, with your selected options.</span>
   </div>
-  <p class="note" id="pv-note"></p>
-  <p class="note" id="pv-bd">Works best with <b>Backdrops</b> enabled (Settings → Display → Backdrops). The preview is shown that way.</p>
   <div class="frame" id="frame"><div class="vp" id="vp"><iframe id="pvf" title="Live preview of Jellyfin with your choices"></iframe><div class="ld">Loading preview…</div></div></div>
   <section class="card thanks wide-only" id="s-thanks">
     <div class="thanks-row"><div><h2>Enjoying Jellyfish?</h2><p class="lead">A star helps other people find it. GitHub only lets you star while signed in there, so this opens the repository.</p></div><a class="starbtn" data-repo="Jellyfish" href="https://github.com/n00bcodr/Jellyfish" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg> Star Jellyfish <span class="cnt" hidden></span></a></div>
@@ -253,6 +261,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const BASE = "https://cdn.jsdelivr.net/gh/n00bcodr/";
 
 /* ---------- data ---------- */
+const BUILD = "__BUILD__";   // build.py puts a hash of the theme files here, so a cached stylesheet never meets newer markup
 const MODULES = [
   { id: "indicators", file: "indicators.css", name: "Cornered card badges", desc: "Watched and unwatched-count badges sit flush in the card's corner (tablets and up).", cls: "corner" },
   { id: "progress_bar", file: "progress_bar.css", name: "Floating progress bar", desc: "A rounded progress bar floating over the bottom of the card.", cls: "float-pb" },
@@ -289,7 +298,7 @@ const S = {
   modules: new Set(), scripts: new Set(),
   ss: "none", ssPlugin: "enhanced", ssLayout: "marquee",
   logo: { mode: "default", src: "", from: "", bytes: 0 },
-  target: "server", ref: "", view: "home", dev: "desktop",
+  target: "server", ref: "", view: "home", item: "movie", dev: "desktop",
 };
 
 /* ---------- colour helpers ---------- */
@@ -363,7 +372,7 @@ function buildMods() {
   }
 }
 function seg(sel, key, after) {
-  $$(sel + " button").forEach(b => b.onclick = () => { S[key] = b.dataset.v; (after || render)(); });
+  $$(sel + " > button").forEach(b => b.onclick = () => { S[key] = b.dataset.v; (after || render)(); });
 }
 
 /* ---------- render ---------- */
@@ -377,6 +386,7 @@ function render() {
   const view = S.view;
   $("#frame").classList.toggle("phone", S.dev === "phone");
   setPreview(view);
+  $("#pv-item").hidden = view !== "item";
   // logo
   $$("#lg-mode button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === S.logo.mode));
   $("#lg-custom").hidden = S.logo.mode !== "custom";
@@ -398,14 +408,14 @@ function render() {
   $$("#mods input").forEach(i => i.checked = S.modules.has(i.dataset.id));
   $$("#scripts input").forEach(i => i.checked = S.scripts.has(i.dataset.id));
   $$('#ss-opts input').forEach(i => i.checked = i.value === S.ss);
-  for (const [sel, key] of [["#pv-view", "view"], ["#pv-dev", "dev"], ["#ss-plugin", "ssPlugin"], ["#ss-layout", "ssLayout"], ["#o-target", "target"]])
-    $$(sel + " button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === (key === "view" ? view : S[key])));
+  for (const [sel, key] of [["#pv-view", "view"], ["#pv-item", "item"], ["#pv-dev", "dev"], ["#ss-plugin", "ssPlugin"], ["#ss-layout", "ssLayout"], ["#o-target", "target"]])
+    $$(sel + " > button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === (key === "view" ? view : S[key])));
   $("#ss-layout-wrap").style.display = S.ssPlugin === "marquee" ? "" : "none";
   $("#ss-plugin").closest(".row").style.display = S.ss === "none" ? "none" : "";
   const hidden = MODULES.filter(m => m.nopreview && S.modules.has(m.id)).map(m => m.name);
   $("#pv-note").textContent = hidden.length ? `Not in the mock-up: ${hidden.join("; ")} (still included in what you copy).` : "Not in the mock-up: plugin add-ons (Jellyfin Enhanced, arr tag logos) and scripts. They are still included in what you copy.";
   writeOutput(c, txt);
-  PV.css = importList("../jf/").map(x => x.line).join("\n") + (customBlock(c, txt) ? "\n" + customBlock(c, txt) : "");
+  PV.css = importList("../jf/").map(x => x.line.replace('.css")', `.css?v=${BUILD}")`)).join("\n") + (customBlock(c, txt) ? "\n" + customBlock(c, txt) : "");
   applyTheme();
   saveHash();
 }
@@ -465,6 +475,25 @@ function showBlur() {
   if (S.view === "livetv") return;   // the guide has no content to scroll under the bar
   if (w && w.scrollY < 100) w.scrollTo({ top: S.view === "item" ? 130 : 230, behavior: "smooth" });
 }
+/* The captured pages are static, so the top bar's links switch between captured pages instead of navigating. */
+const NAV = [[/^#\/$/, "home"], [/^#\/home\?tab=1/, "lib-favourites"], [/^#\/tv\?/, "lib-shows"], [/^#\/movies\?/, "lib-movies"],
+  [/^#\/music\?/, "lib-music"], [/^#\/playlists\?/, "lib-playlists"], [/^#\/boxsets\?/, "lib-collections"], [/^#\/livetv/, "livetv"]];
+const ITEM_KIND = { Movie: "movie", Series: "series", Season: "series", Episode: "series", Person: "person", BoxSet: "collection", Playlist: "playlist", MusicAlbum: "album" };
+function wireNav() {
+  const d = $("#pvf").contentDocument;
+  if (!d || !d.body) return;
+  d.addEventListener("click", e => {
+    // a card opens the captured page for that kind of item (one sample of each was captured)
+    const card = e.target.closest && e.target.closest(".card[data-type]");
+    const kind = card && ITEM_KIND[card.dataset.type];
+    if (kind) { e.preventDefault(); S.view = "item"; S.item = kind; render(); return; }
+    const a = e.target.closest && e.target.closest("a[href^='#']");
+    if (!a) return;
+    e.preventDefault();
+    const hit = NAV.find(([re]) => re.test(a.getAttribute("href")));
+    if (hit && S.view !== hit[1]) { S.view = hit[1]; render(); }
+  }, true);
+}
 function layoutPreview() {
   // The iframe is a real browser window (1440x900 or 390x844) scaled down to fit, so vh-based
   // layouts such as the slideshow keep their proportions.
@@ -477,7 +506,7 @@ function layoutPreview() {
   vp.style.marginInline = "auto";
 }
 function setPreview(view) {
-  const src = `preview/${view}-${S.dev === "phone" ? "mobile" : "desktop"}.html`;
+  const src = `preview/${view === "item" ? "item-" + S.item : view}-${S.dev === "phone" ? "mobile" : "desktop"}.html`;
   layoutPreview();
   if (src === PV.src) return;
   PV.src = src; $("#vp").classList.remove("ready"); $("#pvf").src = src;
@@ -655,7 +684,7 @@ async function init() {
   catch (e) { S.palettes = [{ id: "jellyblue", name: "Jelly Blue", "primary-r": 0, "primary-g": 164, "primary-b": 220, "primary-background-color": "#000000", "secondary-background-color": "#181818", "tertiary-background-color": "#252525", "text-color": "#000000", "header-background-color": "#ffffff6e" }]; }
   loadHash();
   buildPalettes(); buildMods(); buildProjects(); loadStars();
-  seg("#pv-view", "view"); seg("#pv-dev", "dev"); const toHome = () => { S.view = "home"; render(); };
+  seg("#pv-view", "view"); seg("#pv-item", "item"); seg("#pv-dev", "dev"); const toHome = () => { S.view = "home"; render(); };
   seg("#ss-plugin", "ssPlugin", toHome); seg("#ss-layout", "ssLayout", toHome); seg("#o-target", "target");
   const edit = (k, v) => { S.custom[k] = v; render(); };
   $("#c-acc").oninput = e => edit("acc", e.target.value);
@@ -688,7 +717,7 @@ async function init() {
     render();
   };
   const f = $("#pvf");
-  f.addEventListener("load", () => { $("#vp").classList.add("ready"); applyTheme(); });
+  f.addEventListener("load", () => { $("#vp").classList.add("ready"); applyTheme(); wireNav(); });
   new ResizeObserver(layoutPreview).observe($("#frame"));
   render();
 }
