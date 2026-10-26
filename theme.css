@@ -263,6 +263,18 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
     border-color: var(--primary-accent-color) !important;
 }
 
+/* == Progress ring (metadata refresh indicator) == */
+/* Jellyfin draws the ring over a black disc with grey text; its arc is themed above. The disc and the
+   unfilled track follow the palette instead. */
+.progressring-bg {
+    background: var(--header-solid-background-color);
+    border-color: var(--accent-surface-strong);
+}
+.progressring-text {
+    color: var(--accent-text-color);
+    font-weight: 700;
+}
+
 /* == Accent Color for Text & Icons == */
 /* Applies primary accent color to text and icons for emphasis or active states. */
 .button-link:not(.itemDetailPage .button-link), /* Link-styled buttons (excluding those on item detail pages) */
