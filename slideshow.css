@@ -55,8 +55,11 @@ html body:not([class*="media-bar-mobile"]):not(#_):not(#__) .homeSectionsContain
 }
 
 /* Room for the first row's title under the slideshow. (misc.css hides that title and uses the
-   same padding; this keeps the layout the same without it.) */
-#indexPage .homeSectionsContainer .verticalSection.section0 {
+   same padding; this keeps the layout the same without it.) The row's previous/next buttons
+   are positioned from the section's top edge, so they take the same padding or they float
+   above the cards. */
+#indexPage .homeSectionsContainer .verticalSection.section0,
+#indexPage .homeSectionsContainer .verticalSection.section0 .emby-scrollbuttons {
   padding-top: 3em;
 }
 
