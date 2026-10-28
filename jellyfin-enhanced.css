@@ -343,3 +343,44 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
 .je-review-form .je-review-textarea:focus {
     border-color: var(--primary-accent-color);
 }
+
+/* Seerr on the search page.
+   The plugin pins its icon at 68% of the field, sized for the stock input. Inside the
+   theme's search pill it is centred on the pill and made small, and the input leaves room
+   for it so typed text never runs underneath. */
+#searchPage #jellyseerr-search-icon {
+    top: 50%;
+    right: 0;
+    width: 1.9rem;
+    height: 1.9rem;
+    filter: none;
+}
+#searchPage #jellyseerr-search-icon.is-active {
+    filter: drop-shadow(0 0 6px var(--accent-surface-strong));
+}
+#searchPage #jellyseerr-search-icon.is-disabled {
+    filter: grayscale(1);
+}
+#searchPage #jellyseerr-search-icon.is-no-user {
+    filter: hue-rotate(125deg);
+}
+#searchPage #jellyseerr-search-icon.is-filter-active {
+    filter: drop-shadow(0 0 8px #3b82f6) brightness(1.2);
+}
+#searchPage .searchFields .inputContainer:has(#jellyseerr-search-icon) .searchfields-txtSearch {
+    padding-right: 2.6rem;
+}
+
+/* Seerr results row on the search page. */
+.jellyseerr-section .sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+.jellyseerr-refresh-btn {
+    border-radius: 50%;
+    transition: background-color .15s ease;
+}
+.jellyseerr-refresh-btn:hover {
+    background: var(--accent-surface);
+}

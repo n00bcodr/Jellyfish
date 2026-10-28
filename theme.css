@@ -498,6 +498,227 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     border-radius: var(--rounded-cards) !important;
     border: 1px solid var(--alt-accent-color);
 }
+/* The page behind a dialog is dimmed and softened so the dialog is the only thing in focus. */
+.dialogBackdropOpened {
+    opacity: .6;
+    backdrop-filter: blur(6px);
+}
+/* Form dialogs (Media Info, Edit metadata, Add to playlist, Identify...) are three bands: header,
+   content, footer. A hairline separates them and the dialog floats on a deep shadow. */
+.dialog.formDialog {
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .55) !important;
+    overflow: hidden;
+}
+.formDialogHeader {
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+.formDialogFooter {
+    border-top: 1px solid var(--alt-accent-color);
+}
+/* Where Jellyfin makes a dialog fill the screen (phones, narrow windows, TV) it is edge to edge:
+   rounded corners and a border would only show black wedges at the screen's corners. */
+@media (max-width: 50em) {
+    .dialog.dialog-fixedSize,
+    .dialog.dialog-fullscreen-lowres {
+        border-radius: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+}
+.dialog.dialog-fullscreen,
+.layout-tv .dialog.dialog-fixedSize {
+    border-radius: 0 !important;
+    border: 0 !important;
+}
+/* Media Info dialog: the file's details on top, then one card per stream (Video, Audio, Subtitle).
+   Labels are dimmed so the values stand out, and the headings take the accent colour. */
+.mediaInfoContent .mediaInfoStreamType {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-text-color);
+    display: flex;
+    align-items: center;
+    gap: .25em;
+    margin: 0 0 .6em;
+}
+.mediaInfoContent .mediaInfoSource > div:first-child .mediaInfoStreamType {
+    font-size: 1.45rem;
+    color: inherit;
+}
+.mediaInfoContent .mediaInfoLabel {
+    font-weight: 600;
+    opacity: .6;
+    margin-right: .4em;
+}
+.mediaInfoContent .mediaInfoAttribute {
+    color: #fff;
+    overflow-wrap: anywhere;
+}
+/* The file's own details (Container, Path, Size) read as a two-column table: label left, value
+   right, a hairline between rows. The streams below wrap as cards. */
+.mediaInfoContent .mediaInfoSource {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    line-height: 1.9;
+}
+.mediaInfoContent .mediaInfoSource > div:first-child {
+    flex: 0 0 100%;
+}
+.mediaInfoContent .mediaInfoSource > br,
+.mediaInfoContent .mediaInfoSource > .hide {
+    display: none;
+}
+.mediaInfoContent .mediaInfoSource > .mediaInfoLabel {
+    flex: 0 0 7rem;
+    margin: 0;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+.mediaInfoContent .mediaInfoSource > .mediaInfoAttribute {
+    flex: 1 1 0;
+    min-width: calc(100% - 8rem);
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+/* Each stream is a card holding the same two-column table: label left, value right. */
+.mediaInfoContent .mediaInfoStream {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex: 1 1 19rem;
+    max-width: 24rem;
+    box-sizing: border-box;
+    margin: 1.25rem 0 0;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    background: color-mix(in srgb, #fff 5%, transparent);
+}
+.mediaInfoContent .mediaInfoStream > .mediaInfoStreamType {
+    flex: 0 0 100%;
+}
+.mediaInfoContent .mediaInfoStream > br,
+.mediaInfoContent .mediaInfoStream > .hide {
+    display: none;
+}
+.mediaInfoContent .mediaInfoStream > .mediaInfoLabel {
+    flex: 0 0 38%;
+    margin: 0;
+    padding: .3rem 0;
+    border-top: 1px solid var(--alt-accent-color);
+}
+.mediaInfoContent .mediaInfoStream > .mediaInfoAttribute {
+    flex: 1 1 0;
+    min-width: 55%;
+    padding: .3rem 0 .3rem .5rem;
+    border-top: 1px solid var(--alt-accent-color);
+    text-align: right;
+}
+@media (max-width: 50em) {
+    .mediaInfoContent .mediaInfoStream {
+        flex-basis: 100%;
+        max-width: none;
+    }
+}
+.mediaInfoContent .btnCopy {
+    opacity: .7;
+}
+.mediaInfoContent .btnCopy:hover {
+    opacity: 1;
+}
+/* Subtitle editor: the existing subtitles are cards, the search form gets the same section headings. */
+.subtitleEditorDialog .dialogContentInner h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-text-color);
+    margin: 1.25em 0 .6em;
+}
+.subtitleEditorDialog .dialogContentInner h2:first-child {
+    margin-top: .25em;
+}
+.subtitleEditorDialog .listItem {
+    margin-bottom: .6rem;
+    padding: .85rem 1rem;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    background: color-mix(in srgb, #fff 5%, transparent);
+}
+.subtitleEditorDialog .listItemBody > div:first-child {
+    font-weight: 700;
+}
+.subtitleEditorDialog .listItemBodyText.secondary {
+    opacity: .65;
+    font-size: .85em;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+.subtitleEditorDialog .subtitleList .btnDelete:hover {
+    color: #ff9c9f;
+    background: color-mix(in srgb, #e5484d 18%, transparent);
+}
+.subtitleEditorDialog .originalFile .originalSubtitleFileLabel {
+    font-weight: 600;
+    opacity: .6;
+    margin-right: .5em;
+}
+/* Search results: the same cards. The metadata (format, downloads, frame rate) is spaced out and the
+   "Perfect match" / translated / forced pills take the accent colour instead of Jellyfin's blue. */
+.subtitleEditorDialog .listItemBodyText.secondary > span:not(.subtitleFeaturePillow) {
+    margin-right: 1rem;
+}
+.subtitleEditorDialog .subtitleFeaturePillow {
+    margin: .3rem .5rem 0 0;
+    padding: .1rem .7rem;
+    border-radius: 999px;
+    background: var(--accent-surface-strong) !important;
+    border: 1px solid var(--primary-accent-color);
+    color: var(--accent-text-color) !important;
+    font-size: .8rem;
+    font-weight: 700;
+}
+.subtitleEditorDialog .btnDownload:hover {
+    background: var(--accent-surface);
+    border-radius: 50%;
+}
+/* The search controls sit on a card: the language picker, a filled round Search button (the primary
+   action) and an outlined round Upload button. */
+.subtitleEditorDialog .originalFile {
+    margin: 0 0 .75rem;
+}
+.subtitleEditorDialog .subtitleSearchForm {
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    background: color-mix(in srgb, #fff 5%, transparent);
+}
+.subtitleEditorDialog .subtitleSearchForm > .flex {
+    gap: .75rem;
+}
+.subtitleEditorDialog .subtitleSearchForm .selectContainer {
+    margin-bottom: 0;
+}
+.subtitleEditorDialog .subtitleSearchForm .emby-select-iconbutton {
+    flex: none;
+    width: 2.8rem;
+    height: 2.8rem;
+    margin: 1.4rem 0 0;   /* lines the buttons up with the picker, below its label */
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--alt-accent-color);
+    transition: background-color .15s ease, transform .15s ease;
+}
+.subtitleEditorDialog .subtitleSearchForm .btnSearchSubtitles {
+    background: var(--primary-accent-color) !important;
+    border-color: transparent;
+    color: var(--text-color) !important;
+}
+.subtitleEditorDialog .subtitleSearchForm .btnSearchSubtitles:hover {
+    transform: scale(1.06);
+}
+.subtitleEditorDialog .subtitleSearchForm .btnOpenUploadMenu:hover {
+    background: var(--accent-surface);
+}
 /* Margin for titles within action sheets (a type of dialog). */
 .actionSheetTitle {
     margin: 10px 20px !important;
@@ -1546,6 +1767,71 @@ div.card-hoverable.squareCard.card:hover {
     background: var(--secondary-background-color);
 }
 
+/* Search page. The floating top bar sits over the first few pixels, so the page starts below it.
+   The field is one frosted pill (icon and input inside it) that lights up in the accent colour
+   while typing; the input itself is made transparent so the pill is the only surface. */
+.jellyfin-v12 #searchPage.libraryPage,
+#searchPage {
+    padding-top: 1.75rem !important;   /* beats the v12 rule that zeroes .libraryPage padding */
+}
+#searchPage .searchFields .inputLabel {
+    display: none;
+}
+#searchPage .searchFields {
+    margin-bottom: 1.5em;
+}
+#searchPage .searchFieldsInner {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 1.1rem;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, #fff 8%, transparent);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .3);
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+#searchPage .searchFieldsInner:focus-within {
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .3), 0 0 0 3px var(--accent-surface-strong);
+}
+#searchPage .searchfields-icon {
+    font-size: 1.6em;
+    line-height: 1;
+    margin: 0 .5rem 0 0;
+    align-self: center;
+    color: var(--accent-text-color);
+}
+#searchPage .searchFields .inputContainer {
+    margin: 0;
+}
+#searchPage .searchfields-txtSearch,
+#searchPage .searchfields-txtSearch:focus {
+    height: 3.2rem;
+    padding: 0 .25rem;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 1.15rem;
+    color: #fff !important;
+}
+#searchPage .searchfields-txtSearch::placeholder {
+    color: rgba(255, 255, 255, .55) !important;
+    opacity: 1;
+}
+/* Suggestions read as quiet pills, not a bare list */
+#searchPage .searchSuggestionsList a.button-link {
+    border-radius: 999px;
+    opacity: .85;
+    transition: background-color .15s ease, opacity .15s ease;
+}
+#searchPage .searchSuggestionsList a.button-link:hover,
+#searchPage .searchSuggestionsList a.button-link:focus-visible {
+    opacity: 1;
+    background: var(--accent-surface);
+}
+
 /* ~~~~~~~~~~~~~~~~~~~~ DETAILS PAGE (Restored Original Layout Focus) ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles aimed at restoring or customizing the layout of the item details page. */
 
@@ -2503,11 +2789,255 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 /* Negative margin to adjust alignment of child nodes in the tree. */
 .jstree-children { margin-left: -10px !important; }
 
+/* The editor's form scrolls under the dashboard-style top bar (transparent elsewhere), so on this
+   page the bar is solid, and the folder tree starts below it instead of behind it. */
+body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
+    background: var(--header-solid-background-color) !important;
+}
+/* The folder tree and the form are two matching rounded panels with an even gap between them and
+   the screen edges, instead of a bare list next to a grey slab. */
+.layout-desktop .editPageSidebar {
+    top: 76px !important;
+    left: 12px;
+    height: calc(100% - 88px) !important;
+    width: calc(25vw - 12px) !important;
+    overflow-y: auto;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: calc(var(--rounded-cards) + 6px);
+    background: var(--secondary-background-transparent);
+}
+.layout-desktop .editPageInnerContent {
+    width: calc(74vw - 12px) !important;
+    margin: 12px 12px 12px 0;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: calc(var(--rounded-cards) + 6px);
+    background: var(--secondary-background-transparent);
+    overflow: hidden;
+}
+#editItemMetadataPage .formDialogContent {
+    background: transparent !important;
+}
+.jstree-default .jstree-wholerow {
+    border-radius: calc(var(--rounded-cards) / 2);
+}
+/* Folder icon and name share one centred row; as inline text the 24px icon sat above the name's baseline. */
+.jstree-anchor .editorNode {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    height: 100%;
+}
+.jstree-anchor .metadataSidebarIcon {
+    font-size: 22px;
+    line-height: 1;
+    flex: none;
+}
+#editItemMetadataPage .formDialogHeader {
+    background: transparent !important;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+#editItemMetadataPage .formDialogHeaderTitle {
+    font-weight: 700;
+}
+/* Section headings (Genres, People, Studios, Tags, Metadata Settings) match the other pages' bold titles. */
+#editItemMetadataPage :is(h2, h3).sectionTitle,
+#editItemMetadataPage .metadataFormFields :is(h2, h3) {
+    font-weight: 700;
+}
+#editItemMetadataPage .listItem {
+    border-radius: var(--rounded-cards);
+}
+
 /* Styling for the "Save" button in the metadata editor header. */
 #editItemMetadataPage .btnHeaderSave {
     /* Accent background is applied globally */
     height: 40px !important;
-    color: white !important; /* Ensure text is white for contrast */
+    padding: 0 1.2em !important;
+    border-radius: 999px !important;
+    font-weight: 700;
+    color: var(--text-color) !important;   /* the text colour made for use on the accent fill */
+    box-shadow: 0 4px 14px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .3);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+#editItemMetadataPage .btnHeaderSave:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .45);
+}
+#editItemMetadataPage .btnHeaderSave .material-icons {
+    margin-right: .3em;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ USER PREFERENCES ~~~~~~~~~~~~~~~~~~~~ */
+/* Profile, Quick Connect, the preferences menu and the Display page. Most of these are Jellyfin's
+   older markup, already rounded by the rules above; the Display page is a newer MUI form that
+   needs the same look applied to its own classes. */
+
+/* Profile: "Delete Image" is a flat, muted red (solid, no glass or glow) so it reads as destructive
+   without the harsh default red. */
+#userProfilePage #btnDeleteImage {
+    background: #7a2e32 !important;
+    border: 0 !important;
+    color: #ffd9db !important;
+    box-shadow: none !important;
+    transition: background-color .15s ease !important;
+}
+#userProfilePage #btnDeleteImage:hover,
+#userProfilePage #btnDeleteImage:focus-visible {
+    background: #93393e !important;
+    transform: none !important;
+}
+/* Phone: the avatar, name and button stack and centre instead of squeezing beside each other. */
+.layout-mobile #userProfilePage .readOnlyContent {
+    flex-direction: column !important;   /* the page sets row/align inline */
+    align-items: center !important;
+    text-align: center;
+    gap: .5em;
+}
+.layout-mobile #userProfilePage .readOnlyContent .imagePlaceHolder {
+    margin: 0;
+}
+.layout-mobile #userProfilePage .readOnlyContent .username {
+    margin: .25em 0 .5em;
+}
+.layout-mobile #userProfilePage .readOnlyContent br {
+    display: none;
+}
+#userProfilePage .imagePlaceHolder #image {
+    border-radius: 50%;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .4);
+}
+
+/* Quick Connect and the password form sit on a frosted panel so the page isn't loose fields on a
+   blank background. */
+#quickConnectPreferencesPage form > .verticalSection,
+#userProfilePage .updatePasswordForm {
+    padding: 1.5em 1.75em;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: calc(var(--rounded-cards) + 6px);
+    background: color-mix(in srgb, #fff 5%, transparent);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .25);
+}
+#quickConnectPreferencesPage form > .verticalSection {
+    margin-top: 1rem;
+}
+#quickConnectPreferencesPage form > .verticalSection .sectionTitle {
+    margin-top: 0;
+}
+
+/* The preferences menu: each row is a rounded, hoverable tile. */
+#myPreferencesMenuPage .readOnlyContent {
+    display: flex;
+    justify-content: center;
+}
+#myPreferencesMenuPage .verticalSection {
+    width: min(100%, 34rem);
+    margin-top: 1rem;
+    padding: 1.25em 1.5em 1em;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: calc(var(--rounded-cards) + 6px);
+    background: color-mix(in srgb, #fff 5%, transparent);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .25);
+}
+#myPreferencesMenuPage .verticalSection .sectionTitle {
+    margin-top: 0;
+}
+#myPreferencesMenuPage a.listItem-border,
+#myPreferencesMenuPage .listItem-border {
+    display: block;
+    border: 0 !important;
+    border-radius: var(--rounded-cards);
+    margin-bottom: .35em;
+    transition: background-color .15s ease;
+}
+#myPreferencesMenuPage a.listItem-border:hover,
+#myPreferencesMenuPage a.listItem-border:focus-visible {
+    background: var(--accent-surface);
+}
+#myPreferencesMenuPage .listItemIcon {
+    color: var(--accent-text-color);
+}
+#myPreferencesMenuPage .listItemBodyText {
+    font-weight: 600;
+}
+
+/* Display page (MUI form): section headings, fields, checkboxes and helper text match the older
+   preference pages. */
+#displayPreferencesPage .MuiTypography-h2 {
+    font-family: inherit;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--text-color-secondary, rgba(255, 255, 255, .92));
+    margin-top: .75em;
+}
+#displayPreferencesPage .MuiFilledInput-root {
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards) !important;
+    background: var(--alt-accent-color) !important;
+    overflow: hidden;
+}
+#displayPreferencesPage .MuiFilledInput-root::before,
+#displayPreferencesPage .MuiFilledInput-root::after {
+    display: none;   /* the Material underline */
+}
+#displayPreferencesPage .MuiFilledInput-root.Mui-focused {
+    border-color: var(--primary-accent-color);
+}
+#displayPreferencesPage .MuiInputLabel-root {
+    font-weight: 600;
+}
+#displayPreferencesPage .MuiFormHelperText-root {
+    opacity: .7;
+    margin-inline: .25em;
+}
+#displayPreferencesPage .MuiFormHelperText-root a {
+    color: var(--accent-text-color);
+}
+/* The checkbox is a circle with an accent fill, as on the older pages. */
+#displayPreferencesPage .MuiCheckbox-root {
+    color: var(--secondary-accent-color);
+}
+#displayPreferencesPage .MuiCheckbox-root .MuiSvgIcon-root {
+    border-radius: 50%;
+}
+#displayPreferencesPage .MuiCheckbox-root.Mui-checked {
+    color: var(--primary-accent-color);
+}
+#displayPreferencesPage .MuiFormControlLabel-label {
+    font-weight: 600;
+}
+
+/* Select fields: the chevron's box spans the label as well as the field and sits 1px below it, so
+   the arrow rode 3px low. Field and arrow box now share one height and the arrow is centred in it. */
+.selectContainer {
+    --select-h: 2.4rem;
+}
+.selectContainer > select.emby-select,
+.selectContainer select.emby-select-withcolor {
+    height: var(--select-h);
+    box-sizing: border-box;
+}
+.selectContainer .selectArrowContainer {
+    top: auto;
+    bottom: 0;
+    height: var(--select-h);
+    display: flex;
+    align-items: center;
+}
+.selectContainer .selectArrowContainer > div {
+    display: none;
+}
+.selectContainer .selectArrowContainer .selectArrow {
+    margin: 0;   /* Jellyfin pushes it down by the label's height; the box now starts at the field */
+    line-height: 1;
+}
+
+/* Native date and time pickers: the browser draws the calendar/clock icon for a light page unless told
+   the control is on a dark surface, which left it black on the dark fields. */
+input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], [type="week"]) {
+    color-scheme: dark;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ MUSIC PLAYER & NOW PLAYING BAR ~~~~~~~~~~~~~~~~~~~~ */
