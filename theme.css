@@ -3012,7 +3012,7 @@ body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
 /* Select fields: the chevron's box spans the label as well as the field and sits 1px below it, so
    the arrow rode 3px low. Field and arrow box now share one height and the arrow is centred in it. */
 .selectContainer {
-    --select-h: 2.4rem;
+    --select-h: 2.5rem;
 }
 .selectContainer > select.emby-select,
 .selectContainer select.emby-select-withcolor {
