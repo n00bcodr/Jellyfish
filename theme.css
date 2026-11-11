@@ -326,6 +326,10 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .card-hoverable:hover .cardOverlayContainer {
     background: var(--secondary-background-transparent);
 }
+/* Keep overlay buttons (three dots etc.) above the selection panel (z-index 99998). */
+.cardOverlayContainer {
+    z-index: 99999;
+}
 
 .cardOverlayContainer > .cardOverlayFab-primary {
     background-color: transparent !important;
@@ -1226,6 +1230,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 .checkboxOutline.multiSelectCheckboxOutline {
     width: 100% !important;
     height: 100% !important;
+    border: none !important; /* Jellyfin defaults to a grey border on all selectable cards; clear it */
 }
 .checkboxOutline {
     border-radius: var(--rounded-cards) !important;
@@ -1366,6 +1371,18 @@ div.groupedCard.card-hoverable.overflowSquareCard.card:hover > .cardBox-bottompa
 div.card-hoverable.squareCard.card:hover > .cardBox-bottompadded.cardBox > .cardScalable {
     border: 2px solid var(--primary-accent-color) !important;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, .35), 0 10px 26px rgba(0, 0, 0, .55), 0 0 22px rgba(var(--primary-r), var(--primary-g), var(--primary-b), .35) !important;
+}
+/* In selection mode suppress hover border and lift — the checkbox draws its own selection state.
+   Selectors mirror the hover rules above to match their specificity. */
+div.card-withuserdata.card-hoverable.card:hover > .cardBox-bottompadded.cardBox.withMultiSelect > .cardScalable,
+div.groupedCard.card-hoverable.overflowSquareCard.card:hover > .cardBox-bottompadded.cardBox.withMultiSelect > .cardScalable,
+div.card-hoverable.squareCard.card:hover > .cardBox-bottompadded.cardBox.withMultiSelect > .cardScalable {
+    border: 2px solid transparent !important;
+}
+div.card-withuserdata.card-hoverable.card:hover:has(> .cardBox-bottompadded.cardBox.withMultiSelect),
+div.groupedCard.card-hoverable.overflowSquareCard.card:hover:has(> .cardBox-bottompadded.cardBox.withMultiSelect),
+div.card-hoverable.squareCard.card:hover:has(> .cardBox-bottompadded.cardBox.withMultiSelect) {
+    translate: none !important;
 }
 /* The dimming overlay using a pseudo-element. */
 div.card-withuserdata.card-hoverable.card:hover > .cardBox-bottompadded.cardBox > .cardScalable::before,
@@ -2006,6 +2023,7 @@ h3.tagline {
     border: none !important;
     max-width: 70em !important; /* Ensures dropdowns fit within the track selection area */
     width: 100% !important;
+    height: 2em;
 }
 
 /* hide the dropdown arrow in track selections */
