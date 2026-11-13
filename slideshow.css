@@ -26,7 +26,7 @@
 html:root {
   --slideshow-height: 100vh;
   --slideshow-content-top: 62vh; /* the home rows are pushed down by this much */
-  --sl-stack-bottom: calc(var(--slideshow-content-top) + 9vh); /* the text stack and the controls end here, a little over the rows */
+  --sl-stack-bottom: calc(var(--slideshow-content-top) + min(9vh, 3.5rem)); /* the text stack and the controls end here, a little over the rows (capped, so a tall window keeps a gap above the first row's title) */
   --slideshow-gutter: calc(3.3% + 1.5rem); /* the home rows' own side padding (3.3%) plus a small inset */
   --slideshow-dots-reserve: 2.5rem;
   --sl-font: "Quicksand", "Archivo Narrow", sans-serif;

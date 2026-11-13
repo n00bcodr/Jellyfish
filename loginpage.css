@@ -256,7 +256,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
 
 /* Styles input fields on the manual login form. */
 #loginPage .emby-input {
-  color: #1b1b1f; /* dark on the white field - the accent itself is unreadable on light palettes */
+  color: var(--jf-palette-text-primary, #fff); /* theme.css makes fields translucent, so the text is the page's, not a fixed dark */
   transition: 0.3s ease-in-out;
   border-radius: 12px;
   padding: 12px;

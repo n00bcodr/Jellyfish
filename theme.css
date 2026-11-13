@@ -3352,6 +3352,12 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
     padding-top: 1.5rem;
 }
 
+/* With a slideshow, give the first row's title room below it (:where keeps this the weakest rule, so
+   misc.css and slideshow.css still set their own padding). */
+:where(body:has(#slides-container)) #indexPage .section0 {
+    padding-top: 1.5em;
+}
+
 /* Standardizes font family for various text elements often found near or related to the media bar. */
 .genre, .plot, .rating-value, .rating-value span, .date, .age-rating span, .runTime, .featured-content, .button-container button, .play-text {
     font-family: inherit !important;
