@@ -384,3 +384,82 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
 .jellyseerr-refresh-btn:hover {
     background: var(--accent-surface);
 }
+
+/* Seerr discovery header: the plugin builds its tabs from .emby-tab-button, so the theme's
+   header-pill rules hit them. Keep hover/active text readable, and keep Filters/Sort as quiet text buttons. */
+.jellyseerr-discovery-header .jellyseerr-filter-btn:hover,
+.jellyseerr-discovery-header .jellyseerr-filter-btn.emby-tab-button-active {
+    color: var(--text-color) !important;
+}
+.jellyseerr-discovery-header .jellyseerr-sort-btn.emby-tab-button,
+.jellyseerr-discovery-header .jellyseerr-filters-btn.emby-tab-button {
+    height: auto !important;
+    margin-block: 0 !important;
+    margin-inline: .3em 0 !important;
+    padding: .2em .1em .2em .6em !important;
+}
+.jellyseerr-discovery-header .jellyseerr-sort-btn.emby-tab-button:hover,
+.jellyseerr-discovery-header .jellyseerr-filters-btn.emby-tab-button:hover {
+    background: transparent !important;
+    color: var(--accent-text-color) !important;
+}
+
+/* Seerr sort/Filters menu: drop the plugin's outer border/padding so only the theme's rounded panel shows. */
+html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
+    border: 0 !important;
+    border-radius: var(--rounded-cards) !important;
+    padding: 0 !important;
+    background: var(--secondary-background-color) !important;
+    background-image: none !important;
+}
+
+/* Elsewhere "Search Settings" modal: the plugin inline-styles it (fixed greys, blue, 6px corners), hence !important. */
+#streaming-settings-modal > div {
+    background: var(--secondary-background-color) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    border-radius: var(--rounded-cards) !important;
+}
+#streaming-settings-modal select,
+#streaming-settings-modal input[type="text"] {
+    background: var(--alt-accent-color) !important;
+    border: 1px solid transparent !important;
+    border-radius: 12px !important;
+    color: inherit !important;
+}
+#streaming-settings-modal select:focus,
+#streaming-settings-modal input[type="text"]:focus {
+    border-color: var(--primary-accent-color) !important;
+    outline: none;
+}
+#streaming-settings-modal [id$="-autocomplete"] input + div {
+    background: var(--secondary-background-color) !important;
+    border-color: var(--alt-accent-color) !important;
+    border-radius: 12px !important;
+}
+#streaming-settings-modal .selected-tag {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+#streaming-settings-modal input[type="checkbox"] {
+    accent-color: var(--primary-accent-color);
+}
+#streaming-settings-modal #cancel-settings,
+#streaming-settings-modal #save-settings {
+    border: 0 !important;
+    border-radius: 100px !important;
+    padding: 10px 22px !important;
+}
+#streaming-settings-modal #cancel-settings {
+    background: var(--alt-accent-color) !important;
+    color: inherit !important;
+}
+#streaming-settings-modal #save-settings {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+#streaming-settings-modal #save-settings:hover { filter: brightness(1.1); }
+
+/* Seerr cards: Jellyfin's .card has contain: content, which clips the theme's hover shadow into a square dark patch. */
+.jellyseerr-card.card {
+    contain: layout style !important;
+}
