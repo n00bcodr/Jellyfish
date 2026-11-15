@@ -2111,6 +2111,10 @@ div#listChildrenCollapsible { order: 6 !important; }
 .collectionItems { order: 6 !important; }
 .collectionItems .sectionTitleContainer-cards { padding-left: 0 !important; }
 
+/* Person page "Movies [More]": the link wrapper is itself an .emby-button, so it padded the inner "More" button a second time (tall row, button floating low) */
+.sectionTitleContainer-cards > a.clearLink.emby-button { padding: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; margin-left: auto !important; align-self: center; }
+.sectionTitleContainer-cards > a.clearLink.emby-button > button.raised-mini { padding: 0.45em 0.9em !important; margin: 0 !important; }
+
 /* == Reordering Episode Title Elements (Desktop) == */
 /* Adjusts the order of parent name (Show Title) and item name (Episode Title) within the name container. */
 .layout-desktop .nameContainer .parentName { order: 1; } /* Show title */
