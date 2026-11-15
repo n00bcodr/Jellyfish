@@ -268,7 +268,7 @@ body:has(#loginPage:not(.hide)) .standalonePage {
   outline: 2px solid var(--primary-accent-color);
   outline-offset: 2px;
   border-color: var(--primary-accent-color);
-  box-shadow: 0 0 0 3px rgba(var(--primary-accent-color-rgb, 0, 123, 255), 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.1); /* the palette's accent channels; --primary-accent-color-rgb was never defined, so this ring was always blue */
 }
 
 #loginPage .emby-input:hover {

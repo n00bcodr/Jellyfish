@@ -118,20 +118,6 @@ body, h1, h2, h3, h4, h5, h6, p {
     background-color: var(--primary-accent-color);
 }
 
-/* Show theme date in dashboard */
-.dashboardActionsContainer::before {
-    content: "Theme last updated on " var(--theme-updated-on, "..........");
-    display: block;
-    background-color: var(--alt-accent-color);
-    color: #ddd;
-    border-radius: var(--rounded-cards);
-    padding: 15px 15px;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: bold;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    margin-bottom: 1em;
-    margin-left: 2px;
-}
 /* ~~~~~~~~~~~~~~~~~~~~ ACCENT COLOR APPLICATION ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles that apply the theme's accent colors to various UI elements. */
 
@@ -150,7 +136,7 @@ progress[aria-valuenow]:before,               /* Progress bar fill (pseudo-eleme
 .layout-desktop .mainDetailButtons .button-flat.btnPlay,    /* Play button on details page (Desktop JMP) */
 .layout-mobile .mainDetailButtons .btnPlay,     /* Play button on details page (Mobile) */
 .layout-tv .mainDetailButtons .btnPlay,     /* Play button on details page (TV) */
-.playbackProgress>div,                        /* Inner bar of playback progress sliders */
+.mdl-radio__focus-circle,                     /* Halo behind a focused radio button (sort and view menus); Jellyfin hard-codes its blue here */
 .iconOsdProgressInner                         /* Inner part of OSD circular progress indicators */
 {
     background: var(--primary-accent-color) !important;
@@ -167,7 +153,9 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 .MuiAlert-root.MuiAlert-standardInfo,          /* Info type Material UI alerts */
 .navMenuOption-selected,                        /* Selected items in the main navigation menu */
 .MuiListItemButton-root.Mui-selected,           /* Selected Material UI list item buttons */
-.jstree-default .jstree-wholerow-clicked        /* Clicked rows in jsTree (e.g., metadata editor folder tree) */ {
+.jstree-default .jstree-wholerow.jstree-wholerow-clicked /* Clicked rows in jsTree (metadata editor folder tree). Jellyfin's own
+                                                   rule is `.jstree-default .jstree-wholerow-clicked { ... !important }` and loads with
+                                                   the editor, after this file, so the extra class is what lets this one win. */ {
     background: var(--accent-surface-strong) !important;
 }
 
@@ -227,10 +215,16 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
     background: #ffffffc0 !important;
 }
 
-.listItemIcon:not(.listItemIcon-transparent, .notification_important) /* Icons in list items (excluding transparent/important notifications) */
+.listItemIcon:not(.listItemIcon-transparent) /* Icons in list items (excluding transparent ones) */
 {
     color: #ffffff !important;
     background-color: var(--accent-surface-strong) !important;
+}
+/* Jellyfin 12's dashboard draws the same activity icons as MUI Avatars filled with MUI's info blue
+   (bgcolor: info.main). Re-pointing that variable for the avatar only gives informational entries the
+   surface used above; warning and error entries read other variables and keep their own colours. */
+.MuiListItemAvatar-root {
+    --jf-palette-info-main: var(--accent-surface-strong);
 }
 
 /* == Accent Color for Progress Bars == */
@@ -285,13 +279,19 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .upNextDialog-countdownText,                  /* Countdown text in the "Up Next" dialog */
 .MuiSvgIcon-root.MuiSvgIcon-fontSizeInherit,  /* Material UI SVG icons inheriting font size */
 .button-flat:hover,                           /* Hovered flat buttons */
-#divRunningTasks span,                        /* Text within the running tasks indicator */
 .username,                                    /* Usernames (e.g., on profile pages) */
 .headerUsername,                              /* Username in the header */
 .sectionTitle,                                /* Titles of sections */
 .navMenuOption:hover:not(.navMenuOption-selected) /* Hovered main navigation items (not selected) */
 {
     color: var(--accent-text-color) !important;
+}
+/* Keyboard or remote focus: Jellyfin fills a focused button with the accent (.emby-button.show-focus:focus),
+   and accent-coloured text on that fill cannot be read. Text on accent fills is --text-color. */
+.emby-button.show-focus:focus.button-link:not(.itemDetailPage .button-link),
+.emby-button.show-focus:focus .sectionTitle {
+    color: var(--text-color) !important;
+    text-shadow: none;
 }
 
 .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root, /* Icons within selected Material UI list items */
@@ -312,15 +312,6 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
     background-color: transparent !important;
 }
 
-/* == Accent Color for Dashboard Headings == */
-.dashboardSection h3 {
- color: var(--accent-text-color);
- font-weight: bold !important;
-}
-
-.dashboardSection span.material-icons.chevron_right {
-    display: none;
-}
 /* == Hover Color for Movie Card Overlays == */
 /* Sets a semi-transparent background on movie card hover. */
 .card-hoverable:hover .cardOverlayContainer {
@@ -355,14 +346,6 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 /* Red background for delete image button. */
 #btnDeleteImage {
     background: #942626c2 !important;
-}
-/* Red background for shutdown server button. */
-#btnShutdown {
-    background: #AE3739 !important;
-}
-/* Green background for restart server button and Save Metadata button */
-#btnRestartServer {
-    background: forestgreen !important;
 }
 /* Violet background for refresh button and reset metadata button */
 button.raised.btnRefresh.emby-button, .button-reset {
@@ -1153,8 +1136,10 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     .layout-mobile .libraryPage:not(.noSecondaryNavPage) {
         padding-top: 9.5em !important;
     }
-    /* Jellyfin 12's modern layout already places the page below the header, so that padding is dead space. */
-    .jellyfin-v12 .libraryPage:not(.noSecondaryNavPage) {
+    /* Jellyfin 12's modern layout already places the page below the header, so that padding is dead space.
+       Matched by structure (modern pages sit in MUI's <main>; legacy ones do not). The former `.jellyfin-v12`
+       is a body class that only the Media Bar Enhanced plugin adds, and it adds it in the legacy layouts too. */
+    main.MuiBox-root .libraryPage:not(.noSecondaryNavPage) {
         padding-top: 0 !important;
     }
     /* Adjust unpinned header transformation when title and tabs are present. */
@@ -2540,7 +2525,7 @@ div#listChildrenCollapsible { order: 6 !important; }
     border: 0.1em solid var(--alt-accent-color) !important;
 }
 
-.emby-input, .emby-textarea, .paperList, .fab, .emby-select-withcolor, .visualCardBox, .emby-button.raised.button-alt  {
+.emby-input, .emby-textarea, .paperList, .fab, .emby-select-withcolor, .visualCardBox {
     background: var(--alt-accent-color) !important;
 }
 
@@ -2581,7 +2566,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 .button-submit,
 .emby-select,
 .btnRefresh,
-#btnShutdown,
 .raised, /* General raised buttons */
 .MuiToggleButton-root.MuiToggleButtonGroup-groupedHorizontal /* Material UI Toggle Buttons (Jellyfin 10.9+) */
 {
@@ -2636,10 +2620,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Removes borders under list items for a cleaner look. */
 .listItem-border {
     border: 0 !important;
-}
-
-.taskProgressInner { /* Inner progress bar for tasks */
-    background: var(--primary-accent-color);
 }
 
 /* Styles fieldsets in the dashboard with rounding, custom border, and padding. */
@@ -2707,20 +2687,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 #mediaLibraryPage {
     margin-top: 10px !important;
 }
-/* Re-aligns the "Active Devices" container. */
-.activeDevices.itemsContainer {
-    margin: 0px !important;
-}
-
-/* == Dashboard Table Styling == */
-.detailTableBodyRow-shaded:nth-child(even) {
-    background: var(--primary-background-transparent) !important;
-}
-
-/* == Revoke Button Styling (API page)== */
-.btnRevoke {
-    background: #ff000069;
-}
 
 /* == IntroSkipper Settings Details (Within Dashboard) == */
 /* Styles for <summary> elements (used for collapsible sections) in IntroSkipper settings. */
@@ -2736,7 +2702,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Adjusts layout for specific pages due to changes in Jellyfin 10.9.x. */
 
 .MuiAlert-message { color: #fff !important; } /* Ensure Material UI alert messages are white */
-.MuiDataGrid-root.MuiDataGrid-withBorderColor { border-radius: var(--rounded-cards) !important; } /* Rounding for DataGrid */
 .infoBanner { border-radius: var(--rounded-cards) !important; } /* Rounding for info banners */
 .MuiToggleButton-root.MuiToggleButtonGroup-groupedHorizontal { padding-inline: 15px !important; } /* Padding for MUI toggle buttons */
 
@@ -2807,7 +2772,7 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* Styling for the jsTree component used for folder navigation in the metadata editor. */
 .jstree-default-large .jstree-node { line-height: 35px !important; } /* Adjust line height for tree nodes */
-.jstree-wholerow-hovered { background: var(--primary-background-transparent) !important; } /* Background for hovered tree rows */
+.jstree-default .jstree-wholerow-hovered { background: var(--primary-background-transparent) !important; } /* Background for hovered tree rows (two classes: Jellyfin's `.jstree-wholerow-hovered { background: #38c !important }` loads later) */
 /* Negative margin to adjust alignment of child nodes in the tree. */
 .jstree-children { margin-left: -10px !important; }
 
@@ -2976,6 +2941,11 @@ body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
 #myPreferencesMenuPage a.listItem-border:hover,
 #myPreferencesMenuPage a.listItem-border:focus-visible {
     background: var(--accent-surface);
+}
+/* Jellyfin colours a focused button's text for an accent fill (--text-color, black on most palettes); this row
+   keeps the dark tinted surface above instead, so it keeps the page's light text. */
+#myPreferencesMenuPage a.listItem-border:focus-visible {
+    color: inherit;
 }
 #myPreferencesMenuPage .listItemIcon {
     color: var(--accent-text-color);
