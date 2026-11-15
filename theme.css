@@ -313,8 +313,12 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 }
 
 /* == Hover Color for Movie Card Overlays == */
-/* Sets a semi-transparent background on movie card hover. */
-.card-hoverable:hover .cardOverlayContainer {
+/* Sets a semi-transparent background on the card overlay. Jellyfin fades the overlay in on hover (an
+   opacity transition that runs on the compositor). The colour is also set while the overlay rests at
+   opacity 0, so hovering only changes opacity: no repaint when the pointer enters a card, and no switch
+   back to Jellyfin's black while it fades out. Keyboard/TV focus without hover keeps Jellyfin's colour. */
+.card-hoverable:hover .cardOverlayContainer,
+.card-hoverable:not(:focus-within) .cardOverlayContainer {
     background: var(--secondary-background-transparent);
 }
 /* Keep overlay buttons (three dots etc.) above the selection panel (z-index 99998). */
@@ -1189,6 +1193,15 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
  {
     border-radius: var(--rounded-cards) !important;
 }
+/* Jellyfin keeps each poster's blurhash placeholder <canvas> after the poster has faded in and only sets it
+   to opacity 0 (.lazy-hidden). A canvas is always a compositing layer, and inside the rounded clip below it
+   costs a mask render pass per visible card on every frame; it also forces the poster on top of it into a
+   layer of its own. Taking the already invisible canvas out of rendering removes all of that. Jellyfin
+   removes .lazy-hidden again when a poster is unloaded, so the placeholder still shows when it is needed. */
+.blurhash-canvas.lazy-hidden {
+    display: none;
+}
+
 /* Only the image layers clip: that is what rounds the poster corners. .card and
    .cardBox also hold the title/year text and Jellyfin's TV focus-scale outline,
    which `overflow: hidden` on them cut off (focused TV cards lost the left edge of
@@ -3451,6 +3464,12 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ Book SPECIFIC FIXES AND CHANGES ~~~~~~~~~~~~~~~~~~~~ */
+/* Selectors with :has() (here and elsewhere) share one invalidation list in Chrome. Whenever a :has()
+   on <body> has to be re-checked - which happens on any DOM insertion, e.g. a menu, tooltip, dialog or
+   button ripple - every element matching a class or tag that follows a :has() in ANY rule is restyled.
+   So the part after :has() names the rarest class that matches the same elements: the play icon is
+   matched by .detailButton-icon (only the detail-page buttons have it) rather than .material-icons
+   or .play_arrow, which every card's play icon carries too. */
 
 .mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) button.btnPlay::after {
     content: "Read" !important;
@@ -3459,11 +3478,11 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
     font-weight: bold;
 }
 
-.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .material-icons.play_arrow:before{
+.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .detailButton-icon.play_arrow.material-icons:before{
     display:  none !important;
 }
 
-.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .material-icons.play_arrow:after {
+.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .detailButton-icon.play_arrow.material-icons:after {
     content: "\1F56E" !important;
     margin-left: -8px;
 }
@@ -4121,7 +4140,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
 /* All four buttons share one height. "Refresh Theme" is a native <button> (injected by
    dashboard_theming.js) at a fixed 44px while the three MUI buttons are ~36px, which
    made rows uneven whenever they wrapped. */
-.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root,
 #theme-refresh-button {
     box-sizing: border-box;
     height: 44px !important;
@@ -4143,7 +4162,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
         width: 100%;
         padding: 0 .25em;
     }
-    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button {
+    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root {
         width: 100%;
         min-width: 0;
         margin: 0 !important;
@@ -4317,10 +4336,12 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
    instead: always the 2nd and 3rd of the 3 native buttons in that Stack
    (Scan, Restart, Shutdown). The whole group is identified via :has() rather
    than a generated hash class, so it keeps matching across Jellyfin rebuilds.
+   The children are named button.MuiButtonBase-root (all three are MUI buttons) rather than
+   any `button`: see the note on :has() at the Book section about what that costs on every page.
    #theme-refresh-button is our own injected button (see the "New Dashboard
    Theming" JS Injector script) - it has a stable, hand-assigned id, so no
    such targeting games are needed for it. */
-.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root,
 #theme-refresh-button {
   border-radius: 14px !important;
   font-weight: 600 !important;
