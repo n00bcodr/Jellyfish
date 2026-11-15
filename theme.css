@@ -1838,23 +1838,21 @@ div.card-hoverable.squareCard.card:hover {
 /* Styles aimed at restoring or customizing the layout of the item details page. */
 
 /* == One Scale for the Hand-Placed Desktop Layout ==
-   The poster, the title/description column and the hero used to be sized in vw/vh, while the
-   title, metadata row, panel spacing and buttons are in em/px. Browser zoom changes the window's
-   size in CSS px but not em/px, so the two groups drifted apart: at 200% the poster stayed the
-   same size on screen while the text doubled, at 50% the poster filled the screen next to tiny
-   text. --detail-unit stands in for 1vw in those rules. It is 19.2px (1vw of the 1920px window
-   the layout was placed on) on any window wider than 1060 CSS px, so the whole block zooms
-   together like text. Narrower than that (about 175% zoom on a 1080p screen) the magnified poster
-   would leave the description column and the track/episode lists under it too narrow for their
-   rows, so from 1060 down to 820px the unit eases back to 1vw, holding that column at 600px (40em);
-   below 820px it is 1vw as before. At 100% on a 1920px window it is exactly 1vw, so nothing moves
-   there. Engines without min()/max() keep 1vw. */
+   The poster, the title/description column and the hero are sized as shares of the window (vw/vh),
+   while the title, metadata row, panel spacing and buttons are in em/px. Up to 1920 CSS px wide
+   that is the layout as placed. On a wider window (a bigger monitor, or a 1080p screen zoomed out)
+   the window-sized parts kept growing while the text did not: at 50% zoom the poster filled the
+   screen next to tiny text and a book's buttons slid onto the panel. --detail-unit stands in for
+   1vw in those rules and stops growing at 19.2px (1vw of a 1920px window), so wider windows keep
+   the 1920 proportions between artwork and text. At 1920px and below it is 1vw, as before.
+   The hero, logo and pinned buttons get the same cap in "Details Page on Wide Windows" below.
+   Engines without min() keep 1vw. */
 .layout-desktop {
     --detail-unit: 1vw;
 }
-@supports (width: min(1px, max(1vw, 2px))) {
+@supports (width: min(1px, 2px)) {
     .layout-desktop {
-        --detail-unit: min(19.2px, max(1vw, 4.584vw - 29.4px));
+        --detail-unit: min(1vw, 19.2px);
     }
 }
 
@@ -1862,9 +1860,7 @@ div.card-hoverable.squareCard.card:hover {
 /* 10.11+ markup: detailImageContainer sits outside infoWrapper, needs absolute positioning */
 .layout-desktop .detailImageContainer .card { /* The main poster/image on the details page */
     top: 2em !important;       /* Vertical positioning from the top */
-    width: calc(18.3 * var(--detail-unit)) !important;
-    /* Jellyfin caps the card at 25vw; zoomed in past ~137% the poster is wider than that */
-    max-width: max(25vw, calc(18.3 * var(--detail-unit))) !important;
+    width: calc(18.3 * var(--detail-unit)) !important; /* 18.3vw, capped on wide windows (see above) */
     position: absolute !important;
     left: 3.3% !important;
 }
@@ -1907,18 +1903,6 @@ div.card-hoverable.squareCard.card:hover {
     object-fit: contain !important; /* Ensure logo scales properly without overflow */
     animation: slideInLogo 0.8s ease-out; /* Apply slide-in animation */
 }
-/* The logo box is a share of the page, like the hero it sits in, but never larger than on the
-   1920x1080 reference (top 5.33, width 30 and height 16 units), so zooming out shrinks it with
-   the rest of the page instead of leaving a screen-sized logo over tiny text. Those caps can only
-   bind on windows wider than 1920 or taller than 1080 CSS px, so they are limited to them. */
-@media (min-width: 1920.02px), (min-height: 1080.02px) {
-    .layout-desktop .detailLogo {
-        top: min(10%, calc(5.3333 * var(--detail-unit))) !important;
-        max-width: min(30%, calc(30 * var(--detail-unit)));
-        max-height: min(30%, calc(16 * var(--detail-unit)));
-    }
-}
-
 /* Jellyfin hides the logo at 1100px and narrower (an iPad in portrait, a small laptop window).
    The desktop layout has room for it in the hero, so it stays, a little wider on narrow screens. */
 @media (max-width: 68.75em) {
@@ -3329,13 +3313,8 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 }
 .layout-desktop #itemDetailPage.itemDetailPage:is(:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide), :has(.listItem[data-playlistitemid])) .mainDetailButtons {
     position: absolute !important;
-    /* 35px inside the description panel's right edge. The panel ends 3.3% of the row (96.7% of the
-       window) from the right, i.e. 3.1911vw; a plain 6em drifted off that edge as the window width
-       changed with zoom. Not in the buttons' own em either: Jellyfin makes them 8% larger from 1600px
-       up, which moved them 12px against the title when zooming across that width. Both values equal
-       the old 6em at 1920px. */
-    right: calc(3.1911vw + 35.15328px) !important;
-    top: 6.48rem !important;
+    right: 6em !important;
+    top: 6em !important;
 }
 .layout-desktop #itemDetailPage.itemDetailPage.itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailSectionContent {
     padding-top: 12px !important;
@@ -3364,20 +3343,15 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 .layout-tv .headerLeft { padding: 5px !important; } /* Adjust padding for left header on TV */
 
 /* == Backdrop Height (Desktop/TV) == */
+.layout-desktop .itemBackdrop,
 .layout-tv .itemBackdrop {
     height: 45vh !important;
 }
-/* Desktop: the same 45% of the window, but no taller than on the 1920x1080 reference
-   (25.3125 units, 486px), so zooming out shrinks the hero with the rest of the page. */
-.layout-desktop .itemBackdrop {
-    height: min(45vh, calc(25.3125 * var(--detail-unit))) !important;
-}
 /* Pages with no logo and no backdrop image (playlists, many collections) have nothing to
    show in the hero, so it is only tall enough to hold the action buttons, and the content
-   area uses the page background instead of a flat black slab. (22vh is capped like the full
-   hero above: 12.375 units, 237.6px at 1920x1080.) */
+   area uses the page background instead of a flat black slab. */
 .layout-desktop #itemDetailPage.noBackdropTransparency:not(:has(.detailLogo:not(.hide))) > .itemBackdrop {
-    height: max(11rem, min(22vh, calc(12.375 * var(--detail-unit)))) !important;
+    height: max(11rem, 22vh) !important;
 }
 #itemDetailPage.noBackdropTransparency .detailPageWrapperContainer {
     background-color: transparent;
@@ -3500,13 +3474,52 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
 
  .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"])  .mainDetailButtons {
     backdrop-filter: none !important;
-    /* 9% of the ribbon's width at 1920px; in detail units so it zooms with the title next to it */
-    margin-top: calc(8.41553 * var(--detail-unit)) !important;
+    margin-top: 9% !important;
 }
 
 .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .itemMiscInfo {
     margin-left: 11px !important;
     margin-top: 11px !important;
+}
+
+/* == Details Page on Wide Windows (Desktop) ==
+   Wider than 1920 CSS px (a 1440p or 4K monitor, or a 1080p screen zoomed out) the parts of the
+   details page that are sized by the window stop at their 1920x1080 size, like the poster and
+   columns above (--detail-unit), so artwork, buttons and text keep the proportions the layout
+   was placed with instead of the artwork outgrowing the text. Each value below equals the
+   window-relative one at exactly 1920x1080. Narrower windows are not affected. */
+@media (min-width: 1920.02px) {
+    /* Hero: 45% (or 22% with nothing to show) of the window, no taller than at 1920x1080 */
+    .layout-desktop .itemBackdrop {
+        height: min(45vh, calc(25.3125 * var(--detail-unit))) !important;
+    }
+    .layout-desktop #itemDetailPage.noBackdropTransparency:not(:has(.detailLogo:not(.hide))) > .itemBackdrop {
+        height: max(11rem, min(22vh, calc(12.375 * var(--detail-unit)))) !important;
+    }
+    /* Logo box: 10% down, 30% wide and 30% tall at most, no larger than at 1920x1080 */
+    .layout-desktop .detailLogo {
+        top: min(10%, calc(5.3333 * var(--detail-unit))) !important;
+        max-width: min(30%, calc(30 * var(--detail-unit)));
+        max-height: min(30%, calc(16 * var(--detail-unit)));
+    }
+    /* Buttons pinned beside the title (people, playlists): 35px inside the description panel's
+       right edge, which sits 3.3% of the row (3.1911vw) from the window's edge. The plain 6em
+       above stays put while that edge moves out with the window, so the buttons drifted past it. */
+    .layout-desktop #itemDetailPage.itemDetailPage:is(:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide), :has(.listItem[data-playlistitemid])) .mainDetailButtons {
+        right: calc(3.1911vw + 35.15328px) !important;
+    }
+    /* Book: the buttons' 9% offset is a share of the ribbon's width; capped so they don't slide
+       down onto the panel */
+    .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .mainDetailButtons {
+        margin-top: calc(8.41553 * var(--detail-unit)) !important;
+    }
+}
+/* "More like this" and the other poster rows on the details page: 15% of the row (see
+   .overflowPortraitCard), no wider than at 1920x1080, so zooming out shrinks them too */
+@media (min-width: 1920.02px) and (orientation: landscape) {
+    .layout-desktop #itemDetailPage .overflowPortraitCard {
+        width: min(15%, calc(14.0234 * var(--detail-unit))) !important;
+    }
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ JELLYFIN MEDIA PLAYER (JMP) FIXES ~~~~~~~~~~~~~~~~~~~~ */
