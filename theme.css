@@ -3877,7 +3877,13 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     font-weight: 800;
     letter-spacing: .02em;
 }
+.playerStats {
+    z-index: 1000;
+}
 .playerStats .playerStats-closeButton {
+    z-index: 2;
+    pointer-events: auto;
+    cursor: pointer;
     transition: color .15s ease, background-color .15s ease;
 }
 .playerStats .playerStats-closeButton:hover {
