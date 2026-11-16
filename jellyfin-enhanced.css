@@ -404,6 +404,22 @@ header > .MuiToolbar-root > #kefinTweaks-breadcrumbs-wrapper {
     color: var(--accent-text-color) !important;
 }
 
+/* "More with <person>" on a person page, on phones: the plugin fills a wrapping grid with Jellyfin's
+   scroller-row cards (.overflowPortraitCard), which Jellyfin makes 40vw wide below 25em, so most
+   phones got two cards and an empty third of the row. Upright and below Jellyfin's four-a-row width
+   (43.75em) the grid is three exact columns, two on phones narrower than 20em (320px), matching the
+   person's own Movies/Shows grids (theme.css). */
+@media (orientation: portrait) and (max-width: 43.74em) {
+    .layout-mobile .jellyseerr-person-discovery-section .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 33.333%;
+    }
+}
+@media (orientation: portrait) and (max-width: 19.99em) {
+    .layout-mobile .jellyseerr-person-discovery-section .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 50%;
+    }
+}
+
 /* Seerr sort/Filters menu: drop the plugin's outer border/padding so only the theme's rounded panel shows. */
 html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     border: 0 !important;

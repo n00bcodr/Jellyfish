@@ -3305,27 +3305,78 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
     from { opacity: 0; } to { opacity: 1; } /* Simple fade-in from 0 to current opacity (which is .3) */
 }
 
-/* == Hides Backdrop in People Detail page and other adjustments ==
-   People are a poster with no Play button; the desktop layout is handled further down. */
-
+/* == People Detail Page (Mobile) ==
+   People are a poster with no Play button and no backdrop; the desktop layout is handled further down.
+   Upright phones and tablets stack the header like a profile: the photo centred, the name under it
+   with the whole width (one line where it fits, otherwise two balanced lines), and favourite/more
+   centred under the name, as on other mobile item pages. Jellyfin's own layout puts the photo beside
+   a column 37.5% in, which left about 150px for the name, so most names broke onto two to four lines. */
 @media (orientation: portrait) {
     .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) > .itemBackdrop {
         display: none;
     }
-
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: .5em !important;
+    }
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .infoWrapper {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* The photo is in the flow above the name instead of pinned beside it */
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .infoWrapper .detailImageContainer .card {
+        position: relative;
+        float: none;
+        left: auto;
+        bottom: auto;
+        width: min(36vw, 10rem);
+        max-width: none;
+        margin: 0 auto .4em;
+    }
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .nameContainer .itemName {
+        margin: .2em 0;
+        text-wrap: balance;
+    }
     .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .mainDetailButtons {
-        justify-content: flex-end !important;
-        margin-top: -20vh;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding-top: .2em !important;
     }
 }
 
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
-    display: flex;
-    margin-top: 20vh !important;
+/* Turned sideways the photo stays beside the name, as Jellyfin lays it out, below the hero */
+@media (orientation: landscape) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
+        display: flex;
+        margin-top: 20vh !important;
+    }
+}
+/* Sideways and on tablets the grids keep Jellyfin's vw-sized cards in a full-width row; upright
+   phones use the exact columns below, which need the grid's own width */
+@media (orientation: landscape), (min-width: 43.75em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .itemsContainer.padded-right.vertical-wrap {
+        width: 100vw !important;
+    }
 }
 
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .itemsContainer.padded-right.vertical-wrap {
-    width: 100vw !important;
+/* The person's own items ("Movies", "Episodes") are a wrapping grid built from Jellyfin's
+   scroller-row cards, which are 40vw below 25em: two per row on most phones, with a gap the size
+   of a third. Upright and below Jellyfin's four-a-row width (43.75em) the grid is three exact
+   columns, two on phones narrower than 20em (320px) where a third card would be under ~95px.
+   Sideways, Jellyfin already fits four or more. (The same rule for the Jellyfin Enhanced
+   "More with ..." grid is in jellyfin-enhanced.css.) */
+@media (orientation: portrait) and (max-width: 43.74em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) #childrenContent .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 33.333%;
+    }
+}
+@media (orientation: portrait) and (max-width: 19.99em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) #childrenContent .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 50%;
+    }
 }
 
 /* Pages with no backdrop (people, playlists) have nothing to show in the tall hero above the
