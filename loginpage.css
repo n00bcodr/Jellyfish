@@ -7,6 +7,11 @@
 ================================================================================
 */
 
+/* "The login page is showing" is tested next to each target (e.g. .backdropContainer:has(~ * #loginPage))
+   rather than with body:has(#loginPage): a :has() on <body> is re-checked on every DOM change on every page.
+   The dialog rules start from #reactRoot and carry :where(body:not(.libraryDocument) ...), which is always true
+   on the login page and lets the browser skip the :has() on library pages. */
+
 /* ~~~~~~~~~~~~~~~~~~~~ LOGIN PAGE - GENERAL LAYOUT & BACKGROUND ~~~~~~~~~~~~~~~~~~~~ */
 
 /* Styles the main container of the login page. */
@@ -21,7 +26,7 @@
 }
 
 /* Styles the overall login page. */
-body:has(#loginPage) .backdropContainer {
+body .backdropContainer:has(~ * #loginPage) {
     background: var(--background-image, url(https://i.imgur.com/Ewk3Pqw.png)) !important;
     background-size: cover !important;
     background-position: center !important;
@@ -117,24 +122,24 @@ body:has(#loginPage) .backdropContainer {
 /* Styles the dialog box that appears for Quick Connect or Manual Password entry. */
 
 /* Applies to the main dialog when the login page is visible. */
-body:has(#loginPage:not(.hide)) .dialogContainer .formDialog {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ .dialogContainer:where(body:not(.libraryDocument) > *) .formDialog {
   border-radius: 60px !important;
 }
 
 /* Styles the footer of the dialog (containing buttons). */
-body:has(#loginPage:not(.hide)) .dialogContainer .formDialogFooter .emby-button {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ .dialogContainer:where(body:not(.libraryDocument) > *) .formDialogFooter .emby-button {
   background-color: var(--primary-accent-color) !important; /* Accent color for dialog buttons */
   color: var(--text-color) !important; /* palette text colour is the readable one on the accent */
   transition: 0.3s ease-in-out;
 }
 
-body:has(#loginPage:not(.hide)) .dialogContainer .formDialogFooter .emby-button:hover {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ .dialogContainer:where(body:not(.libraryDocument) > *) .formDialogFooter .emby-button:hover {
   transform: scale(1.02);
   filter: brightness(1.1);
 }
 
 /* Styles the header of the dialog. */
-body:has(#loginPage:not(.hide)) .formDialogHeader {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ :where(body:not(.libraryDocument) > *) .formDialogHeader {
   background-color: var(--primary-accent-color) !important;
   border-top-left-radius: 60px;
   border-top-right-radius: 60px;
@@ -144,13 +149,13 @@ body:has(#loginPage:not(.hide)) .formDialogHeader {
 }
 
 /* Styles the title text within the dialog header. */
-body:has(#loginPage:not(.hide)) .formDialogHeaderTitle {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ :where(body:not(.libraryDocument) > *) .formDialogHeaderTitle {
   font-size: 1.5em;
   font-weight: bold;
 }
 
 /* Styles the inner content area of the dialog. */
-body:has(#loginPage:not(.hide)) .dialogContentInner {
+body :where(#reactRoot):has(#loginPage:not(.hide)) ~ :where(body:not(.libraryDocument) > *) .dialogContentInner {
   padding-top: 2em;
   font-weight: bold;
 }
@@ -159,15 +164,15 @@ body:has(#loginPage:not(.hide)) .dialogContentInner {
 
 /* Hide the default header on the login page: Jellyfin 12's app bar only repeats the logo
    that the login card already shows, and the legacy header has nothing useful on this page. */
-body:has(#loginPage:not(.hide)) .headerTop,
-body:has(#loginPage:not(.hide)) .header,
-body:has(#loginPage:not(.hide)) .skinHeader,
-body:has(#loginPage:not(.hide)) .MuiAppBar-root {
+body :where(#reactRoot) > :has(~ * #loginPage:not(.hide)) .headerTop,
+body :where(#reactRoot) > :has(~ * #loginPage:not(.hide)) .header,
+body :where(#reactRoot) > :has(~ * #loginPage:not(.hide)) .skinHeader,
+body .MuiAppBar-root:has(~ * #loginPage:not(.hide)) {
     display: none !important;
 }
 
 /* Adjusts padding for standalone pages when the header is hidden. */
-body:has(#loginPage:not(.hide)) .standalonePage {
+body .standalonePage:is(#loginPage:not(.hide), #loginPage:not(.hide) ~ *, :has(~ #loginPage:not(.hide))) {
     padding-top: clamp(0.5em, 4vh, 3em) !important;
 }
 

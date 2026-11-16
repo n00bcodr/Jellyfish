@@ -1405,6 +1405,16 @@ div.groupedCard.card-hoverable.overflowSquareCard.card:hover,
 div.card-hoverable.squareCard.card:hover {
     translate: 0 -4px;
 }
+/* While the pointer is inside a row or grid of cards, its cards keep a compositing layer, so moving from card to
+   card only animates the lift on the compositor. Without this, Chrome creates a layer around each card for the
+   0.18s lift and drops it again, re-rastering the card (and Jellyfin Enhanced's tags on it) about four times per card
+   visited. Only from 1.5x screens up, where Chrome composites text anyway; on 1x screens the titles in the row would
+   lose sub-pixel anti-aliasing while hovered. No pointer (TV, touch), no layers. */
+@media (min-resolution: 1.5dppx) {
+    .itemsContainer:hover > :is(div.card-withuserdata.card-hoverable.card, div.groupedCard.card-hoverable.overflowSquareCard.card, div.card-hoverable.squareCard.card) {
+        will-change: translate;
+    }
+}
 
 /* == Home Library Button Hover Effects == */
 /* Adds a border and dimming overlay to home library buttons on hover. */
@@ -2839,8 +2849,9 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .jstree-children { margin-left: -10px !important; }
 
 /* The editor's form scrolls under the dashboard-style top bar (transparent elsewhere), so on this
-   page the bar is solid, and the folder tree starts below it instead of behind it. */
-body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
+   page the bar is solid, and the folder tree starts below it instead of behind it. (The editor page sits
+   after the bar, so the :has() is on the bar, not on <body>; see the top bar section.) */
+body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
     background: var(--header-solid-background-color) !important;
 }
 /* The folder tree and the form are two matching rounded panels with an even gap between them and
@@ -3257,11 +3268,12 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 }
 
 /* == Blurred Sidebar Buttons (with Backdrop) == */
-/* Applies blur to sidebar navigation buttons when a backdrop is visible. */
-.layout-desktop:has(.backgroundContainer.withBackdrop) .navMenuOption-selected,
-.layout-mobile:has(.backgroundContainer.withBackdrop) .navMenuOption-selected,
-.layout-desktop:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected),
-.layout-mobile:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected) {
+/* Applies blur to sidebar navigation buttons when a backdrop is visible. The drawer's wrapper follows
+   .backgroundContainer, so a sibling selector does this without a :has() on <html>. */
+.layout-desktop .backgroundContainer.withBackdrop ~ * .navMenuOption-selected,
+.layout-mobile .backgroundContainer.withBackdrop ~ * .navMenuOption-selected,
+.layout-desktop .backgroundContainer.withBackdrop ~ * .navMenuOption:hover:not(.navMenuOption-selected),
+.layout-mobile .backgroundContainer.withBackdrop ~ * .navMenuOption:hover:not(.navMenuOption-selected) {
     background: var(--primary-background-transparent) !important; /* Use theme's transparent background on hover */
     color: var(--accent-text-color) !important;
     backdrop-filter: blur(var(--blur)) !important;
@@ -3382,17 +3394,15 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 .sections.homeSectionsContainer {
     padding-bottom: 100px;
 }
-/* Without a slideshow the first row's title would sit under the floating top bar. (A slideshow
-   stylesheet pushes the rows down itself.) */
-body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
+/* The first row's title would otherwise sit under the floating top bar. slideshow.css takes this back when the
+   Media Bar's slideshow is on the page (it pushes the rows down itself). Deliberately not
+   body:not(:has(#slides-container)): a :has() on <body> is re-checked on every DOM change on the page (Jellyfin
+   Enhanced's poster tags change attributes on every hover), and each re-check restyles thousands of elements. The
+   :not(#_) keeps the specificity of that old selector. */
+body #indexPage .homeSectionsContainer:not(#_) {
     padding-top: 1.5rem;
 }
 
-/* With a slideshow, give the first row's title room below it (:where keeps this the weakest rule, so
-   misc.css and slideshow.css still set their own padding). */
-:where(body:has(#slides-container)) #indexPage .section0 {
-    padding-top: 1.5em;
-}
 
 /* Standardizes font family for various text elements often found near or related to the media bar. */
 .genre, .plot, .rating-value, .rating-value span, .date, .age-rating span, .runTime, .featured-content, .button-container button, .play-text {
@@ -3771,8 +3781,12 @@ header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
 
 /* A hairline under the bar separates it from page content without a heavy shadow.
    Not on the dashboard: there the bar is transparent and starts 240px from the left while
-   the sidebar is 260px wide, so the line floated over the sidebar edge. */
-body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root {
+   the sidebar is 260px wide, so the line floated over the sidebar edge.
+   Not on the video player either. That is checked on the bar's following siblings (the page container
+   comes right after the bar) rather than with body:has(#videoOsdPage): a :has() whose subject is <body>
+   is re-checked on every DOM change on the page, and each re-check restyles every element that any
+   :has() rule here or in a plugin (e.g. Jellyfin Enhanced's poster tags) may affect - thousands per hover. */
+body:not(.dashboardDocument) .MuiAppBar-root:not(:has(~ * #videoOsdPage)) {
     border-bottom: 1px solid var(--alt-accent-color);
 }
 
@@ -3790,7 +3804,7 @@ body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root {
     --bar-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 12px 30px rgba(0, 0, 0, .4);
     --bar-radius: 20px;
 }
-body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root {
+body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root:not(:has(~ * #videoOsdPage)) {
     top: 8px;
     left: 12px;
     right: 12px;
@@ -3854,7 +3868,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     :root { --bar-radius: 16px; }
 }
 @supports not (backdrop-filter: blur(1px)) {
-    body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root { background: var(--header-solid-background-color) !important; }
+    body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root:not(:has(~ * #videoOsdPage)) { background: var(--header-solid-background-color) !important; }
 }
 
 /* Avatar / user menu button */
