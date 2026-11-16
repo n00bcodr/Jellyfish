@@ -118,20 +118,6 @@ body, h1, h2, h3, h4, h5, h6, p {
     background-color: var(--primary-accent-color);
 }
 
-/* Show theme date in dashboard */
-.dashboardActionsContainer::before {
-    content: "Theme last updated on " var(--theme-updated-on, "..........");
-    display: block;
-    background-color: var(--alt-accent-color);
-    color: #ddd;
-    border-radius: var(--rounded-cards);
-    padding: 15px 15px;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: bold;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    margin-bottom: 1em;
-    margin-left: 2px;
-}
 /* ~~~~~~~~~~~~~~~~~~~~ ACCENT COLOR APPLICATION ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles that apply the theme's accent colors to various UI elements. */
 
@@ -150,7 +136,7 @@ progress[aria-valuenow]:before,               /* Progress bar fill (pseudo-eleme
 .layout-desktop .mainDetailButtons .button-flat.btnPlay,    /* Play button on details page (Desktop JMP) */
 .layout-mobile .mainDetailButtons .btnPlay,     /* Play button on details page (Mobile) */
 .layout-tv .mainDetailButtons .btnPlay,     /* Play button on details page (TV) */
-.playbackProgress>div,                        /* Inner bar of playback progress sliders */
+.mdl-radio__focus-circle,                     /* Halo behind a focused radio button (sort and view menus); Jellyfin hard-codes its blue here */
 .iconOsdProgressInner                         /* Inner part of OSD circular progress indicators */
 {
     background: var(--primary-accent-color) !important;
@@ -167,7 +153,9 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 .MuiAlert-root.MuiAlert-standardInfo,          /* Info type Material UI alerts */
 .navMenuOption-selected,                        /* Selected items in the main navigation menu */
 .MuiListItemButton-root.Mui-selected,           /* Selected Material UI list item buttons */
-.jstree-default .jstree-wholerow-clicked        /* Clicked rows in jsTree (e.g., metadata editor folder tree) */ {
+.jstree-default .jstree-wholerow.jstree-wholerow-clicked /* Clicked rows in jsTree (metadata editor folder tree). Jellyfin's own
+                                                   rule is `.jstree-default .jstree-wholerow-clicked { ... !important }` and loads with
+                                                   the editor, after this file, so the extra class is what lets this one win. */ {
     background: var(--accent-surface-strong) !important;
 }
 
@@ -227,10 +215,16 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
     background: #ffffffc0 !important;
 }
 
-.listItemIcon:not(.listItemIcon-transparent, .notification_important) /* Icons in list items (excluding transparent/important notifications) */
+.listItemIcon:not(.listItemIcon-transparent) /* Icons in list items (excluding transparent ones) */
 {
     color: #ffffff !important;
     background-color: var(--accent-surface-strong) !important;
+}
+/* Jellyfin 12's dashboard draws the same activity icons as MUI Avatars filled with MUI's info blue
+   (bgcolor: info.main). Re-pointing that variable for the avatar only gives informational entries the
+   surface used above; warning and error entries read other variables and keep their own colours. */
+.MuiListItemAvatar-root {
+    --jf-palette-info-main: var(--accent-surface-strong);
 }
 
 /* == Accent Color for Progress Bars == */
@@ -285,13 +279,19 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .upNextDialog-countdownText,                  /* Countdown text in the "Up Next" dialog */
 .MuiSvgIcon-root.MuiSvgIcon-fontSizeInherit,  /* Material UI SVG icons inheriting font size */
 .button-flat:hover,                           /* Hovered flat buttons */
-#divRunningTasks span,                        /* Text within the running tasks indicator */
 .username,                                    /* Usernames (e.g., on profile pages) */
 .headerUsername,                              /* Username in the header */
 .sectionTitle,                                /* Titles of sections */
 .navMenuOption:hover:not(.navMenuOption-selected) /* Hovered main navigation items (not selected) */
 {
     color: var(--accent-text-color) !important;
+}
+/* Keyboard or remote focus: Jellyfin fills a focused button with the accent (.emby-button.show-focus:focus),
+   and accent-coloured text on that fill cannot be read. Text on accent fills is --text-color. */
+.emby-button.show-focus:focus.button-link:not(.itemDetailPage .button-link),
+.emby-button.show-focus:focus .sectionTitle {
+    color: var(--text-color) !important;
+    text-shadow: none;
 }
 
 .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root, /* Icons within selected Material UI list items */
@@ -312,18 +312,13 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
     background-color: transparent !important;
 }
 
-/* == Accent Color for Dashboard Headings == */
-.dashboardSection h3 {
- color: var(--accent-text-color);
- font-weight: bold !important;
-}
-
-.dashboardSection span.material-icons.chevron_right {
-    display: none;
-}
 /* == Hover Color for Movie Card Overlays == */
-/* Sets a semi-transparent background on movie card hover. */
-.card-hoverable:hover .cardOverlayContainer {
+/* Sets a semi-transparent background on the card overlay. Jellyfin fades the overlay in on hover (an
+   opacity transition that runs on the compositor). The colour is also set while the overlay rests at
+   opacity 0, so hovering only changes opacity: no repaint when the pointer enters a card, and no switch
+   back to Jellyfin's black while it fades out. Keyboard/TV focus without hover keeps Jellyfin's colour. */
+.card-hoverable:hover .cardOverlayContainer,
+.card-hoverable:not(:focus-within) .cardOverlayContainer {
     background: var(--secondary-background-transparent);
 }
 /* Keep overlay buttons (three dots etc.) above the selection panel (z-index 99998). */
@@ -355,14 +350,6 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 /* Red background for delete image button. */
 #btnDeleteImage {
     background: #942626c2 !important;
-}
-/* Red background for shutdown server button. */
-#btnShutdown {
-    background: #AE3739 !important;
-}
-/* Green background for restart server button and Save Metadata button */
-#btnRestartServer {
-    background: forestgreen !important;
 }
 /* Violet background for refresh button and reset metadata button */
 button.raised.btnRefresh.emby-button, .button-reset {
@@ -1153,8 +1140,10 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     .layout-mobile .libraryPage:not(.noSecondaryNavPage) {
         padding-top: 9.5em !important;
     }
-    /* Jellyfin 12's modern layout already places the page below the header, so that padding is dead space. */
-    .jellyfin-v12 .libraryPage:not(.noSecondaryNavPage) {
+    /* Jellyfin 12's modern layout already places the page below the header, so that padding is dead space.
+       Matched by structure (modern pages sit in MUI's <main>; legacy ones do not). The former `.jellyfin-v12`
+       is a body class that only the Media Bar Enhanced plugin adds, and it adds it in the legacy layouts too. */
+    main.MuiBox-root .libraryPage:not(.noSecondaryNavPage) {
         padding-top: 0 !important;
     }
     /* Adjust unpinned header transformation when title and tabs are present. */
@@ -1204,6 +1193,15 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
  {
     border-radius: var(--rounded-cards) !important;
 }
+/* Jellyfin keeps each poster's blurhash placeholder <canvas> after the poster has faded in and only sets it
+   to opacity 0 (.lazy-hidden). A canvas is always a compositing layer, and inside the rounded clip below it
+   costs a mask render pass per visible card on every frame; it also forces the poster on top of it into a
+   layer of its own. Taking the already invisible canvas out of rendering removes all of that. Jellyfin
+   removes .lazy-hidden again when a poster is unloaded, so the placeholder still shows when it is needed. */
+.blurhash-canvas.lazy-hidden {
+    display: none;
+}
+
 /* Only the image layers clip: that is what rounds the poster corners. .card and
    .cardBox also hold the title/year text and Jellyfin's TV focus-scale outline,
    which `overflow: hidden` on them cut off (focused TV cards lost the left edge of
@@ -1406,6 +1404,16 @@ div.card-withuserdata.card-hoverable.card:hover,
 div.groupedCard.card-hoverable.overflowSquareCard.card:hover,
 div.card-hoverable.squareCard.card:hover {
     translate: 0 -4px;
+}
+/* While the pointer is inside a row or grid of cards, its cards keep a compositing layer, so moving from card to
+   card only animates the lift on the compositor. Without this, Chrome creates a layer around each card for the
+   0.18s lift and drops it again, re-rastering the card (and Jellyfin Enhanced's tags on it) about four times per card
+   visited. Only from 1.5x screens up, where Chrome composites text anyway; on 1x screens the titles in the row would
+   lose sub-pixel anti-aliasing while hovered. No pointer (TV, touch), no layers. */
+@media (min-resolution: 1.5dppx) {
+    .itemsContainer:hover > :is(div.card-withuserdata.card-hoverable.card, div.groupedCard.card-hoverable.overflowSquareCard.card, div.card-hoverable.squareCard.card) {
+        will-change: translate;
+    }
 }
 
 /* == Home Library Button Hover Effects == */
@@ -1852,11 +1860,30 @@ div.card-hoverable.squareCard.card:hover {
 /* ~~~~~~~~~~~~~~~~~~~~ DETAILS PAGE (Restored Original Layout Focus) ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles aimed at restoring or customizing the layout of the item details page. */
 
+/* == One Scale for the Hand-Placed Desktop Layout ==
+   The poster, the title/description column and the hero are sized as shares of the window (vw/vh),
+   while the title, metadata row, panel spacing and buttons are in em/px. Up to 1920 CSS px wide
+   that is the layout as placed. On a wider window (a bigger monitor, or a 1080p screen zoomed out)
+   the window-sized parts kept growing while the text did not: at 50% zoom the poster filled the
+   screen next to tiny text and a book's buttons slid onto the panel. --detail-unit stands in for
+   1vw in those rules and stops growing at 19.2px (1vw of a 1920px window), so wider windows keep
+   the 1920 proportions between artwork and text. At 1920px and below it is 1vw, as before.
+   The hero, logo and pinned buttons get the same cap in "Details Page on Wide Windows" below.
+   Engines without min() keep 1vw. */
+.layout-desktop {
+    --detail-unit: 1vw;
+}
+@supports (width: min(1px, 2px)) {
+    .layout-desktop {
+        --detail-unit: min(1vw, 19.2px);
+    }
+}
+
 /* == Detail Image Sizing and Positioning (Desktop) == */
 /* 10.11+ markup: detailImageContainer sits outside infoWrapper, needs absolute positioning */
 .layout-desktop .detailImageContainer .card { /* The main poster/image on the details page */
     top: 2em !important;       /* Vertical positioning from the top */
-    width: 18.3vw !important;  /* Width relative to viewport width */
+    width: calc(18.3 * var(--detail-unit)) !important; /* 18.3vw, capped on wide windows (see above) */
     position: absolute !important;
     left: 3.3% !important;
 }
@@ -1899,7 +1926,6 @@ div.card-hoverable.squareCard.card:hover {
     object-fit: contain !important; /* Ensure logo scales properly without overflow */
     animation: slideInLogo 0.8s ease-out; /* Apply slide-in animation */
 }
-
 /* Jellyfin hides the logo at 1100px and narrower (an iPad in portrait, a small laptop window).
    The desktop layout has room for it in the hero, so it stays, a little wider on narrow screens. */
 @media (max-width: 68.75em) {
@@ -2051,7 +2077,7 @@ h3.tagline {
        (1.25em padding), so this scales with it too (5em); a fixed 245px put the title on
        the panel's edge wherever the root font size is smaller than 14.9px (iPad). */
     margin-top: calc(64px + 12em) !important;
-    margin-left: 20.8vw !important; /* Offset from left, relative to viewport width */
+    margin-left: calc(20.8 * var(--detail-unit)) !important; /* Lines up with the description column */
 }
 .layout-desktop .detailPagePrimaryContainer { /* Primary container for the top section of details page */
     padding-left: 3.3% !important; /* Re-affirm padding */
@@ -2063,34 +2089,35 @@ h3.tagline {
 }
 /* The row is pinned over the description panel, so without a width limit it runs past the
    panel's right edge and its last items (dates) spill out. It is capped at the panel's inner
-   width (page width less both 3.3% side paddings, the description's 20.4vw left offset and the
+   width (page width less both 3.3% side paddings, the description's 20.4-unit left offset and the
    panel's own 16px inset on each side) and wraps there. */
 .layout-desktop .itemMiscInfo-primary {
-    max-width: calc(93.4% - 20.4vw - 32px);
+    max-width: calc(93.4% - 20.4 * var(--detail-unit) - 32px);
 }
 
 /* == Description Box Positioning (Desktop) == */
 /* Moves the primary content (description, etc.) to align with the repositioned title. */
 .layout-desktop .detailPagePrimaryContent {
-    padding-left: 20.4vw !important; /* Offset from left */
+    padding-left: calc(20.4 * var(--detail-unit)) !important; /* Poster width plus the gap beside it */
 	padding-bottom: 1em;
 }
 
 /* == Minimum Height for Primary Content Based on Poster Aspect Ratio (Desktop) == */
-/* Adjusts the minimum height of the primary content area to prevent overlap or awkward spacing with different poster image aspect ratios. */
+/* Adjusts the minimum height of the primary content area to prevent overlap or awkward spacing with different poster image aspect ratios.
+   The poster is 18.3 units wide and starts 2em down, so these keep the next section below it. */
 .layout-desktop .detailPageWrapperContainer:has(.detailImageContainer .portraitCard) .detailPagePrimaryContent {
-    min-height: 29vw !important; /* For portrait posters (e.g., 2:3) */
+    min-height: calc(29 * var(--detail-unit)) !important; /* For portrait posters (e.g., 2:3) */
 }
 .layout-desktop .detailPageWrapperContainer:has(.detailImageContainer .squareCard) .detailPagePrimaryContent {
-    min-height: 20vw !important; /* For square posters (e.g., 1:1) */
+    min-height: calc(20 * var(--detail-unit)) !important; /* For square posters (e.g., 1:1) */
 }
 .layout-desktop .detailPageWrapperContainer:has(.detailImageContainer .backdropCard) .detailPagePrimaryContent {
-    min-height: 12vw !important; /* For backdrop/landscape posters (e.g., 16:9) */
+    min-height: calc(12 * var(--detail-unit)) !important; /* For backdrop/landscape posters (e.g., 16:9) */
 }
 /* Fallback for browsers not supporting :has() (e.g., JMP). */
 @supports not selector(:has(*)) {
     .layout-desktop .detailPageWrapperContainer .detailPagePrimaryContent {
-        min-height: 29vw !important; /* Default to a common height */
+        min-height: calc(29 * var(--detail-unit)) !important; /* Default to a common height */
     }
 }
 
@@ -2110,10 +2137,6 @@ h3.tagline {
 div#listChildrenCollapsible { order: 6 !important; }
 .collectionItems { order: 6 !important; }
 .collectionItems .sectionTitleContainer-cards { padding-left: 0 !important; }
-
-/* Person page "Movies [More]": the link wrapper is itself an .emby-button, so it padded the inner "More" button a second time (tall row, button floating low) */
-.sectionTitleContainer-cards > a.clearLink.emby-button { padding: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; margin-left: auto !important; align-self: center; }
-.sectionTitleContainer-cards > a.clearLink.emby-button > button.raised-mini { padding: 0.45em 0.9em !important; margin: 0 !important; }
 
 /* == Reordering Episode Title Elements (Desktop) == */
 /* Adjusts the order of parent name (Show Title) and item name (Episode Title) within the name container. */
@@ -2147,6 +2170,36 @@ div#listChildrenCollapsible { order: 6 !important; }
     flex-wrap: nowrap;
     flex-direction: row;
     align-items: baseline;
+}
+
+/* == Long Titles (Desktop) ==
+   The title block is positioned on its own (above), so Jellyfin's ellipsis for long titles never
+   applies and a long title runs past the panel, off the page, or under buttons that share its line.
+   On windows narrower than the 1920px reference (browser zoom included) it is capped at the
+   description panel's right edge (96.7% of the row, from its 20.8-unit offset), less the room the
+   action buttons need on pages where they sit on the title's line, and ends in an ellipsis.
+   At 1920px and wider the title keeps the room it always had. */
+@media (max-width: 1919.98px) {
+    .layout-desktop .nameContainer {
+        max-width: calc(96.7% - 20.8 * var(--detail-unit) - var(--detail-title-reserve, 0px));
+    }
+    /* The series/artist name keeps its width; the episode, season or album name after it
+       takes the ellipsis (otherwise the series name wraps onto a second line over the panel). */
+    .layout-desktop .nameContainer .parentName {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    /* Buttons on the title's line: people (favourite, more), playlists (five buttons) and books
+       (Read plus four), about 3.6rem a button, plus their inset from the panel's edge. */
+    .layout-desktop #itemDetailPage.itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) {
+        --detail-title-reserve: 10.6rem;
+    }
+    .layout-desktop #itemDetailPage.itemDetailPage:has(.listItem[data-playlistitemid]) {
+        --detail-title-reserve: 21.5rem;
+    }
+    .layout-desktop #itemDetailPage.itemDetailPage:has(button.btnPlaystate[data-type="Book"]) {
+        --detail-title-reserve: 22rem;
+    }
 }
 
 .nameContainer:has(.itemName.subtitle) .parentName {
@@ -2540,7 +2593,7 @@ div#listChildrenCollapsible { order: 6 !important; }
     border: 0.1em solid var(--alt-accent-color) !important;
 }
 
-.emby-input, .emby-textarea, .paperList, .fab, .emby-select-withcolor, .visualCardBox, .emby-button.raised.button-alt  {
+.emby-input, .emby-textarea, .paperList, .fab, .emby-select-withcolor, .visualCardBox {
     background: var(--alt-accent-color) !important;
 }
 
@@ -2581,7 +2634,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 .button-submit,
 .emby-select,
 .btnRefresh,
-#btnShutdown,
 .raised, /* General raised buttons */
 .MuiToggleButton-root.MuiToggleButtonGroup-groupedHorizontal /* Material UI Toggle Buttons (Jellyfin 10.9+) */
 {
@@ -2636,10 +2688,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Removes borders under list items for a cleaner look. */
 .listItem-border {
     border: 0 !important;
-}
-
-.taskProgressInner { /* Inner progress bar for tasks */
-    background: var(--primary-accent-color);
 }
 
 /* Styles fieldsets in the dashboard with rounding, custom border, and padding. */
@@ -2707,20 +2755,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 #mediaLibraryPage {
     margin-top: 10px !important;
 }
-/* Re-aligns the "Active Devices" container. */
-.activeDevices.itemsContainer {
-    margin: 0px !important;
-}
-
-/* == Dashboard Table Styling == */
-.detailTableBodyRow-shaded:nth-child(even) {
-    background: var(--primary-background-transparent) !important;
-}
-
-/* == Revoke Button Styling (API page)== */
-.btnRevoke {
-    background: #ff000069;
-}
 
 /* == IntroSkipper Settings Details (Within Dashboard) == */
 /* Styles for <summary> elements (used for collapsible sections) in IntroSkipper settings. */
@@ -2736,7 +2770,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Adjusts layout for specific pages due to changes in Jellyfin 10.9.x. */
 
 .MuiAlert-message { color: #fff !important; } /* Ensure Material UI alert messages are white */
-.MuiDataGrid-root.MuiDataGrid-withBorderColor { border-radius: var(--rounded-cards) !important; } /* Rounding for DataGrid */
 .infoBanner { border-radius: var(--rounded-cards) !important; } /* Rounding for info banners */
 .MuiToggleButton-root.MuiToggleButtonGroup-groupedHorizontal { padding-inline: 15px !important; } /* Padding for MUI toggle buttons */
 
@@ -2807,13 +2840,14 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* Styling for the jsTree component used for folder navigation in the metadata editor. */
 .jstree-default-large .jstree-node { line-height: 35px !important; } /* Adjust line height for tree nodes */
-.jstree-wholerow-hovered { background: var(--primary-background-transparent) !important; } /* Background for hovered tree rows */
+.jstree-default .jstree-wholerow-hovered { background: var(--primary-background-transparent) !important; } /* Background for hovered tree rows (two classes: Jellyfin's `.jstree-wholerow-hovered { background: #38c !important }` loads later) */
 /* Negative margin to adjust alignment of child nodes in the tree. */
 .jstree-children { margin-left: -10px !important; }
 
 /* The editor's form scrolls under the dashboard-style top bar (transparent elsewhere), so on this
-   page the bar is solid, and the folder tree starts below it instead of behind it. */
-body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
+   page the bar is solid, and the folder tree starts below it instead of behind it. (The editor page sits
+   after the bar, so the :has() is on the bar, not on <body>; see the top bar section.) */
+body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
     background: var(--header-solid-background-color) !important;
 }
 /* The folder tree and the form are two matching rounded panels with an even gap between them and
@@ -2976,6 +3010,11 @@ body:has(#editItemMetadataPage) .MuiAppBar-root.MuiAppBar-root {
 #myPreferencesMenuPage a.listItem-border:hover,
 #myPreferencesMenuPage a.listItem-border:focus-visible {
     background: var(--accent-surface);
+}
+/* Jellyfin colours a focused button's text for an accent fill (--text-color, black on most palettes); this row
+   keeps the dark tinted surface above instead, so it keeps the page's light text. */
+#myPreferencesMenuPage a.listItem-border:focus-visible {
+    color: inherit;
 }
 #myPreferencesMenuPage .listItemIcon {
     color: var(--accent-text-color);
@@ -3225,11 +3264,12 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 }
 
 /* == Blurred Sidebar Buttons (with Backdrop) == */
-/* Applies blur to sidebar navigation buttons when a backdrop is visible. */
-.layout-desktop:has(.backgroundContainer.withBackdrop) .navMenuOption-selected,
-.layout-mobile:has(.backgroundContainer.withBackdrop) .navMenuOption-selected,
-.layout-desktop:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected),
-.layout-mobile:has(.backgroundContainer.withBackdrop) .navMenuOption:hover:not(.navMenuOption-selected) {
+/* Applies blur to sidebar navigation buttons when a backdrop is visible. The drawer's wrapper follows
+   .backgroundContainer, so a sibling selector does this without a :has() on <html>. */
+.layout-desktop .backgroundContainer.withBackdrop ~ * .navMenuOption-selected,
+.layout-mobile .backgroundContainer.withBackdrop ~ * .navMenuOption-selected,
+.layout-desktop .backgroundContainer.withBackdrop ~ * .navMenuOption:hover:not(.navMenuOption-selected),
+.layout-mobile .backgroundContainer.withBackdrop ~ * .navMenuOption:hover:not(.navMenuOption-selected) {
     background: var(--primary-background-transparent) !important; /* Use theme's transparent background on hover */
     color: var(--accent-text-color) !important;
     backdrop-filter: blur(var(--blur)) !important;
@@ -3261,27 +3301,78 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
     from { opacity: 0; } to { opacity: 1; } /* Simple fade-in from 0 to current opacity (which is .3) */
 }
 
-/* == Hides Backdrop in People Detail page and other adjustments ==
-   People are a poster with no Play button; the desktop layout is handled further down. */
-
+/* == People Detail Page (Mobile) ==
+   People are a poster with no Play button and no backdrop; the desktop layout is handled further down.
+   Upright phones and tablets stack the header like a profile: the photo centred, the name under it
+   with the whole width (one line where it fits, otherwise two balanced lines), and favourite/more
+   centred under the name, as on other mobile item pages. Jellyfin's own layout puts the photo beside
+   a column 37.5% in, which left about 150px for the name, so most names broke onto two to four lines. */
 @media (orientation: portrait) {
     .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) > .itemBackdrop {
         display: none;
     }
-
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: .5em !important;
+    }
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .infoWrapper {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* The photo is in the flow above the name instead of pinned beside it */
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .infoWrapper .detailImageContainer .card {
+        position: relative;
+        float: none;
+        left: auto;
+        bottom: auto;
+        width: min(36vw, 10rem);
+        max-width: none;
+        margin: 0 auto .4em;
+    }
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .nameContainer .itemName {
+        margin: .2em 0;
+        text-wrap: balance;
+    }
     .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .mainDetailButtons {
-        justify-content: flex-end !important;
-        margin-top: -20vh;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding-top: .2em !important;
     }
 }
 
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
-    display: flex;
-    margin-top: 20vh !important;
+/* Turned sideways the photo stays beside the name, as Jellyfin lays it out, below the hero */
+@media (orientation: landscape) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .detailRibbon {
+        display: flex;
+        margin-top: 20vh !important;
+    }
+}
+/* Sideways and on tablets the grids keep Jellyfin's vw-sized cards in a full-width row; upright
+   phones use the exact columns below, which need the grid's own width */
+@media (orientation: landscape), (min-width: 43.75em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .itemsContainer.padded-right.vertical-wrap {
+        width: 100vw !important;
+    }
 }
 
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) .itemsContainer.padded-right.vertical-wrap {
-    width: 100vw !important;
+/* The person's own items ("Movies", "Episodes") are a wrapping grid built from Jellyfin's
+   scroller-row cards, which are 40vw below 25em: two per row on most phones, with a gap the size
+   of a third. Upright and below Jellyfin's four-a-row width (43.75em) the grid is three exact
+   columns, two on phones narrower than 20em (320px) where a third card would be under ~95px.
+   Sideways, Jellyfin already fits four or more. (The same rule for the Jellyfin Enhanced
+   "More with ..." grid is in jellyfin-enhanced.css.) */
+@media (orientation: portrait) and (max-width: 43.74em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) #childrenContent .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 33.333%;
+    }
+}
+@media (orientation: portrait) and (max-width: 19.99em) {
+    .layout-mobile #itemDetailPage:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide) #childrenContent .itemsContainer.vertical-wrap > .overflowPortraitCard {
+        width: 50%;
+    }
 }
 
 /* Pages with no backdrop (people, playlists) have nothing to show in the tall hero above the
@@ -3350,17 +3441,15 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 .sections.homeSectionsContainer {
     padding-bottom: 100px;
 }
-/* Without a slideshow the first row's title would sit under the floating top bar. (A slideshow
-   stylesheet pushes the rows down itself.) */
-body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
+/* The first row's title would otherwise sit under the floating top bar. slideshow.css takes this back when the
+   Media Bar's slideshow is on the page (it pushes the rows down itself). Deliberately not
+   body:not(:has(#slides-container)): a :has() on <body> is re-checked on every DOM change on the page (Jellyfin
+   Enhanced's poster tags change attributes on every hover), and each re-check restyles thousands of elements. The
+   :not(#_) keeps the specificity of that old selector. */
+body #indexPage .homeSectionsContainer:not(#_) {
     padding-top: 1.5rem;
 }
 
-/* With a slideshow, give the first row's title room below it (:where keeps this the weakest rule, so
-   misc.css and slideshow.css still set their own padding). */
-:where(body:has(#slides-container)) #indexPage .section0 {
-    padding-top: 1.5em;
-}
 
 /* Standardizes font family for various text elements often found near or related to the media bar. */
 .genre, .plot, .rating-value, .rating-value span, .date, .age-rating span, .runTime, .featured-content, .button-container button, .play-text {
@@ -3432,6 +3521,12 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ Book SPECIFIC FIXES AND CHANGES ~~~~~~~~~~~~~~~~~~~~ */
+/* Selectors with :has() (here and elsewhere) share one invalidation list in Chrome. Whenever a :has()
+   on <body> has to be re-checked - which happens on any DOM insertion, e.g. a menu, tooltip, dialog or
+   button ripple - every element matching a class or tag that follows a :has() in ANY rule is restyled.
+   So the part after :has() names the rarest class that matches the same elements: the play icon is
+   matched by .detailButton-icon (only the detail-page buttons have it) rather than .material-icons
+   or .play_arrow, which every card's play icon carries too. */
 
 .mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) button.btnPlay::after {
     content: "Read" !important;
@@ -3440,11 +3535,11 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
     font-weight: bold;
 }
 
-.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .material-icons.play_arrow:before{
+.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .detailButton-icon.play_arrow.material-icons:before{
     display:  none !important;
 }
 
-.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .material-icons.play_arrow:after {
+.mainDetailButtons:has(button.btnPlaystate[data-type="Book"]) .detailButton-icon.play_arrow.material-icons:after {
     content: "\1F56E" !important;
     margin-left: -8px;
 }
@@ -3461,6 +3556,46 @@ body:not(:has(#slides-container)) #indexPage .homeSectionsContainer {
 .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .itemMiscInfo {
     margin-left: 11px !important;
     margin-top: 11px !important;
+}
+
+/* == Details Page on Wide Windows (Desktop) ==
+   Wider than 1920 CSS px (a 1440p or 4K monitor, or a 1080p screen zoomed out) the parts of the
+   details page that are sized by the window stop at their 1920x1080 size, like the poster and
+   columns above (--detail-unit), so artwork, buttons and text keep the proportions the layout
+   was placed with instead of the artwork outgrowing the text. Each value below equals the
+   window-relative one at exactly 1920x1080. Narrower windows are not affected. */
+@media (min-width: 1920.02px) {
+    /* Hero: 45% (or 22% with nothing to show) of the window, no taller than at 1920x1080 */
+    .layout-desktop .itemBackdrop {
+        height: min(45vh, calc(25.3125 * var(--detail-unit))) !important;
+    }
+    .layout-desktop #itemDetailPage.noBackdropTransparency:not(:has(.detailLogo:not(.hide))) > .itemBackdrop {
+        height: max(11rem, min(22vh, calc(12.375 * var(--detail-unit)))) !important;
+    }
+    /* Logo box: 10% down, 30% wide and 30% tall at most, no larger than at 1920x1080 */
+    .layout-desktop .detailLogo {
+        top: min(10%, calc(5.3333 * var(--detail-unit))) !important;
+        max-width: min(30%, calc(30 * var(--detail-unit)));
+        max-height: min(30%, calc(16 * var(--detail-unit)));
+    }
+    /* Buttons pinned beside the title (people, playlists): 35px inside the description panel's
+       right edge, which sits 3.3% of the row (3.1911vw) from the window's edge. The plain 6em
+       above stays put while that edge moves out with the window, so the buttons drifted past it. */
+    .layout-desktop #itemDetailPage.itemDetailPage:is(:has(.detailImageContainer .card:not(.backdropCard)):has(.mainDetailButtons .btnPlay.hide), :has(.listItem[data-playlistitemid])) .mainDetailButtons {
+        right: calc(3.1911vw + 35.15328px) !important;
+    }
+    /* Book: the buttons' 9% offset is a share of the ribbon's width; capped so they don't slide
+       down onto the panel */
+    .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .mainDetailButtons {
+        margin-top: calc(8.41553 * var(--detail-unit)) !important;
+    }
+}
+/* "More like this" and the other poster rows on the details page: 15% of the row (see
+   .overflowPortraitCard), no wider than at 1920x1080, so zooming out shrinks them too */
+@media (min-width: 1920.02px) and (orientation: landscape) {
+    .layout-desktop #itemDetailPage .overflowPortraitCard {
+        width: min(15%, calc(14.0234 * var(--detail-unit))) !important;
+    }
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ JELLYFIN MEDIA PLAYER (JMP) FIXES ~~~~~~~~~~~~~~~~~~~~ */
@@ -3693,8 +3828,12 @@ header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
 
 /* A hairline under the bar separates it from page content without a heavy shadow.
    Not on the dashboard: there the bar is transparent and starts 240px from the left while
-   the sidebar is 260px wide, so the line floated over the sidebar edge. */
-body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root {
+   the sidebar is 260px wide, so the line floated over the sidebar edge.
+   Not on the video player either. That is checked on the bar's following siblings (the page container
+   comes right after the bar) rather than with body:has(#videoOsdPage): a :has() whose subject is <body>
+   is re-checked on every DOM change on the page, and each re-check restyles every element that any
+   :has() rule here or in a plugin (e.g. Jellyfin Enhanced's poster tags) may affect - thousands per hover. */
+body:not(.dashboardDocument) .MuiAppBar-root:not(:has(~ * #videoOsdPage)) {
     border-bottom: 1px solid var(--alt-accent-color);
 }
 
@@ -3712,7 +3851,7 @@ body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root {
     --bar-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 12px 30px rgba(0, 0, 0, .4);
     --bar-radius: 20px;
 }
-body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root {
+body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root:not(:has(~ * #videoOsdPage)) {
     top: 8px;
     left: 12px;
     right: 12px;
@@ -3776,7 +3915,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     :root { --bar-radius: 16px; }
 }
 @supports not (backdrop-filter: blur(1px)) {
-    body:not(.dashboardDocument):not(:has(#videoOsdPage)) .MuiAppBar-root.MuiAppBar-root { background: var(--header-solid-background-color) !important; }
+    body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root:not(:has(~ * #videoOsdPage)) { background: var(--header-solid-background-color) !important; }
 }
 
 /* Avatar / user menu button */
@@ -4062,7 +4201,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
 /* All four buttons share one height. "Refresh Theme" is a native <button> (injected by
    dashboard_theming.js) at a fixed 44px while the three MUI buttons are ~36px, which
    made rows uneven whenever they wrapped. */
-.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root,
 #theme-refresh-button {
     box-sizing: border-box;
     height: 44px !important;
@@ -4084,7 +4223,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
         width: 100%;
         padding: 0 .25em;
     }
-    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button {
+    .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root {
         width: 100%;
         min-width: 0;
         margin: 0 !important;
@@ -4258,10 +4397,12 @@ span.MuiButtonBase-root.MuiCheckbox-root.MuiCheckbox-colorPrimary.MuiCheckbox-si
    instead: always the 2nd and 3rd of the 3 native buttons in that Stack
    (Scan, Restart, Shutdown). The whole group is identified via :has() rather
    than a generated hash class, so it keeps matching across Jellyfin rebuilds.
+   The children are named button.MuiButtonBase-root (all three are MUI buttons) rather than
+   any `button`: see the note on :has() at the Book section about what that costs on every page.
    #theme-refresh-button is our own injected button (see the "New Dashboard
    Theming" JS Injector script) - it has a stable, hand-assigned id, so no
    such targeting games are needed for it. */
-.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button,
+.MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) > button.MuiButtonBase-root,
 #theme-refresh-button {
   border-radius: 14px !important;
   font-weight: 600 !important;
