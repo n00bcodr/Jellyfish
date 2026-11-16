@@ -763,29 +763,6 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     color: var(--text-color) !important;
 }
 
-/* Type label on Seerr posters (MOVIE / SERIES / COLLECTION): the theme's chip (accent-tinted
-   surface, accent border, readable accent text) instead of three fixed brand colours; the label
-   still names the type. */
-.jellyseerr-media-badge.jellyseerr-media-badge {
-    background-color: var(--accent-surface-strong);
-    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
-    color: var(--accent-text-color);
-    text-shadow: none;
-}
-/* "View collection" pill on a collection poster: same chip, accent glow instead of green. The
-   plugin's `transition: all` is narrowed to what changes. */
-.jellyseerr-collection-badge.jellyseerr-collection-badge {
-    background-color: var(--accent-surface-strong);
-    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
-    color: var(--accent-text-color);
-    text-shadow: none;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
-    transition: transform .2s ease, box-shadow .2s ease;
-}
-.jellyseerr-collection-badge.jellyseerr-collection-badge:hover {
-    box-shadow: 0 0 0 1px var(--primary-accent-color), 0 10px 26px rgba(0, 0, 0, .5);
-}
-
 /* Download-progress popover (hovering a Seerr item that is downloading): a solid theme menu with
    an accent status chip and an accent progress bar. */
 .jellyseerr-hover-popover.jellyseerr-hover-popover {
