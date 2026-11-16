@@ -151,7 +151,6 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary {
 /* == Secondary Accent Backgrounds == */
 /* Applied to elements that need a less prominent accent background. */
 .MuiAlert-root.MuiAlert-standardInfo,          /* Info type Material UI alerts */
-.navMenuOption-selected,                        /* Selected items in the main navigation menu */
 .MuiListItemButton-root.Mui-selected,           /* Selected Material UI list item buttons */
 .jstree-default .jstree-wholerow.jstree-wholerow-clicked /* Clicked rows in jsTree (metadata editor folder tree). Jellyfin's own
                                                    rule is `.jstree-default .jstree-wholerow-clicked { ... !important }` and loads with
@@ -278,11 +277,7 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 .metadataSidebarIcon,                         /* Icons in the metadata editor sidebar */
 .upNextDialog-countdownText,                  /* Countdown text in the "Up Next" dialog */
 .MuiSvgIcon-root.MuiSvgIcon-fontSizeInherit,  /* Material UI SVG icons inheriting font size */
-.button-flat:hover,                           /* Hovered flat buttons */
-.username,                                    /* Usernames (e.g., on profile pages) */
-.headerUsername,                              /* Username in the header */
-.sectionTitle,                                /* Titles of sections */
-.navMenuOption:hover:not(.navMenuOption-selected) /* Hovered main navigation items (not selected) */
+.button-flat:hover                            /* Hovered flat buttons */
 {
     color: var(--accent-text-color) !important;
 }
@@ -301,13 +296,9 @@ progress::-webkit-progress-value,             /* Progress bar fill for WebKit br
 }
 
 /* == Accent Color for Hover Effects (Fine Pointer Devices) == */
-/* Applies accent color on hover for icon buttons, specifically for mouse users. */
-.paper-icon-button-light:hover:not(:disabled) { /* Exclude disabled buttons */
-    color: var(--primary-accent-color) !important;
-    background-color: transparent !important;
-}
-
-.paper-icon-button-light:active:not(:disabled) { /* Active state for icon buttons */
+/* Applies accent color on hover and while pressed for icon buttons. */
+.paper-icon-button-light:hover:not(:disabled),
+.paper-icon-button-light:active:not(:disabled) { /* Hovered or pressed; disabled buttons are excluded */
     color: var(--primary-accent-color) !important;
     background-color: transparent !important;
 }
@@ -398,9 +389,6 @@ html
 .dialog,                                      /* Dialog boxes */
 .programCell-active,                          /* Active program cells in the TV guide */
 .channelsContainer,                           /* Container for TV channels */
-.layout-desktop .detailSectionContent,        /* Content area within detail sections (Desktop) - Consider backdrop transparency rules */
-.layout-mobile .detailSectionContent,         /* Content area within detail sections (Mobile) */
-.layout-tv .detailSectionContent,         /* Content area within detail sections (tv) */
 .trackSelections                            /* Audio/Subtitle track selection area */
 {
     background: var(--secondary-background-transparent) !important;
@@ -741,7 +729,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     .layout-mobile #castContent .card.overflowPortraitCard,
     .layout-mobile #guestCastContent .card.overflowPortraitCard  {
         width: 18% !important;
-        font-size: 90% !important;
     }
 }
 /* iPads/tablets in landscape */
@@ -749,7 +736,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     .layout-mobile #castContent .card.overflowPortraitCard,
     .layout-mobile #guestCastContent .card.overflowPortraitCard {
       width: 12% !important;
-      font-size: 90% !important;
     }
 }
 /* Desktop cast and crew card size. */
@@ -763,7 +749,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 /* == Header Base Styling == */
 /* Basic transparency and padding for the main header. */
 .skinHeader, .skinHeader-withBackground.osdHeader {
-    background-color: transparent !important;
     background: transparent !important;
 }
 .layout-desktop .skinHeader,
@@ -1039,10 +1024,7 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
    up; below that it becomes a slide-out drawer, so reserving 260px for it left an
    empty gutter and pushed the content off the right edge on narrow windows. */
 @media (min-width: 900px) {
-    .layout-desktop .dashboardDocument .mainAnimatedPage {
-        left: 260px !important;
-    }
-
+    .layout-desktop .dashboardDocument .mainAnimatedPage,
     .layout-desktop div#dashboardPage {
         left: 260px !important;
     }
@@ -1093,7 +1075,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     background: var(--header-background-color) !important; /* Re-apply defined header background */
     border-radius: 100px !important;
     backdrop-filter: blur(24px) !important; /* Strong blur */
-    box-shadow: 1px 3px 6px rgba(var(--secondary-background-color),.5); /* Dark shadow */
     color: var(--secondary-background-color) !important; /* Dark text */
     height: 40px !important;
     padding: 0 10px !important;
@@ -1264,13 +1245,6 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
 }
 
 /* == General Card & List Item Styling == */
-/* Additional rounding for specific card and list elements. */
-.cardBox { /* Redundant if .card already covers this, but ensures specificity */
-    border-radius: var(--rounded-cards) !important;
-}
-.paperList { /* Container for lists, often in settings */
-    border-radius: var(--rounded-cards) !important;
-}
 /* Styling for list items in desktop and TV layouts, adding padding, transition, and rounding. */
 .layout-desktop .listItem,
 .layout-tv .listItem {
@@ -1419,7 +1393,6 @@ div.card-hoverable.squareCard.card:hover {
 /* == Home Library Button Hover Effects == */
 /* Adds a border and dimming overlay to home library buttons on hover. */
 #homeTab a.emby-button.homeLibraryButton.raised {
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     background: var(--primary-accent-color) !important;
     border-radius: 18px !important;
 }
@@ -1689,7 +1662,6 @@ div.card-hoverable.squareCard.card:hover {
         }
     }
     .alphaPicker-fixed-right .MuiToggleButtonGroup-vertical .MuiToggleButton-root {
-        flex-basis: 0;
         padding-top: 0;
         padding-bottom: 0;
     }
@@ -2287,7 +2259,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 .layout-mobile .mainDetailButtons .btnPlay {
     /* Primary accent background is applied globally */
     position: relative !important; /* Ensure proper positioning */
-    padding-right: auto !important; /* Auto padding, or adjust as needed */
     right: auto !important;
     color: var(--secondary-background-color) !important;
     padding-top: 10px !important; /* Specific top padding for mobile */
@@ -2410,9 +2381,7 @@ div#listChildrenCollapsible { order: 6 !important; }
     background-color: var(--primary-accent-color) !important; /* Uses primary accent color */
 }
 .mdl-slider-background-upper { /* The unfilled (remaining) part of the track */
-    border-top-right-radius: 100px !important;
     border-radius: 100px !important; /* Pill shape */
-    border-bottom-right-radius: 100px !important;
     background: hsla(0, 0%, 100%, .2) !important; /* Matches track background */
     transform: translateX(-3px) !important; /* Slight adjustment for visual alignment */
 }
@@ -2586,7 +2555,6 @@ div#listChildrenCollapsible { order: 6 !important; }
 /* Applies consistent rounding to various form elements and lists in settings/dashboard. */
 .emby-input,
 .emby-textarea,
-.emby-select,
 .paperList,           /* General list container */
 .subtitleappearance-preview /* Preview area in subtitle settings */
 {
@@ -2597,7 +2565,7 @@ div#listChildrenCollapsible { order: 6 !important; }
     border: 0.1em solid var(--alt-accent-color) !important;
 }
 
-.emby-input, .emby-textarea, .paperList, .fab, .emby-select-withcolor, .visualCardBox {
+.emby-input, .emby-textarea, .paperList, .emby-select-withcolor, .visualCardBox {
     background: var(--alt-accent-color) !important;
 }
 
@@ -2694,17 +2662,16 @@ div#listChildrenCollapsible { order: 6 !important; }
     border: 0 !important;
 }
 
-/* Styles fieldsets in the dashboard with rounding, custom border, and padding. */
+/* Styles fieldsets in the dashboard with rounding and a custom border; desktop and TV also get padding. */
 .layout-desktop fieldset.verticalSection-extrabottompadding,
-.layout-tv fieldset.verticalSection-extrabottompadding {
-    border-radius: var(--rounded-cards) !important;
-    border-color: var(--secondary-background-transparent) !important;
-    padding: 10px 35px 20px 35px !important;
-}
-
+.layout-tv fieldset.verticalSection-extrabottompadding,
 .layout-mobile fieldset.verticalSection-extrabottompadding {
     border-radius: var(--rounded-cards) !important;
     border-color: var(--secondary-background-transparent) !important;
+}
+.layout-desktop fieldset.verticalSection-extrabottompadding,
+.layout-tv fieldset.verticalSection-extrabottompadding {
+    padding: 10px 35px 20px 35px !important;
 }
 
 #itemDetailPage .verticalSection .itemsContainer.padded-right {
@@ -2823,10 +2790,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 .MuiListItemIcon-root.MuiSvgIcon-fontSizeMedium {
     color: inherit !important;
 }
-/* Padding for MUI list item buttons that are NOT part of the main sidebar (e.g., other lists in dashboard pages). */
-.MuiList-root:not(.MuiList-subheader) .MuiListItemButton-root.MuiListItemButton-gutters {
-    padding: 20px 38px 10px 38px !important;
-}
 /* Styling for MUI collapsed list item buttons (e.g., in nested navigation). */
 .MuiCollapse-root.MuiCollapse-vertical .MuiListItemButton-root.MuiListItemButton-gutters {
     width: 85% !important;
@@ -2837,10 +2800,6 @@ body.dashboardDocument .MuiAppBar-root.MuiAppBar-root {
 
 /* ~~~~~~~~~~~~~~~~~~~~ METADATA EDITOR ~~~~~~~~~~~~~~~~~~~~ */
 /* Styles specific to the metadata editor interface. */
-
-/* Adjusts widths for the sidebar and content area in the desktop metadata editor. */
-.layout-desktop .editPageSidebar { width: 25vw !important; } /* Sidebar takes 25% of viewport width */
-.layout-desktop .editPageInnerContent { width: 74vw !important; } /* Inner content takes most of the remaining width */
 
 /* Styling for the jsTree component used for folder navigation in the metadata editor. */
 .jstree-default-large .jstree-node { line-height: 35px !important; } /* Adjust line height for tree nodes */
@@ -2856,22 +2815,22 @@ body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
 }
 /* The folder tree and the form are two matching rounded panels with an even gap between them and
    the screen edges, instead of a bare list next to a grey slab. */
+.layout-desktop .editPageSidebar,
+.layout-desktop .editPageInnerContent {
+    border: 1px solid var(--alt-accent-color);
+    border-radius: calc(var(--rounded-cards) + 6px);
+    background: var(--secondary-background-transparent);
+}
 .layout-desktop .editPageSidebar {
     top: 76px !important;
     left: 12px;
     height: calc(100% - 88px) !important;
     width: calc(25vw - 12px) !important;
     overflow-y: auto;
-    border: 1px solid var(--alt-accent-color);
-    border-radius: calc(var(--rounded-cards) + 6px);
-    background: var(--secondary-background-transparent);
 }
 .layout-desktop .editPageInnerContent {
     width: calc(74vw - 12px) !important;
     margin: 12px 12px 12px 0;
-    border: 1px solid var(--alt-accent-color);
-    border-radius: calc(var(--rounded-cards) + 6px);
-    background: var(--secondary-background-transparent);
     overflow: hidden;
 }
 #editItemMetadataPage .formDialogContent {
@@ -2956,9 +2915,6 @@ body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
 .layout-mobile #userProfilePage .readOnlyContent .imagePlaceHolder {
     margin: 0;
 }
-.layout-mobile #userProfilePage .readOnlyContent .username {
-    margin: .25em 0 .5em;
-}
 .layout-mobile #userProfilePage .readOnlyContent br {
     display: none;
 }
@@ -2967,21 +2923,26 @@ body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
     box-shadow: 0 8px 28px rgba(0, 0, 0, .4);
 }
 
-/* Quick Connect and the password form sit on a frosted panel so the page isn't loose fields on a
-   blank background. */
+/* Quick Connect, the password form and the preferences menu sit on a frosted panel so the page isn't
+   loose fields on a blank background. */
 #quickConnectPreferencesPage form > .verticalSection,
-#userProfilePage .updatePasswordForm {
-    padding: 1.5em 1.75em;
+#userProfilePage .updatePasswordForm,
+#myPreferencesMenuPage .verticalSection {
     border: 1px solid var(--alt-accent-color);
     border-radius: calc(var(--rounded-cards) + 6px);
     background: color-mix(in srgb, #fff 5%, transparent);
     backdrop-filter: blur(var(--blur));
     box-shadow: 0 10px 32px rgba(0, 0, 0, .25);
 }
+#quickConnectPreferencesPage form > .verticalSection,
+#userProfilePage .updatePasswordForm {
+    padding: 1.5em 1.75em;
+}
 #quickConnectPreferencesPage form > .verticalSection {
     margin-top: 1rem;
 }
-#quickConnectPreferencesPage form > .verticalSection .sectionTitle {
+#quickConnectPreferencesPage form > .verticalSection .sectionTitle,
+#myPreferencesMenuPage .verticalSection .sectionTitle {
     margin-top: 0;
 }
 
@@ -2994,14 +2955,6 @@ body .MuiAppBar-root.MuiAppBar-root:has(~ * #editItemMetadataPage) {
     width: min(100%, 34rem);
     margin-top: 1rem;
     padding: 1.25em 1.5em 1em;
-    border: 1px solid var(--alt-accent-color);
-    border-radius: calc(var(--rounded-cards) + 6px);
-    background: color-mix(in srgb, #fff 5%, transparent);
-    backdrop-filter: blur(var(--blur));
-    box-shadow: 0 10px 32px rgba(0, 0, 0, .25);
-}
-#myPreferencesMenuPage .verticalSection .sectionTitle {
-    margin-top: 0;
 }
 #myPreferencesMenuPage a.listItem-border,
 #myPreferencesMenuPage .listItem-border {
@@ -3251,10 +3204,8 @@ input:is([type="date"], [type="datetime-local"], [type="time"], [type="month"], 
 
 /* Fallback for browsers not supporting :has() (e.g., JMP). */
 @supports not selector(:has(*)) {
-    /* Simpler transparent background with blur for desktop JMP. */
+    /* Rounded drawer corners for desktop JMP (its background is set in the JMP fixes section below). */
     .layout-desktop .backgroundContainer.withBackdrop + div .mainDrawer {
-        background: transparent !important;
-        backdrop-filter: blur(24px) !important;
         border-top-right-radius: 30px !important; /* Rounded corners for the drawer */
         border-bottom-right-radius: 30px !important; /* Rounded corners for the drawer */
     }
@@ -3548,10 +3499,6 @@ body #indexPage .homeSectionsContainer:not(#_) {
     margin-left: -8px;
 }
 
-.layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .itemBackdrop, .layout-mobile #itemDetailPage:has(button.btnPlaystate[data-type="Book"]) .itemBackdrop {
-    height: 15%;
-}
-
  .layout-desktop #itemDetailPage:has(button.btnPlaystate[data-type="Book"])  .mainDetailButtons {
     backdrop-filter: none !important;
     margin-top: 9% !important;
@@ -3665,7 +3612,6 @@ body #indexPage .homeSectionsContainer:not(#_) {
 button.emby-tab-button.guide-date-tab-button.emby-button {
     flex: 1 0 auto;
     height: auto !important; /* Jellyfin fixes tab buttons at one line tall; these hold two */
-    min-width: 4.25rem;
     padding: 0.5rem 0.9rem !important;
     margin: 0 !important; /* the general tab rule adds a margin; the slider already has a gap */
     border-radius: var(--rounded-cards) !important; /* the general tab rule makes every tab a pill */
@@ -3696,7 +3642,6 @@ button.emby-tab-button.guide-date-tab-button.emby-tab-button-active.emby-button 
 
 /* Hover Effects */
 button.emby-tab-button.guide-date-tab-button.emby-button:hover:not(.emby-tab-button-active) {
-    background: var(--accent-surface-strong);
     color: #ffffff;
 }
 
@@ -3725,7 +3670,6 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus-visible {
 
     button.emby-tab-button.guide-date-tab-button.emby-button {
         padding: 0.4rem 0.6rem !important;
-        min-width: 3.4rem;
         font-size: 1rem;
     }
 }
@@ -3791,16 +3735,13 @@ button.emby-tab-button.guide-date-tab-button.emby-button:focus-visible {
     width: 48px !important;
     height: 48px !important;
     box-sizing: border-box !important;
+    border-radius: 50%;
+    transition: color .15s ease, background-color .15s ease;
 }
 
 .MuiToolbar-root .MuiIconButton-root svg,
 .MuiToolbar-root .MuiIconButton-root .material-icons {
     font-size: 24px !important;
-}
-
-.MuiToolbar-root .MuiIconButton-root {
-    border-radius: 50%;
-    transition: color .15s ease, background-color .15s ease;
 }
 .MuiToolbar-root .MuiIconButton-root:hover {
     color: #ffffff !important;
@@ -3933,13 +3874,9 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     outline-offset: -2px;
 }
 
-/* User menu and other MUI popover rows: inset, rounded rows with a clear accent hover
-   (the stock 8% white wash is nearly invisible on the dark menu surface). */
-.MuiMenu-paper .MuiMenuItem-root {
-    margin: 1px 6px;
-    border-radius: 10px;
-    transition: background-color .15s ease;
-}
+/* User menu and other MUI popover rows: a clear accent hover (the stock 8% white wash is nearly
+   invisible on the dark menu surface). The rows' inset and rounding are set further down, together
+   with the SyncPlay and Cast menu rows. */
 .MuiMenu-paper .MuiMenuItem-root:hover {
     background-color: var(--accent-surface-strong) !important;
 }
@@ -3958,6 +3895,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     border-radius: var(--rounded-cards);
     box-shadow: 0 12px 36px rgba(0, 0, 0, .5);
 }
+.MuiMenu-paper .MuiMenuItem-root,
 .MuiMenu-root .MuiPaper-root .MuiMenuItem-root {
     margin: 1px 6px;
     border-radius: 10px;
@@ -3983,6 +3921,7 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     backdrop-filter: blur(var(--blur));
     min-width: 22em;
     max-width: min(34em, 90vw);
+    z-index: 1000;
 }
 .playerStats .playerStats-stats {
     padding: 1em 3.2em 1em 1.2em !important;
@@ -4023,9 +3962,6 @@ body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiB
     font-size: 1.05em;
     font-weight: 800;
     letter-spacing: .02em;
-}
-.playerStats {
-    z-index: 1000;
 }
 .playerStats .playerStats-closeButton {
     z-index: 2;
@@ -4131,8 +4067,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
     color: #ffffff !important;
 }
 
-body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemIcon-root,
-body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemIcon-root {
     color: inherit !important;
 }
 
@@ -4223,7 +4158,6 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
     .MuiStack-root:has(> .MuiButton-containedError.MuiButton-containedError:nth-child(2)) {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .5em;
         width: 100%;
         padding: 0 .25em;
     }
@@ -4236,7 +4170,7 @@ body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-select
     }
 }
 
-/* Activity list items */
+/* MUI list item buttons that are not part of the main sidebar (the activity list and other dashboard lists) */
 .MuiList-root:not(.MuiList-subheader) .MuiListItemButton-root.MuiListItemButton-gutters {
     padding: 10px 30px 10px 30px !important;
 }
