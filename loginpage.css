@@ -62,15 +62,6 @@ body .backdropContainer:has(~ * #loginPage) {
   padding-top: 2em !important;  /* Top padding */
 }
 
-/* Styles the "Select User" or "Log In" title. */
-#loginPage .sectionTitle {
-  margin: 0 auto 1.2em !important; /* Centering and bottom margin */
-  text-align: center;
-  /* The following margin and padding were repeated, potentially overriding the above. Consolidating. */
-  /* margin: -10px 0 0 0; */ /* This was likely an attempt to adjust based on logo, see logo section */
-  /* padding: 0; */
-}
-
 /* Styles for individual user cards in the visual login form. */
 #loginPage .squareCard { /* User selection cards */
     width: 10em !important;
@@ -205,8 +196,7 @@ body .standalonePage:is(#loginPage:not(.hide), #loginPage:not(.hide) ~ *, :has(~
   text-indent: 0;
 }
 
-/* Adjusts the .sectionTitle (used for "Select User" / "Log In") when the logo is replacing H1.
-   This was previously further up, combined here for clarity with the logo replacement. */
+/* The "Select User" / "Log In" title: centred, and pulled up slightly under the logo that replaces the H1. */
 #loginPage .sectionTitle {
   margin: -10px auto 1.2em !important; /* Negative top margin to pull it up slightly, adjust as needed */
   text-align: center;
@@ -263,21 +253,13 @@ body .standalonePage:is(#loginPage:not(.hide), #loginPage:not(.hide) ~ *, :has(~
 #loginPage .emby-input {
   color: var(--jf-palette-text-primary, #fff); /* theme.css makes fields translucent, so the text is the page's, not a fixed dark */
   transition: 0.3s ease-in-out;
-  border-radius: 12px;
   padding: 12px;
-  background-color: #fff;
-  border: 1px solid #ddd;
 }
 
 #loginPage .emby-input:focus {
   outline: 2px solid var(--primary-accent-color);
   outline-offset: 2px;
-  border-color: var(--primary-accent-color);
   box-shadow: 0 0 0 3px rgba(var(--primary-r), var(--primary-g), var(--primary-b), 0.1); /* the palette's accent channels; --primary-accent-color-rgb was never defined, so this ring was always blue */
-}
-
-#loginPage .emby-input:hover {
-  border-color: var(--primary-accent-color);
 }
 
 /* Hover effect for the "Remember me" checkbox container. */
@@ -412,14 +394,8 @@ body .standalonePage:is(#loginPage:not(.hide), #loginPage:not(.hide) ~ *, :has(~
     font-size: 0.8em;
   }
 
-  /* Adjusts logo size on small screens. */
-  #loginPage h1::before {
-      height: 60px;
-  }
-
   /* Improve button sizing on mobile */
   #loginPage button.emby-button {
-    min-height: 44px;
     padding: 0.75em 1.5em;
   }
 

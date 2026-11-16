@@ -93,12 +93,19 @@
     font-weight: 600;
 }
 
-/* Form controls on the plugin's pages (Calendar, Hidden Content, Requests...) inherit the
-   theme font instead of the browser default. */
+/* Form controls on the plugin's pages (Calendar, Hidden Content, Requests...) and in its Seerr
+   dialogs inherit the theme font instead of the browser default. */
 [class*="je-"] :is(button, input, select, textarea),
 :is(button, input, select, textarea)[class*="je-"],
-[id^="je-"] :is(button, input, select, textarea) {
+[id^="je-"] :is(button, input, select, textarea),
+.jellyseerr-season-modal :is(button, input, select, textarea) {
     font-family: inherit;
+}
+
+/* Toasts: the plugin already takes the palette's tint, blur and accent border from the theme
+   detector; only the corners differ from Jellyfin's own toasts (.toastVisible in theme.css). */
+.jellyfin-enhanced-toast {
+    border-radius: 18px !important;
 }
 
 /* Active-streams panel: same surface, radius and accent as the theme's other floating
@@ -478,4 +485,611 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
 /* Seerr cards: Jellyfin's .card has contain: content, which clips the theme's hover shadow into a square dark patch. */
 .jellyseerr-card.card {
     contain: layout style !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ SEERR DIALOGS ~~~~~~~~~~~~~~~~~~~~ */
+/* Request movie / series (season picker) / collection, Report issue and the quota notice all share
+   the plugin's .jellyseerr-season-modal shell, which it paints in fixed slate and indigo. Here it
+   becomes a theme dialog (solid surface, hairline border, card radius, the same deep shadow as
+   .dialog.formDialog), with theme fields, pill buttons and the accent for selection. The plugin
+   injects its <style> after this file, so every rule is scoped under the modal root to win, and
+   matches its !important where it uses one. Semantic status colours (available, pending,
+   processing) and the amber TVDB warning are kept. */
+.jellyseerr-season-modal.jellyseerr-season-modal {
+    background: rgba(0, 0, 0, .6);   /* neutral dim like the theme's dialog backdrop, instead of navy */
+}
+.jellyseerr-season-modal .jellyseerr-season-content {
+    background: var(--secondary-background-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .55);
+}
+.jellyseerr-season-modal .jellyseerr-season-header {
+    border-radius: var(--rounded-cards) var(--rounded-cards) 0 0;
+    border-bottom: 1px solid var(--alt-accent-color);
+}
+/* The fade under the backdrop image ends in the dialog's own surface, so the title band joins the body. */
+.jellyseerr-season-modal .jellyseerr-season-header::before {
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--secondary-background-color) 35%, transparent) 0%,
+        color-mix(in srgb, var(--secondary-background-color) 65%, transparent) 55%,
+        color-mix(in srgb, var(--secondary-background-color) 95%, transparent) 100%);
+}
+.jellyseerr-season-modal .jellyseerr-season-title {
+    color: var(--accent-text-color);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .6);   /* legible over the backdrop, without the indigo glow */
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options {
+    border-top-color: var(--alt-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options h3,
+.jellyseerr-season-modal .jellyseerr-season-header-label,
+.jellyseerr-season-modal .jellyseerr-collection-header-label {
+    color: rgba(255, 255, 255, .62);
+}
+.jellyseerr-season-modal .jellyseerr-form-group label,
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-form-group label {
+    color: rgba(255, 255, 255, .85);
+}
+
+/* Fields: the theme's field look (faint fill, hairline, card radius, accent border on focus). */
+.jellyseerr-season-modal :is(.jellyseerr-form-group :is(select, input, textarea), .jellyseerr-issue-select, .jellyseerr-issue-textarea, .jellyseerr-select) {
+    background-color: var(--alt-accent-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    color: #fff;
+}
+.jellyseerr-season-modal :is(.jellyseerr-form-group :is(select, input, textarea), .jellyseerr-issue-select, .jellyseerr-issue-textarea, .jellyseerr-select):hover {
+    background-color: var(--alt-accent-color);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent);
+}
+.jellyseerr-season-modal :is(.jellyseerr-form-group :is(select, input, textarea), .jellyseerr-issue-select, .jellyseerr-issue-textarea, .jellyseerr-select):focus {
+    background-color: var(--alt-accent-color);
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent-color) 30%, transparent);
+}
+/* Server / quality / folder selects: the plugin sets these with !important. */
+.jellyseerr-season-modal .jellyseerr-form-group select[is="emby-select"],
+.jellyseerr-season-modal .jellyseerr-advanced-options select[is="emby-select"] {
+    background-color: var(--alt-accent-color) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    border-radius: var(--rounded-cards) !important;
+}
+.jellyseerr-season-modal .jellyseerr-form-group select[is="emby-select"]:hover,
+.jellyseerr-season-modal .jellyseerr-advanced-options select[is="emby-select"]:hover {
+    background-color: var(--alt-accent-color) !important;
+    border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent) !important;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options select[is="emby-select"]:focus {
+    border-color: var(--primary-accent-color) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent-color) 30%, transparent) !important;
+}
+/* The open option list (where the browser draws it with page colours): palette surface and the
+   accent for the chosen option, as the theme's .emby-select does. */
+.jellyseerr-season-modal .jellyseerr-advanced-options select[is="emby-select"] option {
+    background-color: var(--secondary-background-color) !important;
+    color: #fff !important;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options select[is="emby-select"] option:checked {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Season / collection rows: faint panels with a hairline; hover takes the accent tint. The
+   plugin animates them with `transition: all`; only the properties that change are kept. */
+.jellyseerr-season-modal :is(.jellyseerr-season-header-row, .jellyseerr-collection-header-row) {
+    background: color-mix(in srgb, #fff 5%, transparent);
+    border-color: var(--alt-accent-color);
+    color: #fff;
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-item, .jellyseerr-collection-movie-row, .jellyseerr-tvdb-match-row) {
+    background: color-mix(in srgb, #fff 3%, transparent);
+    border-color: var(--alt-accent-color);
+    transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.jellyseerr-season-modal .jellyseerr-season-item:hover:not(.disabled),
+.jellyseerr-season-modal .jellyseerr-tvdb-match-row:hover,
+.jellyseerr-season-modal .jellyseerr-collection-movie-row:hover:not(:has(input:disabled)) {
+    background: var(--accent-surface);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent);
+}
+.jellyseerr-season-modal .jellyseerr-season-item.disabled {
+    background: rgba(0, 0, 0, .2);
+    border-color: var(--alt-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-tvdb-match-row.selected {
+    background: var(--accent-surface-strong);
+    border-color: var(--primary-accent-color);
+    box-shadow: none;
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-name, .jellyseerr-collection-movie-details .title, .jellyseerr-tvdb-match-row .title) {
+    color: #fff;
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-meta, .jellyseerr-collection-movie-details .year, .jellyseerr-tvdb-match-row .meta, .jellyseerr-tvdb-match-row .overview, .jellyseerr-tvdb-match-hint, .jellyseerr-inline-progress-text) {
+    color: rgba(255, 255, 255, .6);
+}
+.jellyseerr-season-modal .jellyseerr-season-episodes {
+    color: rgba(255, 255, 255, .5);
+}
+
+/* Season / movie switches: accent track when on. The knob keeps a shadow so it stays visible on
+   light accents (banana, mint...). */
+.jellyseerr-season-modal :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox) {
+    background: rgba(255, 255, 255, .18);
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox):checked {
+    background: var(--primary-accent-color);
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox)::before {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+}
+.jellyseerr-season-modal :is(.jellyseerr-season-checkbox, .jellyseerr-collection-checkbox, .jellyseerr-tvdb-match-row):focus-visible {
+    outline-color: var(--primary-accent-color);
+}
+/* "Not requested" is the only status chip in indigo: it becomes an accent chip; the semantic
+   status colours stay. */
+.jellyseerr-season-modal .jellyseerr-season-status-not-requested {
+    background: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 50%, transparent);
+    color: var(--accent-text-color);
+}
+.jellyseerr-season-modal .jellyseerr-inline-progress {
+    background: rgba(0, 0, 0, .2);
+    border-color: var(--alt-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-inline-progress-fill {
+    background: var(--primary-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-tvdb-match {
+    background: color-mix(in srgb, #fff 3%, transparent);
+}
+.jellyseerr-season-modal .jellyseerr-quota-chip:not(.jellyseerr-quota-chip-warning):not(.jellyseerr-quota-chip-restricted) {
+    background: var(--accent-surface);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent);
+    color: rgba(255, 255, 255, .85);
+}
+/* Single-season TV picker (TV layout). */
+.jellyseerr-season-modal .jellyseerr-tv-picker-option {
+    background: color-mix(in srgb, #fff 6%, transparent);
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-tv-picker-option[aria-selected="true"] {
+    border-color: var(--primary-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-tv-picker-option:focus {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+    border-color: var(--primary-accent-color);
+}
+
+/* Footer: a hairline band like .formDialogFooter; Request is an accent pill, Cancel a quiet one. */
+.jellyseerr-season-modal .jellyseerr-modal-footer {
+    background: transparent;
+    border-top-color: var(--alt-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-modal-button {
+    border-radius: 999px;
+    transition: background-color .2s ease, filter .2s ease;
+}
+.jellyseerr-season-modal .jellyseerr-modal-button-primary,
+.jellyseerr-season-modal .jellyseerr-modal-button-primary:hover:not(:disabled) {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+    box-shadow: none;
+    transform: none;
+}
+.jellyseerr-season-modal .jellyseerr-modal-button-primary:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+.jellyseerr-season-modal .jellyseerr-modal-button-secondary {
+    background: var(--alt-accent-color);
+    border-color: transparent;
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-modal-button-secondary:hover {
+    background: var(--accent-surface-strong);
+    border-color: transparent;
+}
+
+/* Report issue: the type choice is a row of pills; the chosen one is an accent fill with
+   --text-color (the plugin's white label was unreadable on light accents). Its list of existing
+   issues uses accent chips where the plugin had fixed blue and lavender. */
+.jellyseerr-season-modal .jellyseerr-radio-option {
+    border-radius: 999px;
+    border-width: 1px;
+    border-color: var(--alt-accent-color);
+    background-color: var(--alt-accent-color);
+}
+.jellyseerr-season-modal .jellyseerr-radio-input:hover + .jellyseerr-radio-option {
+    border-color: var(--primary-accent-color);
+    background-color: var(--accent-surface);
+}
+.jellyseerr-season-modal .jellyseerr-radio-input:checked + .jellyseerr-radio-option {
+    border-color: var(--primary-accent-color);
+    background-color: var(--primary-accent-color);
+    color: var(--text-color);
+}
+.jellyseerr-season-modal .jellyseerr-radio-input:focus-visible + .jellyseerr-radio-option {
+    outline: 2px solid var(--primary-accent-color);
+    outline-offset: 2px;
+}
+.jellyseerr-season-modal .jellyseerr-issues-header {
+    color: rgba(255, 255, 255, .62);
+}
+.jellyseerr-season-modal :is(.jellyseerr-issue-section-title, .jellyseerr-pill.pill-number-open, .jellyseerr-pill:not([class*="pill-"])) {
+    background: var(--accent-surface-strong);
+    color: var(--accent-text-color);
+}
+.jellyseerr-season-modal .jellyseerr-issue-card {
+    border-color: var(--alt-accent-color);
+    border-radius: 12px;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ SEERR CARDS AND BUTTONS ~~~~~~~~~~~~~~~~~~~~ */
+/* Request buttons (cards, more-info dialog, item pages) are pills; "Request" itself is the accent
+   with --text-color instead of the plugin's fixed purple. The other states keep their semantic
+   colours (available green, pending amber...). The class is repeated to beat the plugin's
+   !important rules, which come later. */
+.jellyseerr-request-button.jellyseerr-request-button,
+.jellyseerr-button-group.jellyseerr-button-group {
+    border-radius: 999px;
+}
+.jellyseerr-request-button.jellyseerr-request-button.jellyseerr-button-request {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+.jellyseerr-request-button.jellyseerr-request-button.jellyseerr-button-request:hover:not(:disabled) {
+    background-color: var(--primary-accent-color) !important;
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .35);
+}
+/* 4K split button: the arrow half follows the Request half. */
+.jellyseerr-button-group.jellyseerr-button-group .jellyseerr-button-request ~ .jellyseerr-split-arrow {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-left-color: color-mix(in srgb, var(--text-color) 25%, transparent);
+}
+/* 4K choice popup: a solid theme menu instead of the plugin's purple block. */
+.jellyseerr-4k-popup.jellyseerr-4k-popup.show {
+    background: var(--header-solid-background-color) !important;
+    border-color: var(--alt-accent-color);
+    border-radius: 12px;
+}
+.jellyseerr-4k-popup.jellyseerr-4k-popup .jellyseerr-4k-popup-item:not(:disabled):hover {
+    background: var(--accent-surface-strong);
+}
+.jellyseerr-4k-popup.jellyseerr-4k-popup .jellyseerr-4k-popup-item.chip-requested {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Type label on Seerr posters (MOVIE / SERIES / COLLECTION): the theme's chip (accent-tinted
+   surface, accent border, readable accent text) instead of three fixed brand colours; the label
+   still names the type. */
+.jellyseerr-media-badge.jellyseerr-media-badge {
+    background-color: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
+    color: var(--accent-text-color);
+    text-shadow: none;
+}
+/* "View collection" pill on a collection poster: same chip, accent glow instead of green. The
+   plugin's `transition: all` is narrowed to what changes. */
+.jellyseerr-collection-badge.jellyseerr-collection-badge {
+    background-color: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
+    color: var(--accent-text-color);
+    text-shadow: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.jellyseerr-collection-badge.jellyseerr-collection-badge:hover {
+    box-shadow: 0 0 0 1px var(--primary-accent-color), 0 10px 26px rgba(0, 0, 0, .5);
+}
+
+/* Download-progress popover (hovering a Seerr item that is downloading): a solid theme menu with
+   an accent status chip and an accent progress bar. */
+.jellyseerr-hover-popover.jellyseerr-hover-popover {
+    background: var(--header-solid-background-color);
+    color: #fff;
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .5);
+}
+.jellyseerr-hover-popover.jellyseerr-hover-popover .status {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+}
+.jellyseerr-hover-popover.jellyseerr-hover-popover .jellyseerr-hover-progress .bar {
+    background: var(--primary-accent-color);
+}
+.jellyseerr-hover-popover.jellyseerr-hover-popover .eta {
+    color: rgba(255, 255, 255, .7);
+}
+
+/* Row arrows on the Seerr recommendations page: a dark palette disc at rest, the accent on hover
+   (was navy, then indigo). */
+.je-recommendations-section .je-scroll-btn {
+    background: color-mix(in srgb, var(--secondary-background-color) 80%, transparent);
+    border-color: var(--alt-accent-color);
+}
+.je-recommendations-section .je-scroll-btn:hover {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ SEERR MORE-INFO DIALOG ~~~~~~~~~~~~~~~~~~~~ */
+/* The full-height details dialog for Seerr titles. Its panel, the fade under the backdrop and the
+   collection card were fixed navy/slate; they take the palette's surface so the dialog matches the
+   theme's item pages. Its 4K menu and download bars follow the Seerr card rules above. */
+.je-more-info-modal.je-more-info-modal .modal-container {
+    background: var(--secondary-background-color);
+}
+.je-more-info-modal.je-more-info-modal .je-modal-backdrop-overlay {
+    background: linear-gradient(to bottom,
+        color-mix(in srgb, var(--secondary-background-color) 45%, transparent) 0%,
+        transparent 28%,
+        color-mix(in srgb, var(--secondary-background-color) 55%, transparent) 62%,
+        color-mix(in srgb, var(--secondary-background-color) 92%, transparent) 86%,
+        var(--secondary-background-color) 100%);
+}
+.je-more-info-modal.je-more-info-modal :is(.modal-close, .modal-refresh) {
+    background: color-mix(in srgb, var(--secondary-background-color) 70%, transparent);
+    border: 1px solid var(--alt-accent-color);
+    transition: background-color .15s ease;
+}
+.je-more-info-modal.je-more-info-modal :is(.modal-close, .modal-refresh):hover:not(:disabled) {
+    background: var(--accent-surface-strong);
+}
+.je-more-info-modal.je-more-info-modal .je-collection-card {
+    background-color: var(--secondary-background-color);
+    border-radius: var(--rounded-cards);
+}
+.je-more-info-modal.je-more-info-modal .je-collection-card-overlay {
+    background-image: linear-gradient(color-mix(in srgb, var(--secondary-background-color) 45%, transparent) 0%,
+        color-mix(in srgb, var(--secondary-background-color) 80%, transparent) 100%);
+}
+.je-more-info-modal.je-more-info-modal .je-collection-card-content {
+    color: #fff;
+}
+.je-more-info-modal.je-more-info-modal .je-collection-card-button {
+    color: #fff;
+    background: var(--alt-accent-color);
+    border-color: transparent;
+    border-radius: 999px;
+}
+.je-more-info-modal.je-more-info-modal .je-collection-card:hover .je-collection-card-button {
+    background: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 50%, transparent);
+}
+.je-more-info-modal.je-more-info-modal .je-download-progress .fill {
+    background: var(--primary-accent-color);
+}
+.je-more-info-modal.je-more-info-modal .je-download-eta {
+    color: rgba(255, 255, 255, .7);
+}
+.je-4k-popup.je-4k-popup {
+    background: var(--header-solid-background-color);
+    border-color: var(--alt-accent-color);
+    border-radius: 12px;
+}
+.je-4k-popup.je-4k-popup .je-4k-popup-item:hover {
+    background: var(--accent-surface-strong);
+}
+.je-4k-popup.je-4k-popup .je-4k-popup-item.je-4k-request {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ SPOILER GUARD ~~~~~~~~~~~~~~~~~~~~ */
+/* "On" was lavender (the plugin's Seerr purple): the item-page icon and the more-info pill take
+   the accent instead. */
+.je-spoiler-blur-btn.je-spoiler-blur-on.detailButton .detailButton-icon {
+    color: var(--accent-text-color);
+}
+.je-spoiler-pending-btn.je-spoiler-pending-btn.je-spoiler-pending-on {
+    background: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 60%, transparent);
+    color: var(--accent-text-color);
+}
+.je-spoiler-pending-btn.je-spoiler-pending-btn.je-spoiler-pending-on:hover:not(:disabled) {
+    background: var(--accent-surface-strong);
+    border-color: var(--primary-accent-color);
+    color: #fff;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ RELEASE NOTES ("What's new") ~~~~~~~~~~~~~~~~~~~~ */
+/* The plugin builds this popup from inline styles only (no classes): fixed blue icon, title and
+   GitHub button, a red Close, and a 50px blur. Its parts are reached by position (header, notes,
+   footer), which stays true while its hover handlers rewrite the inline styles, and need
+   !important to beat them. Result: the theme's header surface with a hairline, an accent icon and
+   title, an accent pill for "View on GitHub" and a quiet pill for Close (it only closes). */
+#jellyfin-release-notes-notification {
+    background: color-mix(in srgb, var(--header-solid-background-color) 92%, transparent) !important;
+    border: 1px solid var(--alt-accent-color) !important;
+    border-radius: var(--rounded-cards) !important;
+    color: #fff !important;
+    backdrop-filter: blur(var(--blur)) !important;   /* the surface is nearly opaque: a lighter blur is enough */
+}
+#jellyfin-release-notes-notification > div:first-child {
+    border-bottom-color: var(--alt-accent-color) !important;
+}
+#jellyfin-release-notes-notification > div:first-child > div > div:first-child {       /* icon disc */
+    background: var(--accent-surface-strong) !important;
+}
+#jellyfin-release-notes-notification > div:first-child > div > div:nth-child(2) > div:first-child {   /* title */
+    color: var(--accent-text-color) !important;
+}
+#jellyfin-release-notes-notification > div:first-child button:hover,
+#jellyfin-release-notes-notification > div:last-child > button:hover {
+    background: var(--accent-surface-strong) !important;
+}
+#jellyfin-release-notes-notification > div:last-child {
+    border-top-color: var(--alt-accent-color) !important;
+}
+#jellyfin-release-notes-notification > div:last-child > a {                            /* View on GitHub */
+    background: var(--primary-accent-color) !important;
+    border-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    transition: filter .15s ease !important;
+}
+#jellyfin-release-notes-notification > div:last-child > a:hover {
+    filter: brightness(1.1);
+}
+#jellyfin-release-notes-notification > div:last-child > button {                       /* Close */
+    background: var(--alt-accent-color) !important;
+    border-color: transparent !important;
+    border-radius: 999px !important;
+}
+/* Links inside the notes: the readable accent on the dark surface. */
+#jellyfin-release-notes-notification > div:nth-child(2) a {
+    color: var(--accent-text-color) !important;
+    text-decoration-color: color-mix(in srgb, var(--accent-text-color) 40%, transparent) !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ CALENDAR AND DOWNLOADS / REQUESTS PAGES ~~~~~~~~~~~~~~~~~~~~ */
+/* The plugin fills the selected view / tab with the accent but leaves the label white, which is
+   unreadable on light accents (banana, mint, peach): text on an accent fill is --text-color.
+   "Today" uses the accent as text, so it takes the readable accent. */
+.je-calendar-view-btn.je-calendar-view-btn.active,
+.je-requests-tab.je-requests-tab.emby-button.active,
+.je-issues-tab.je-issues-tab.emby-button.active,
+.je-downloads-tab.je-downloads-tab.emby-button.active,
+.je-request-watch-btn.je-request-watch-btn {
+    color: var(--text-color) !important;
+}
+.je-downloads-tab.emby-button.active .je-downloads-tab-count {
+    background: color-mix(in srgb, var(--text-color) 18%, transparent);
+}
+.je-calendar-day.je-calendar-day.je-calendar-today :is(.je-calendar-day-number, .je-calendar-day-name) {
+    color: var(--accent-text-color) !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ AWARDS (item pages) ~~~~~~~~~~~~~~~~~~~~ */
+/* The awards band was a fixed navy-teal gradient: it takes the accent-tinted surfaces and the
+   card radius. The gold star and "won" badges stay gold (the award colour, not a theme accent). */
+.je-awards-section.je-awards-section {
+    background: linear-gradient(115deg, var(--accent-surface) 0%, var(--accent-surface-strong) 100%);
+    border-radius: var(--rounded-cards);
+    box-shadow: inset 0 0 0 1px var(--alt-accent-color);
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ HIDDEN CONTENT ~~~~~~~~~~~~~~~~~~~~ */
+/* Hide confirmation: a theme dialog with pill buttons; Hide uses the theme's destructive style.
+   The plugin's per-scope colours for "Hide episode / show / everywhere" are inline and stay. */
+.je-hide-confirm-overlay .je-hide-confirm-dialog {
+    background: var(--secondary-background-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .55);
+}
+.je-hide-confirm-dialog .je-hide-confirm-options input[type="checkbox"] {
+    accent-color: var(--primary-accent-color);
+}
+.je-hide-confirm-dialog .je-hide-confirm-cancel {
+    background: var(--alt-accent-color);
+    border-color: transparent;
+    border-radius: 999px;
+}
+.je-hide-confirm-dialog .je-hide-confirm-cancel:hover {
+    background: var(--accent-surface-strong);
+}
+.je-hide-confirm-dialog .je-hide-confirm-hide,
+.je-hidden-content-page-unhide-all.je-hidden-content-page-unhide-all {
+    background: #7a2e32;
+    border: 1px solid transparent;
+    color: #ffd9dc;
+    border-radius: 999px;
+}
+.je-hide-confirm-dialog .je-hide-confirm-hide:hover,
+.je-hidden-content-page-unhide-all.je-hidden-content-page-unhide-all:hover {
+    background: #8a3439;
+}
+/* Hidden Content page: the "scoped" badge and filter were fixed cornflower blue. */
+.je-hidden-scoped-badge.je-hidden-scoped-badge,
+.je-hidden-scoped-filter.je-hidden-scoped-filter.active {
+    background: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 50%, transparent);
+    color: var(--accent-text-color);
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ BOOKMARKS PAGE ~~~~~~~~~~~~~~~~~~~~ */
+/* Fixed Material blue (bar beside each bookmark, offset buttons, the modal's primary button and
+   info box) becomes the accent; the selected tab gets an accent underline; the library modals
+   become theme dialogs. Amber "orphaned" warnings stay. */
+.je-bookmark-row .je-bookmark-bar {
+    background: var(--primary-accent-color);
+}
+.je-bookmark-tabs .je-tab.active {
+    color: #fff;
+    border-bottom-color: var(--primary-accent-color);
+}
+.je-bookmark-item-header .je-offset-icon,
+.je-bookmark-item .je-offset-icon {
+    background: var(--accent-surface-strong);
+    border-color: color-mix(in srgb, var(--primary-accent-color) 50%, transparent);
+    color: var(--accent-text-color);
+}
+.je-bm-library-modal-overlay .je-bm-library-modal-container {
+    background: var(--secondary-background-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+}
+.je-bm-library-modal-container .je-modal-info-box {
+    background: var(--accent-surface);
+    border: 1px solid color-mix(in srgb, var(--primary-accent-color) 40%, transparent);
+}
+.je-bm-library-modal-container .je-modal-info-title {
+    color: var(--accent-text-color);
+}
+.je-bm-library-modal-container .je-modal-input {
+    background: var(--alt-accent-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: 12px;
+}
+.je-bm-library-modal-container .je-modal-input:focus {
+    border-color: var(--primary-accent-color);
+}
+.je-bm-library-modal-container .je-modal-btn-primary {
+    background: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
+    color: var(--text-color);
+    border-radius: 999px;
+}
+.je-bm-library-modal-container .je-modal-btn-primary:hover:not(:disabled) {
+    background: var(--primary-accent-color);
+    filter: brightness(1.1);
+}
+.je-bm-library-modal-container .je-bookmark-btn-cancel {
+    background: var(--alt-accent-color);
+    color: #fff;
+    border-color: transparent;
+    border-radius: 999px;
+}
+/* The offset dialog's clock icon is painted blue inline (the duplicates dialog's amber icon stays). */
+.je-bookmarks-modal-header > .material-icons[style*="#2196f3"] {
+    color: var(--accent-text-color) !important;
+}
+/* "Adjust Offset" in the duplicates dialog is painted blue inline (the amber "Merge" and the
+   green/amber version labels are semantic and stay). */
+.je-bm-library-modal-container .je-btn[data-sync-from] {
+    background: var(--accent-surface-strong) !important;
+    border-color: color-mix(in srgb, var(--primary-accent-color) 60%, transparent) !important;
+    color: var(--accent-text-color) !important;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~ *ARR LINKS ~~~~~~~~~~~~~~~~~~~~ */
+/* With several Sonarr/Radarr instances the link opens a menu. The plugin sets its colours inline
+   from the theme detector, which maps the label to --text-color (black here: that token is for
+   text on accent fills), so the instance names were black on a dark tint. !important on the
+   custom properties wins over the inline ones. */
+.arr-dropdown {
+    --arr-menu-bg: var(--header-solid-background-color) !important;
+    --arr-menu-text: #fff !important;
+    --arr-menu-border: var(--alt-accent-color) !important;
+    --arr-menu-hover: var(--accent-surface-strong) !important;
+}
+.arr-dropdown .arr-dropdown-menu {
+    border-radius: 12px;
 }
