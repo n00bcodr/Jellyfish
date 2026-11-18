@@ -1157,3 +1157,25 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
 .jellyseerr-sort-menu .jellyseerr-menu-profile-row:hover {
     background: var(--accent-surface);
 }
+
+/* Recommendations switch and Filters button: smaller. The theme's desktop .emby-tab-button margin (.5em) and the
+   plugin's 34px/40px minimum heights made the pills oversized next to the title. */
+.je-reco-tools .jellyseerr-discovery-filter,
+.je-recommendations-category-header .jellyseerr-discovery-filter {
+    gap: 0;
+    padding: 2px;
+}
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 26px !important;
+    padding: 0 .8em !important;
+    font-size: .85em;
+}
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 30px !important;
+    padding: 0 .85em 0 .7em !important;
+    font-size: .85em;
+}
