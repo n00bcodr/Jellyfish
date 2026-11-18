@@ -1074,7 +1074,7 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
 /* Seerr Recommendations page and its category pages: the All | Movies | Series switch and the Filters button
    sit in .je-reco-tools / .je-recommendations-category-header (not .jellyseerr-discovery-header). The theme's
    .emby-tab-button rules already give hover and active an accent pill with --text-color on it, so this only
-   lets the plugin's own light pill colours step aside and keeps the text and icon readable in every state. */
+   lets the plugin's own light pill colours step aside. */
 .je-reco-tools .jellyseerr-discovery-filter,
 .je-recommendations-category-header .jellyseerr-discovery-filter {
     background: var(--alt-accent-color) !important;
@@ -1094,16 +1094,7 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     background: var(--primary-accent-color) !important;
     color: var(--text-color) !important;
 }
-.je-reco-tools .jellyseerr-filter-btn.emby-tab-button:hover *,
-.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button:hover *,
-.je-reco-tools .jellyseerr-filter-btn.emby-tab-button-active *,
-.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button-active *,
-.je-reco-tools .jellyseerr-filters-btn.emby-tab-button:hover *,
-.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button:hover *,
-.je-reco-tools .jellyseerr-filters-btn.emby-tab-button[data-on] *,
-.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button[data-on] * {
-    color: var(--text-color) !important;
-}
+
 
 /* Seerr Filters panel (the .jellyseerr-sort-menu): inputs, the all/any switch, range bounds and saved filters. */
 .jellyseerr-sort-menu .jellyseerr-menu-input {
@@ -1195,7 +1186,4 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     background: var(--primary-accent-color) !important;
     color: var(--text-color) !important;
 }
-.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button:hover *,
-.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button:hover * {
-    color: var(--text-color) !important;
-}
+
