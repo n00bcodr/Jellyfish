@@ -34,6 +34,10 @@
     // , THEME_BASE + "jellyfin-enhanced.css"
   ];
 
+  // Where to send people who want the theme on the rest of Jellyfin (this script only themes the dashboard).
+  const THEME_BUILDER_URL = "https://n00bcodr.github.io/Jellyfish/";
+  const INSTALL_GUIDE_URL = "https://github.com/n00bcodr/Jellyfish#installation";
+
   // Extra CSS injected alongside the imported theme(s).
   // (The old `.MuiStack-root.css-1kuiulr { align-self: center }` rule moved into theme.css,
   //  where it is matched by structure instead of a generated class name that breaks on
@@ -240,9 +244,52 @@
     return urls;
   }
 
+  // Jellyfin 12 can show the Custom CSS box empty after a full reload of the Branding page (it fills again after
+  // navigating away and back), while the server still has the CSS. Pressing Jellyfin's Save then would store the
+  // blank box and wipe it. Once per visit, if the box is empty, put the server's CSS back in it (through the native
+  // setter and an input event, so the form's state follows) and leave it alone after that.
+  let restoredBrandingVisit = false;
+  async function restoreBlankCustomCss() {
+    if (restoredBrandingVisit) return;
+    const box = document.querySelector('textarea[name="CustomCss"]');
+    if (!box) return;
+    restoredBrandingVisit = true;
+    if (box.value || document.activeElement === box) return;
+    try {
+      const client = window.ApiClient;
+      const config = await client.getJSON(client.getUrl('System/Configuration/branding'));
+      const current = document.querySelector('textarea[name="CustomCss"]');
+      if (!config?.CustomCss || !current || current.value || document.activeElement === current) return;
+      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+      setter.call(current, config.CustomCss);
+      current.dispatchEvent(new Event('input', { bubbles: true }));
+      console.log('[Jellyfish Theme] Restored the Custom CSS box, which Jellyfin showed empty.');
+    } catch (e) {
+      console.warn('[Jellyfish Theme] Could not check the Custom CSS box:', e);
+    }
+  }
+
+  // Puts the basic Jellyfish import into the server's Custom CSS code box (through the native setter and an input
+  // event so the form's state follows). It does not save: Jellyfin's own Save button stores it.
+  function addBasicThemeToCustomCss(btn) {
+    const box = document.querySelector('textarea[name="CustomCss"]');
+    const line = `@import url("${THEME_BASE}theme.css");`;
+    const label = btn.querySelector('span:last-child') || btn;
+    const say = (text) => { label.textContent = text; setTimeout(() => { label.textContent = 'Add basic Jellyfish theme'; }, 4000); };
+    if (!box) return say('Custom CSS box not found');
+    if (box.value.includes(line) || /jellyfish[^"')]*\/theme\.css/i.test(box.value)) return say('Already in Custom CSS code');
+    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+    setter.call(box, box.value ? `${line}\n${box.value}` : line);
+    box.dispatchEvent(new Event('input', { bubbles: true }));
+    box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    say('Added - now press Save below');
+  }
+
   // Add editable theme list panel to branding page
   function injectThemeListPanel() {
-    if (!isBrandingPage() || document.getElementById(PANEL_ID)) return;
+    if (!isBrandingPage()) { restoredBrandingVisit = false; return; }
+    restoreBlankCustomCss();
+    if (document.getElementById(PANEL_ID)) return;
 
     const loginDisclaimer = document.querySelector('textarea[name="LoginDisclaimer"]');
     const parentBlock = loginDisclaimer?.closest(".MuiFormControl-root");
@@ -316,6 +363,29 @@
     buttonContainer.appendChild(saveButton);
     buttonContainer.appendChild(resetButton);
     panel.appendChild(buttonContainer);
+
+    // This box only themes the dashboard. Say so, and offer the way to theme everything else: the server's own
+    // "Custom CSS code" box (below), with a button that adds the basic Jellyfish import to it.
+    const note = document.createElement('div');
+    note.id = 'jellyfish-theme-note';
+    note.className = helperClass;
+    note.style.cssText = 'margin-top: 1.2em;';
+    const noteText = document.createElement('p');
+    noteText.style.margin = '0 0 .6em';
+    noteText.append('This list only themes the dashboard. To use Jellyfish on the rest of Jellyfin (home, libraries, details), the imports go in the ');
+    const strong = document.createElement('strong');
+    strong.textContent = 'Custom CSS code';
+    noteText.append(strong, ' box below, then Jellyfin\u2019s own Save. ');
+    for (const [label, href] of [['Theme Builder', THEME_BUILDER_URL], ['Installation guide', INSTALL_GUIDE_URL]]) {
+      const a = document.createElement('a');
+      a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = label;
+      a.style.cssText = 'margin-right: 1em; color: inherit; font-weight: 600; text-decoration: underline;';
+      noteText.appendChild(a);
+    }
+    const addBtn = createJellyfinButton('Add basic Jellyfish theme', false, 'add');
+    addBtn.onclick = () => addBasicThemeToCustomCss(addBtn);
+    note.append(noteText, addBtn);
+    panel.appendChild(note);
 
     parentBlock.after(panel);
   }
