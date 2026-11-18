@@ -134,6 +134,7 @@
     background-color: var(--alt-accent-color) !important;
     border-color: var(--alt-accent-color) !important;
     border-radius: 14px !important;
+    margin-top: .5em;
 }
 #je-active-streams-panel .je-as-user,
 #je-active-streams-panel .je-as-panel-footer {
