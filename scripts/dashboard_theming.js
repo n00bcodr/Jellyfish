@@ -310,12 +310,17 @@
     parentBlock.after(panel);
   }
 
-  // Handle theme application based on dashboardDocument class
+  // Handle theme application based on dashboardDocument class.
+  // The style tag is created the first time the dashboard opens (not re-fetched on later visits) and is
+  // switched off with media="not all" everywhere else, so the theme CSS never applies to the rest of Jellyfin
+  // (where the server's Custom CSS already provides it).
   function handleThemeVisibility() {
-    // Only inject once - if the theme style tag already exists, leave it alone, instead of
-    // removing and re-fetching it from jsDelivr on every visit to the dashboard.
-    if (isDashboardDocument() && !document.querySelector(`style[${STYLE_ID}]`)) {
-      applyNewTheme();
+    const style = document.querySelector(`style[${STYLE_ID}]`);
+    if (isDashboardDocument()) {
+      if (!style) applyNewTheme();
+      else if (style.media) style.removeAttribute('media');
+    } else if (style && style.media !== 'not all') {
+      style.media = 'not all';
     }
   }
 
