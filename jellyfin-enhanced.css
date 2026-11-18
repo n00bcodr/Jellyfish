@@ -1179,3 +1179,23 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     padding: 0 .85em 0 .7em !important;
     font-size: .85em;
 }
+
+/* Recommendations category page: the sort button ("Popular") matches the Filters button beside it. */
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 30px !important;
+    padding: 0 .85em !important;
+    font-size: .85em;
+    background: var(--alt-accent-color) !important;
+    color: inherit !important;
+}
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button:hover,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button:hover {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button:hover *,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button:hover * {
+    color: var(--text-color) !important;
+}
