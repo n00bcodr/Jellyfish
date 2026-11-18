@@ -18,6 +18,7 @@
   const BUTTON_ID = 'theme-refresh-button';
   const PANEL_ID = 'jellyfish-theme-list';
   const STORAGE_KEY = 'jellyfish-custom-theme-urls';
+  const VERSION_KEY = 'jellyfish-theme-version';
 
   // Where the theme files are loaded from. Use a branch or tag ref (e.g. "jellyfish@some-branch")
   // to try a development version; this is the only line to change.
@@ -84,6 +85,10 @@
     }
   }
 
+  function bumpThemeVersion() {
+    try { localStorage.setItem(VERSION_KEY, String(Date.now())); } catch (e) { /* storage unavailable: the old version stays */ }
+  }
+
   function removeOldTheme() {
     document.querySelector(`style[${STYLE_ID}]`)?.remove();
   }
@@ -94,7 +99,9 @@
     const style = document.createElement('style');
     style.setAttribute(STYLE_ID, 'true');
 
-    const cacheBuster = Date.now();
+    // A stable version, so the browser keeps the theme cached between visits. It only changes when
+    // you press "Refresh Theme" or "Save & Apply" (bumpThemeVersion), not on every page load.
+    const cacheBuster = localStorage.getItem(VERSION_KEY) || '1';
     const themeUrls = getThemeUrls();
 
     const importRules = themeUrls
@@ -172,6 +179,7 @@
       Refresh Theme`;
     btn.onclick = async () => {
       console.log("Jellyfin Theme Refreshed");
+      bumpThemeVersion();
       // Re-download the theme files before reloading. The reload then finds the fresh copies in
       // the browser cache, including the ones Custom CSS imports without a ?v= suffix.
       await Promise.race([refetchThemeFiles(), new Promise(r => setTimeout(r, 5000))]);
@@ -288,6 +296,7 @@
       // the Custom CSS box empty until you navigate away and back, and saving it blank would
       // wipe the branding CSS.
       saveThemeUrls(urls);
+      bumpThemeVersion();
       applyNewTheme();
       showNotification('Themes saved and applied.');
     };
@@ -297,6 +306,7 @@
     resetButton.onclick = () => {
       if (window.confirm('Reset to default theme URLs?')) {
         localStorage.removeItem(STORAGE_KEY); // forget the saved list so the defaults apply again
+        bumpThemeVersion();
         document.getElementById('theme-urls-textarea').value = DEFAULT_THEME_URLS.join('\n');
         applyNewTheme();
         showNotification('Reset to defaults and applied.');
@@ -332,6 +342,8 @@
     const debouncedDOMHandler = () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
+        // Jellyfin changes the DOM constantly on other pages (cards, carousels); nothing here applies there.
+        if (!isDashboardDocument()) return;
         handleButtonVisibility();
         injectThemeListPanel();
       }, 100);
@@ -344,6 +356,7 @@
         handleThemeVisibility();
         lastDashboardState = currentState;
       }
+      if (!isDashboardDocument()) return;
       handleButtonVisibility();
       injectThemeListPanel();
     });
