@@ -148,6 +148,13 @@ a:has([data-testid="FavoriteIcon"]) { display: none !important; }
     z-index: 2;
 }
 
+/* Keep the background on hover (theme's generic icon-button hover makes it transparent) and grow slightly */
+.cardOverlayContainer>.cardOverlayFab-primary:hover:not(:disabled) {
+    background-color: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    transform: scale(1.15);
+}
+
 /* Blur the card upon hovering on play button */
 .cardOverlayContainer:has(.cardOverlayButton:hover) {
     backdrop-filter: blur(5px) !important;

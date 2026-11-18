@@ -763,29 +763,6 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     color: var(--text-color) !important;
 }
 
-/* Type label on Seerr posters (MOVIE / SERIES / COLLECTION): the theme's chip (accent-tinted
-   surface, accent border, readable accent text) instead of three fixed brand colours; the label
-   still names the type. */
-.jellyseerr-media-badge.jellyseerr-media-badge {
-    background-color: var(--accent-surface-strong);
-    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
-    color: var(--accent-text-color);
-    text-shadow: none;
-}
-/* "View collection" pill on a collection poster: same chip, accent glow instead of green. The
-   plugin's `transition: all` is narrowed to what changes. */
-.jellyseerr-collection-badge.jellyseerr-collection-badge {
-    background-color: var(--accent-surface-strong);
-    border-color: color-mix(in srgb, var(--primary-accent-color) 70%, transparent);
-    color: var(--accent-text-color);
-    text-shadow: none;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
-    transition: transform .2s ease, box-shadow .2s ease;
-}
-.jellyseerr-collection-badge.jellyseerr-collection-badge:hover {
-    box-shadow: 0 0 0 1px var(--primary-accent-color), 0 10px 26px rgba(0, 0, 0, .5);
-}
-
 /* Download-progress popover (hovering a Seerr item that is downloading): a solid theme menu with
    an accent status chip and an accent progress bar. */
 .jellyseerr-hover-popover.jellyseerr-hover-popover {
@@ -1092,4 +1069,133 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
 }
 .arr-dropdown .arr-dropdown-menu {
     border-radius: 12px;
+}
+
+/* Seerr Recommendations page and its category pages: the All | Movies | Series switch and the Filters button
+   sit in .je-reco-tools / .je-recommendations-category-header (not .jellyseerr-discovery-header). The theme's
+   .emby-tab-button rules already give hover and active an accent pill with --text-color on it, so this only
+   lets the plugin's own light pill colours step aside and keeps the text and icon readable in every state. */
+.je-reco-tools .jellyseerr-discovery-filter,
+.je-recommendations-category-header .jellyseerr-discovery-filter {
+    background: var(--alt-accent-color) !important;
+}
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button {
+    background: var(--alt-accent-color) !important;
+}
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button:hover,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button:hover,
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button-active,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button-active,
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button:hover,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button:hover,
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button[data-on],
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button[data-on] {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button:hover *,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button:hover *,
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button-active *,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button-active *,
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button:hover *,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button:hover *,
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button[data-on] *,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button[data-on] * {
+    color: var(--text-color) !important;
+}
+
+/* Seerr Filters panel (the .jellyseerr-sort-menu): inputs, the all/any switch, range bounds and saved filters. */
+.jellyseerr-sort-menu .jellyseerr-menu-input {
+    background: var(--alt-accent-color) !important;
+    border: 1px solid transparent !important;
+    border-radius: 12px !important;
+    color: inherit !important;
+    box-shadow: none !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-input:focus {
+    border-color: var(--primary-accent-color) !important;
+    outline: none;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-input[aria-invalid="true"] {
+    border-color: var(--jellyseerr-error, #e5484d) !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-match-track {
+    background: var(--alt-accent-color) !important;
+    box-shadow: none !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-match-btn[aria-checked="true"] {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    box-shadow: none !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-match-btn:not([aria-checked="true"]):hover {
+    background: var(--accent-surface) !important;
+    color: var(--text-color) !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-profile-save.emby-button.raised,
+.jellyseerr-sort-menu .jellyseerr-filters-run {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+    border: 0 !important;
+    border-radius: 100px !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-profile-save.emby-button.raised:hover,
+.jellyseerr-sort-menu .jellyseerr-filters-run:hover {
+    filter: brightness(1.1);
+}
+.jellyseerr-sort-menu .jellyseerr-menu-profile-undo,
+.jellyseerr-sort-menu .jellyseerr-menu-profile-delete {
+    border-radius: 100px !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-profile-mark {
+    color: var(--primary-accent-color) !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-choices:not([hidden]) {
+    border-bottom-color: var(--alt-accent-color) !important;
+}
+.jellyseerr-sort-menu .jellyseerr-menu-profile-row:hover {
+    background: var(--accent-surface);
+}
+
+/* Recommendations switch and Filters button: smaller. The theme's desktop .emby-tab-button margin (.5em) and the
+   plugin's 34px/40px minimum heights made the pills oversized next to the title. */
+.je-reco-tools .jellyseerr-discovery-filter,
+.je-recommendations-category-header .jellyseerr-discovery-filter {
+    gap: 0;
+    padding: 2px;
+}
+.je-reco-tools .jellyseerr-filter-btn.emby-tab-button,
+.je-recommendations-category-header .jellyseerr-filter-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 26px !important;
+    padding: 0 .8em !important;
+    font-size: .85em;
+}
+.je-reco-tools .jellyseerr-filters-btn.emby-tab-button,
+.je-recommendations-category-controls .jellyseerr-filters-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 30px !important;
+    padding: 0 .85em 0 .7em !important;
+    font-size: .85em;
+}
+
+/* Recommendations category page: the sort button ("Popular") matches the Filters button beside it. */
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button {
+    margin: 0 !important;
+    min-height: 30px !important;
+    padding: 0 .85em !important;
+    font-size: .85em;
+    background: var(--alt-accent-color) !important;
+    color: inherit !important;
+}
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button:hover,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button:hover {
+    background: var(--primary-accent-color) !important;
+    color: var(--text-color) !important;
+}
+.je-recommendations-category-header .jellyseerr-sort-btn.emby-tab-button:hover *,
+.je-recommendations-category-controls .jellyseerr-sort-btn.emby-tab-button:hover * {
+    color: var(--text-color) !important;
 }

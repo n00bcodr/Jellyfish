@@ -326,7 +326,7 @@ body:has(> #slides-container) #indexPage .homeSectionsContainer:not(#_):not(#__)
   white-space: nowrap !important;
 }
 /* Hide Favorite if Watchlist is present */
-.button-container:has(.watchlist-button) .favorite-button {
+.button-container:has(.watchlist-button) > .favorite-button:not(.watchlist-button) {
   display: none !important;
 }
 /* Hover */
