@@ -54,6 +54,12 @@ html body:not([class*="media-bar-mobile"]):not(#_):not(#__) .homeSectionsContain
   margin-top: calc(var(--slideshow-content-top) - var(--slideshow-page-offset, 0px)) !important;
 }
 
+/* theme.css pads the rows for the floating top bar; with the slideshow on the page the rows already start below it.
+   (This file is only loaded with the Media Bar, so the :has() on <body> costs nothing for everyone else.) */
+body:has(> #slides-container) #indexPage .homeSectionsContainer:not(#_):not(#__) {
+  padding-top: 0;
+}
+
 /* Room for the first row's title under the slideshow. (misc.css hides that title and uses the
    same padding; this keeps the layout the same without it.) The row's previous/next buttons
    are positioned from the section's top edge, so they take the same padding or they float
@@ -320,7 +326,7 @@ html body:not([class*="media-bar-mobile"]):not(#_):not(#__) .homeSectionsContain
   white-space: nowrap !important;
 }
 /* Hide Favorite if Watchlist is present */
-.button-container:has(.watchlist-button) .favorite-button {
+.button-container:has(.watchlist-button) > .favorite-button:not(.watchlist-button) {
   display: none !important;
 }
 /* Hover */

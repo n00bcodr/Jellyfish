@@ -68,6 +68,9 @@ Here's a breakdown of what each script does:
 - Loads `theme.css` on the dashboard (Jellyfin blocks Custom CSS there).
 - Adds a **Refresh Theme** button to the dashboard, which re-fetches the theme without cache.
 - Adds an editable **Dashboard Theme CSS URLs** box under *Dashboard → Branding → Custom CSS* (saved per browser). Use it to add a color palette (e.g. `.../colors/coal.css`) or `jellyfin-enhanced.css` if you use the Jellyfin Enhanced plugin. *Reset to Defaults* goes back to the list in the script.
+  
+  > [!NOTE]
+  > That list only themes the **dashboard**. To use Jellyfish on the rest of Jellyfin, the imports go in Jellyfin's own **Custom CSS code** box on the same page (see [Installation](../README.md#installation) or the [Theme Builder](https://n00bcodr.github.io/Jellyfish/)); the page shows a short note and an **Add basic Jellyfish theme** button that fills in the basic import for you, then press Jellyfin's Save.
 - It copies class names from the dashboard's own buttons and fields instead of hard-coding Jellyfin's generated `css-…` names, so it keeps working when Jellyfin rebuilds.
 
 
