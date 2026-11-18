@@ -275,14 +275,22 @@
     const box = document.querySelector('textarea[name="CustomCss"]');
     const line = `@import url("${THEME_BASE}theme.css");`;
     const label = btn.querySelector('span:last-child') || btn;
-    const say = (text) => { label.textContent = text; setTimeout(() => { label.textContent = 'Add basic Jellyfish theme'; }, 4000); };
-    if (!box) return say('Custom CSS box not found');
-    if (box.value.includes(line) || /jellyfish[^"')]*\/theme\.css/i.test(box.value)) return say('Already in Custom CSS code');
+    const icon = btn.querySelector('.material-icons');
+    // Shows a result on the button for a few seconds: its own icon, and dimmed when nothing was changed.
+    const say = (text, iconName, dim) => {
+      label.textContent = text;
+      if (icon) icon.textContent = iconName;
+      btn.style.opacity = dim ? '.6' : '';
+      clearTimeout(btn._reset);
+      btn._reset = setTimeout(() => { label.textContent = 'Add basic Jellyfish theme'; if (icon) icon.textContent = 'add'; btn.style.opacity = ''; }, 4000);
+    };
+    if (!box) return say('Custom CSS box not found', 'error_outline', true);
+    if (box.value.includes(line) || /jellyfish[^"')]*\/theme\.css/i.test(box.value)) return say('Already in Custom CSS code', 'check_circle', true);
     const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
     setter.call(box, box.value ? `${line}\n${box.value}` : line);
     box.dispatchEvent(new Event('input', { bubbles: true }));
     box.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    say('Added - now press Save below');
+    say('Added - now press Save below', 'check', false);
   }
 
   // Add editable theme list panel to branding page
@@ -368,11 +376,11 @@
     // "Custom CSS code" box (below), with a button that adds the basic Jellyfish import to it.
     const note = document.createElement('div');
     note.id = 'jellyfish-theme-note';
-    note.className = helperClass;
     note.style.cssText = 'margin-top: 1.2em;';
     const noteText = document.createElement('p');
-    noteText.style.margin = '0 0 .6em';
-    noteText.append('This list only themes the dashboard. To use Jellyfish on the rest of Jellyfin (home, libraries, details), the imports go in the ');
+    noteText.className = helperClass; // same inset as the helper text above, so the words line up
+    noteText.style.margin = '0';
+    noteText.append('The list above only themes the dashboard. To use Jellyfish on the rest of Jellyfin (home, libraries, details), the imports go in the ');
     const strong = document.createElement('strong');
     strong.textContent = 'Custom CSS code';
     noteText.append(strong, ' box below, then Jellyfin\u2019s own Save. ');
@@ -382,9 +390,13 @@
       a.style.cssText = 'margin-right: 1em; color: inherit; font-weight: 600; text-decoration: underline;';
       noteText.appendChild(a);
     }
+    // Same row style as the Save & Apply buttons above, so the two line up.
+    const noteButtons = document.createElement('div');
+    noteButtons.style.cssText = 'margin-top: 1em; display: flex; gap: 0.5em; flex-wrap: wrap;';
     const addBtn = createJellyfinButton('Add basic Jellyfish theme', false, 'add');
     addBtn.onclick = () => addBasicThemeToCustomCss(addBtn);
-    note.append(noteText, addBtn);
+    noteButtons.appendChild(addBtn);
+    note.append(noteText, noteButtons);
     panel.appendChild(note);
 
     parentBlock.after(panel);
