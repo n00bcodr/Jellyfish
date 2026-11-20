@@ -548,10 +548,6 @@ body:has(> #slides-container) #indexPage .homeSectionsContainer:not(#_):not(#__)
   #slides-container :is(.arrow, .mute-button, .volume-toggle) {
     display: none !important;
   }
-  #slides-container .pause-button {
-    right: var(--slideshow-gutter) !important;
-    top: 5.5rem !important;
-  }
   /* the plot is left out of the phone bar */
   #slides-container:not(.layout-plate) .plot-container {
     display: none !important;
