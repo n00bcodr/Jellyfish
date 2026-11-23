@@ -1079,6 +1079,20 @@ progress::-webkit-progress-value  /* Filled part of the progress bar (WebKit) */
     height: 40px !important;
     padding: 0 10px !important;
 }
+/* Jellyfin Enhanced builds its own container with the class .headerRight when another plugin's button
+   (Moonfin's, for one) sits next to the user menu, so its header buttons are not folded into the
+   native button row. It is not the legacy header, so it takes none of the pill styling above or in
+   colors/liquidglass.css: otherwise the plugin's buttons sit inside a second, grey pill. */
+.MuiToolbar-root > .headerRight[data-je-header-fallback] {
+    background: none !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    height: auto !important;
+    padding: 0 !important;
+}
 /* Styling for mobile header tabs (pill shape, light background, blur). */
 .layout-mobile .headerTabs {
     height: 40px !important;
