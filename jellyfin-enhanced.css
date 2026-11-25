@@ -649,6 +649,57 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
     border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent);
     color: rgba(255, 255, 255, .85);
 }
+/* "This request will be approved automatically": a green note, as the plugin keeps green for
+   approvals; the surface and corners are the theme's. */
+.jellyseerr-season-modal .jellyseerr-auto-approve {
+    border-radius: var(--rounded-cards);
+}
+/* Tags (typeable multi-select) and Request As (picture list): the same field look as the selects
+   above. Chosen tags are accent chips; the open lists take the palette surface and the accent for
+   the highlighted row. */
+.jellyseerr-season-modal .jellyseerr-advanced-options :is(.jellyseerr-tag-field, .jellyseerr-user-toggle) {
+    background-color: var(--alt-accent-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-user-toggle:hover {
+    border-color: color-mix(in srgb, var(--primary-accent-color) 45%, transparent);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options :is(.jellyseerr-tag-field:focus-within, .jellyseerr-user-toggle:focus-visible) {
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent-color) 30%, transparent);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-tag-chip {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-tag-input {
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-tag-input::placeholder {
+    color: rgba(255, 255, 255, .5);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options :is(.jellyseerr-tag-options, .jellyseerr-user-list) {
+    background: var(--secondary-background-color);
+    border: 1px solid var(--alt-accent-color);
+    border-radius: var(--rounded-cards);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-tag-option {
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options :is(.jellyseerr-tag-option:hover, .jellyseerr-tag-option.active, .jellyseerr-user-item:hover, .jellyseerr-user-item:focus-visible) {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-user-item {
+    background: transparent;
+    border: none;
+    color: #fff;
+}
+.jellyseerr-season-modal .jellyseerr-advanced-options .jellyseerr-user-avatar {
+    background: var(--accent-surface-strong);
+}
 /* Single-season TV picker (TV layout). */
 .jellyseerr-season-modal .jellyseerr-tv-picker-option {
     background: color-mix(in srgb, #fff 6%, transparent);
@@ -942,6 +993,17 @@ html:not(.layout-tv) .jellyseerr-sort-menu.actionSheet {
 }
 .je-calendar-day.je-calendar-day.je-calendar-today :is(.je-calendar-day-number, .je-calendar-day-name) {
     color: var(--accent-text-color) !important;
+}
+
+/* "Approve with options" next to Approve / Decline: the theme's faint round button. */
+.je-request-options-btn.je-request-options-btn {
+    background: var(--alt-accent-color);
+    color: #fff;
+}
+.je-request-options-btn.je-request-options-btn:hover,
+.je-request-options-btn.je-request-options-btn:focus-visible {
+    background: var(--primary-accent-color);
+    color: var(--text-color);
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~ AWARDS (item pages) ~~~~~~~~~~~~~~~~~~~~ */
